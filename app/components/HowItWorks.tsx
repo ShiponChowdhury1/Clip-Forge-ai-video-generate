@@ -1,29 +1,8 @@
 "use client";
 
-import { FileText, Settings, Share2 } from "lucide-react";
+import { steps } from "@/app/data";
 
 export default function HowItWorks() {
-  const steps = [
-    {
-      step: 1,
-      title: "Paste your script",
-      desc: "Simply paste your content or let our AI generate a script for you from a prompt.",
-      icon: FileText,
-    },
-    {
-      step: 2,
-      title: "Customize settings",
-      desc: "Choose your voice, visual style, and background music to match your brand's vibe.",
-      icon: Settings,
-    },
-    {
-      step: 3,
-      title: "Export and share",
-      desc: "Download your video in 9:16 format and upload directly to your favorite platforms.",
-      icon: Share2,
-    },
-  ];
-
   return (
     <section id="how-it-works" className="w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 md:mb-16">

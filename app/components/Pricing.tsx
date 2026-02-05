@@ -1,78 +1,9 @@
 "use client";
 
 import { Check, X } from "lucide-react";
+import { plans } from "@/app/data";
 
 export default function Pricing() {
-  const plans = [
-    {
-      name: "Starter",
-      price: "$0",
-      period: "One-time",
-      credits: "50 Credits Included",
-      features: [
-        { text: "1080p Export", included: true },
-        { text: "Standard Voices", included: true },
-        { text: "Basic Support", included: true },
-        { text: "No Watermark", included: true },
-      ],
-      button: "Buy 50 Credits",
-      highlighted: false,
-      cardStyle: {
-        width: "396.78px",
-        height: "555.26px",
-        padding: "44.33px",
-        gap: "35.46px",
-        borderRadius: "26.6px",
-        borderWidth: "1.23px",
-      },
-    },
-    {
-      name: "Growth",
-      price: "$10",
-      period: "/one-time",
-      credits: "3000 Credits Included",
-      features: [
-        { text: "4K Export", included: true },
-        { text: "Premium AI Voices", included: true },
-        { text: "Priority Support", included: true },
-        { text: "Unlimited Assets", included: true },
-      ],
-      button: "Buy 200 Credits",
-      highlighted: true,
-      badge: "MOST POPULAR",
-      cardStyle: {
-        width: "420.05px",
-        height: "607.36px",
-        padding: "44.33px",
-        gap: "35.46px",
-        borderRadius: "26.6px",
-        borderWidth: "1.23px",
-      },
-    },
-    {
-      name: "Pro",
-      price: "$25",
-      period: "/one-time",
-      credits: "6000 Credits Included",
-      features: [
-        { text: "API Access", included: true },
-        { text: "Custom Branding", included: true },
-        { text: "Dedicated Manager", included: true },
-        { text: "Bulk Generation", included: true },
-      ],
-      button: "Buy 600 Credits",
-      highlighted: false,
-      cardStyle: {
-        width: "396.78px",
-        height: "555.26px",
-        padding: "44.33px",
-        gap: "35.46px",
-        borderRadius: "26.6px",
-        borderWidth: "1.23px",
-      },
-    },
-  ];
-
   return (
     <section id="pricing" className="w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-2 sm:mb-3">

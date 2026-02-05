@@ -1,32 +1,8 @@
 "use client";
 
-import { FileText, Music, Film } from "lucide-react";
+import { features } from "@/app/data";
 
 export default function Features() {
-  const features = [
-    {
-      title: "AI Script to Video",
-      desc: "Transform any script into a polished video with AI-powered scene generation and transitions.",
-      icon: FileText,
-      iconBg: "bg-cyan-500/10",
-      iconColor: "text-cyan-500",
-    },
-    {
-      title: "Background Music",
-      desc: "Add the perfect soundtrack from our curated library of royalty-free music tracks.",
-      icon: Music,
-      iconBg: "bg-cyan-500/10",
-      iconColor: "text-cyan-500",
-    },
-    {
-      title: "Video Scenes",
-      desc: "Enhance your content with AI-generated video clips that match your narrative.",
-      icon: Film,
-      iconBg: "bg-cyan-500/10",
-      iconColor: "text-cyan-500",
-    },
-  ];
-
   return (
     <section id="features" className="w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 md:mb-16 px-2">

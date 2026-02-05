@@ -1,36 +1,9 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { faqs } from "@/app/data";
 
 export default function FAQ() {
-  const faqs = [
-    {
-      question: "What are credits?",
-      answer:
-        "Credits are our internal currency. 1 credit = 1 video generation. Credits never expire and you can buy more whenever you need them.",
-    },
-    {
-      question: "Is the content really copyright free?",
-      answer:
-        "Yes, all our AI-generated scenes, music, and voiceovers are 100% copyright-free and royalty-free for commercial use.",
-    },
-    {
-      question: "Can I use my own voice?",
-      answer:
-        "Yes, you can upload your own voice recordings or use our premium AI voices. You have complete control over the audio.",
-    },
-    {
-      question: "What format are the videos exported in?",
-      answer:
-        "Videos are exported in MP4 format in 9:16 aspect ratio (1080x1920) resolution, perfect for TikTok, Reels, and Shorts.",
-    },
-    {
-      question: "Do you offer a free trial?",
-      answer:
-        "Yes, our Starter plan includes 50 free credits so you can test the platform before purchasing more credits.",
-    },
-  ];
-
   return (
     <section id="faq" className="w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-10 md:mb-12">

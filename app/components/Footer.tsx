@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Twitter, Github, Linkedin, Instagram } from "lucide-react";
 
 export default function Footer() {
@@ -12,13 +13,13 @@ export default function Footer() {
           {/* Logo & Description */}
           <div className="col-span-2 sm:col-span-2 lg:col-span-1 max-w-sm">
             <Link href="/" className="flex items-center gap-2 mb-4 sm:mb-5">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-4 sm:h-4">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 17L12 22L22 17" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 12L12 17L22 12" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Clipforge Logo"
+                width={48}
+                height={48}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg"
+              />
               <span className="text-lg sm:text-xl font-semibold text-white">Clipforge</span>
             </Link>
             <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8">
