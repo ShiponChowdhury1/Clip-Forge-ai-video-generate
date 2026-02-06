@@ -50,7 +50,7 @@ export default function AuthInput({
         {rightLabel && (
           <button
             onClick={onRightLabelClick}
-            className="text-[#00A6F4] text-sm font-semibold hover:underline"
+            className="text-[#00A6F4] text-sm font-semibold underline hover:text-[#0096d9] transition"
           >
             {rightLabel}
           </button>

@@ -56,10 +56,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-xs sm:text-sm mb-4 sm:mb-6 text-white tracking-wider">LEGAL</h4>
             <ul className="space-y-3 sm:space-y-4">
-              <li><a href="#" className="text-gray-400 hover:text-white transition text-xs sm:text-sm">Contact</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition text-xs sm:text-sm">Privacy Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition text-xs sm:text-sm">Terms of Service</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition text-xs sm:text-sm">Refund Policy</a></li>
+              <li><a href="mailto:contact@clipforge.com" className="text-gray-400 hover:text-white transition text-xs sm:text-sm">Contact</a></li>
+              <li><Link href="/privacy-policy" className="text-gray-400 hover:text-white transition text-xs sm:text-sm">Privacy Policy</Link></li>
+              <li><Link href="/terms-of-service" className="text-gray-400 hover:text-white transition text-xs sm:text-sm">Terms of Service</Link></li>
+              <li><Link href="/refund-policy" className="text-gray-400 hover:text-white transition text-xs sm:text-sm">Refund Policy</Link></li>
             </ul>
           </div>
           

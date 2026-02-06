@@ -119,19 +119,19 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className={`relative text-sm transition-colors duration-300 group ${
+              className={`relative text-sm transition-colors duration-300 ${
                 activeSection === link.href
                   ? "text-cyan-400"
                   : "text-gray-400 hover:text-white"
               }`}
             >
               {link.name}
-              {/* Underline animation */}
+              {/* Underline animation - only active state */}
               <span
                 className={`absolute -bottom-1 left-0 h-0.5 bg-cyan-400 transition-all duration-300 ease-out ${
                   activeSection === link.href
                     ? "w-full"
-                    : "w-0 group-hover:w-full"
+                    : "w-0"
                 }`}
               />
             </a>

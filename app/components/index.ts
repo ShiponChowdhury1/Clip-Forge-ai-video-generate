@@ -6,3 +6,6 @@ export { Hero, VideoSection, Features, HowItWorks, Pricing, FAQ } from "./home";
 
 // Auth components
 export * from "./auth";
+
+// Dashboard components
+export { Sidebar, DashboardHeader, VideoCard } from "./dashboard";

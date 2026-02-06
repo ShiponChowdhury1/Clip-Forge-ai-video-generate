@@ -125,24 +125,28 @@ export const videos = [
     desc: "Generate viral storytelling content in minutes.",
     bgImage: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
     bgColor: "from-slate-900 via-slate-800 to-slate-900",
+    image: "/video/storytelling.png",
   },
   {
     title: "Educational",
     desc: "Generate viral educational content in minutes.",
     bgImage: "linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%)",
     bgColor: "from-gray-900 via-gray-800 to-gray-900",
+    image: "/video/educational.png",
   },
   {
     title: "Product Promo",
     desc: "Generate viral product promo content in minutes.",
     bgImage: "linear-gradient(135deg, #0a192f 0%, #112240 50%, #1d3557 100%)",
     bgColor: "from-blue-950 via-blue-900 to-cyan-900",
+    image: "/video/productPromo.png",
   },
   {
     title: "Cinematic",
     desc: "Generate viral cinematic content in minutes.",
     bgImage: "linear-gradient(135deg, #000000 0%, #0d1b2a 50%, #1b263b 100%)",
     bgColor: "from-black via-slate-900 to-slate-800",
+    image: "/video/cinematic.png",
   },
 ];
 
