@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+/* Override browser autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 9999px #0d1117 inset !important;
+  box-shadow: 0 0 0 9999px #0d1117 inset !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
+  background-color: #0d1117 !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  transition: background-color 600000s 0s, color 600000s 0s;
+  caret-color: rgba(255, 255, 255, 0.5);
+}
+
+input:-moz-autofill,
+input:-moz-autofill:hover,
+input:-moz-autofill:focus {
+  background-color: #0d1117 !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
