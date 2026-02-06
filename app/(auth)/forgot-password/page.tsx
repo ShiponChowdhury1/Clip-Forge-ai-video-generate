@@ -1,4 +1,4 @@
-import ForgotPasswordForm from "@/app/components/auth/ForgotPasswordForm";
+import { ForgotPasswordForm } from "@/app/components";
 
 export const metadata = {
   title: "Forgot Password | Clipforge",

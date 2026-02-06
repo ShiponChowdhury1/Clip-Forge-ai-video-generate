@@ -1,4 +1,4 @@
-import RegisterForm from "@/app/components/auth/RegisterForm";
+import { RegisterForm } from "@/app/components";
 
 export const metadata = {
   title: "Create Account | Clipforge",

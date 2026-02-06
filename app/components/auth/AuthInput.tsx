@@ -35,13 +35,14 @@ export default function AuthInput({
       {/* Label Row */}
       <div className="flex items-center justify-between mb-2">
         <label
-          className="text-white font-bold text-sm tracking-[1.4px] capitalize"
+          className="font-bold text-sm tracking-[1.4px] capitalize"
           style={{
             fontFamily: "Arimo, sans-serif",
             fontWeight: 700,
             fontSize: "18px",
             lineHeight: "20px",
             letterSpacing: "1.4px",
+            color: "#99A1AF",
           }}
         >
           {label}

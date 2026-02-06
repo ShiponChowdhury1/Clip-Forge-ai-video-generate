@@ -1,4 +1,4 @@
-import VerifyEmailForm from "@/app/components/auth/VerifyEmailForm";
+import { VerifyEmailForm } from "@/app/components";
 
 export const metadata = {
   title: "Verify Email | Clipforge",

@@ -1,4 +1,4 @@
-import ResetPasswordForm from "@/app/components/auth/ResetPasswordForm";
+import { ResetPasswordForm } from "@/app/components";
 
 export const metadata = {
   title: "Reset Password | Clipforge",

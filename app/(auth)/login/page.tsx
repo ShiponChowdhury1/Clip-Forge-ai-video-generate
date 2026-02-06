@@ -1,4 +1,4 @@
-import LoginForm from "@/app/components/auth/LoginForm";
+import { LoginForm } from "@/app/components";
 
 export const metadata = {
   title: "Login | Clipforge",
