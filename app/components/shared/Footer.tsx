@@ -23,7 +23,7 @@ export default function Footer() {
               <span className="text-lg sm:text-xl font-semibold text-white">Clipforge</span>
             </Link>
             <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8">
-              The world's most powerful AI video generation platform. Create faceless reels, cinematic shorts, and viral content in seconds with credit-based pricing that scales with you.
+              The world&lsquo;s most powerful AI video generation platform. Create faceless reels, cinematic shorts, and viral content in seconds with credit-based pricing that scales with you.
             </p>
             <div className="flex gap-2 sm:gap-3">
               <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-gray-800 transition border border-gray-800">

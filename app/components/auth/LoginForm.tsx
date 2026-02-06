@@ -19,7 +19,7 @@ export default function LoginForm() {
           label="Password"
           type="password"
           placeholder="••••••••"
-          rightLabel="Forgot?"
+          rightLabel="Forgot Password?"
           onRightLabelClick={() => router.push("/forgot-password")}
         />
 

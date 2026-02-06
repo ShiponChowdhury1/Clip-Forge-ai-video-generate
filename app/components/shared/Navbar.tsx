@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 const navLinks = [
   { name: "Features", href: "#features" },
@@ -15,8 +16,17 @@ const navLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const pathname = usePathname();
+  const router = useRouter();
+  const isHomePage = pathname === "/";
 
   useEffect(() => {
+    // Only run scroll detection on home page
+    if (!isHomePage) {
+      setActiveSection("");
+      return;
+    }
+
     const handleScroll = () => {
       const sections = navLinks.map((link) => link.href.replace("#", ""));
       const scrollPosition = window.scrollY + 100;
@@ -44,10 +54,37 @@ export default function Navbar() {
     handleScroll(); // Check initial position
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
+
+  // Handle hash scrolling when coming from another page
+  useEffect(() => {
+    if (isHomePage && window.location.hash) {
+      const hash = window.location.hash;
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          const offsetTop = element.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({
+            top: offsetTop,
+            behavior: "smooth",
+          });
+          setActiveSection(hash);
+        }
+      }, 100);
+    }
+  }, [isHomePage]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    setIsOpen(false);
+
+    // If not on home page, navigate to home with hash
+    if (!isHomePage) {
+      router.push(`/${href}`);
+      return;
+    }
+
+    // On home page, smooth scroll to section
     const element = document.querySelector(href);
     if (element) {
       const offsetTop = element.getBoundingClientRect().top + window.scrollY - 80;
@@ -57,7 +94,6 @@ export default function Navbar() {
       });
       setActiveSection(href);
     }
-    setIsOpen(false);
   };
 
   return (

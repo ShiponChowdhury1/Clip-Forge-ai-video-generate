@@ -1,8 +1,8 @@
-export { default as Navbar } from "./Navbar";
-export { default as Hero } from "./Hero";
-export { default as VideoSection } from "./VideoSection";
-export { default as Features } from "./Features";
-export { default as HowItWorks } from "./HowItWorks";
-export { default as Pricing } from "./Pricing";
-export { default as FAQ } from "./FAQ";
-export { default as Footer } from "./Footer";
+// Shared components (used across multiple pages)
+export { Navbar, Footer } from "./shared";
+
+// Home page components
+export { Hero, VideoSection, Features, HowItWorks, Pricing, FAQ } from "./home";
+
+// Auth components
+export * from "./auth";

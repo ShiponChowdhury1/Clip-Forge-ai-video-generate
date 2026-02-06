@@ -22,7 +22,8 @@ export default function RegisterForm() {
           <input
             type="checkbox"
             id="terms"
-            className="w-5 h-5 mt-0.5 rounded border-gray-600 bg-transparent accent-[#00A6F4] cursor-pointer"
+            className="w-5 h-5 mt-0.5 rounded border-gray-600 cursor-pointer accent-[#00A6F4]"
+            style={{ backgroundColor: "#2D3235" }}
           />
           <label htmlFor="terms" className="text-gray-400 text-sm leading-relaxed">
             I&apos;ve read and agree with the{" "}
