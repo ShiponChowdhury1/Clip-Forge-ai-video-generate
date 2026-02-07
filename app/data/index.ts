@@ -150,6 +150,154 @@ export const videos = [
   },
 ];
 
+// Video Card Data (Reusable for Dashboard & All Videos page)
+export interface VideoCardData {
+  id: string;
+  title: string;
+  category: string;
+  videoUrl: string;
+  createdAt: string;
+  keywords?: string;
+  negativeKeywords?: string;
+  videoFormat?: string;
+  videoStyle?: string;
+  voiceType?: string;
+  status?: "Completed" | "Processing" | "Failed";
+}
+
+export const videoCardData: VideoCardData[] = [
+  {
+    id: "1",
+    title: "A Small Effort, A Big Heart",
+    category: "Inspirational",
+    videoUrl: "/video/a-small-effort-a-big-heart.mp4",
+    createdAt: "Created 10min ago",
+    keywords: "Heart, Kindness, Effort",
+    negativeKeywords: "Violence",
+    videoFormat: "9:16",
+    videoStyle: "Cinematic",
+    voiceType: "Griffin",
+    status: "Completed",
+  },
+  {
+    id: "2",
+    title: "Anime Episode",
+    category: "Anime",
+    videoUrl: "/video/anime-episode.mp4",
+    createdAt: "Created 15min ago",
+    keywords: "Anime, Action",
+    negativeKeywords: "Gore",
+    videoFormat: "9:16",
+    videoStyle: "Anime",
+    voiceType: "Griffin",
+    status: "Completed",
+  },
+  {
+    id: "3",
+    title: "Create Faceless Videos",
+    category: "Tutorial",
+    videoUrl: "/video/create-faceless-short-form-videos-with-one-click.mp4",
+    createdAt: "Created 20min ago",
+    keywords: "Faceless, Tutorial, AI",
+    negativeKeywords: "Face",
+    videoFormat: "9:16",
+    videoStyle: "Educational",
+    voiceType: "Nova",
+    status: "Completed",
+  },
+  {
+    id: "4",
+    title: "Doraemon",
+    category: "Anime",
+    videoUrl: "/video/doraimon.mp4",
+    createdAt: "Created 25min ago",
+    keywords: "Doraemon, Cartoon, Fun",
+    negativeKeywords: "Violence",
+    videoFormat: "9:16",
+    videoStyle: "Anime",
+    voiceType: "Griffin",
+    status: "Completed",
+  },
+  {
+    id: "5",
+    title: "Love Each Other",
+    category: "Emotional",
+    videoUrl: "/video/love-each-other.mp4",
+    createdAt: "Created 30min ago",
+    keywords: "Love, Emotion, Relationship",
+    negativeKeywords: "Hate",
+    videoFormat: "9:16",
+    videoStyle: "Storytelling",
+    voiceType: "Shimmer",
+    status: "Completed",
+  },
+  {
+    id: "6",
+    title: "Multi Disease Detection Dogs",
+    category: "Educational",
+    videoUrl: "/video/multi-disease-detection-dogs.mp4",
+    createdAt: "Created 35min ago",
+    keywords: "Dogs, Health, Detection",
+    negativeKeywords: "Violence",
+    videoFormat: "9:16",
+    videoStyle: "Educational",
+    voiceType: "Nova",
+    status: "Completed",
+  },
+  {
+    id: "7",
+    title: "Rhythm of the Night",
+    category: "Music",
+    videoUrl: "/video/rhythm-of-the-night.mp4",
+    createdAt: "Created 40min ago",
+    keywords: "Music, Night, Rhythm",
+    negativeKeywords: "Silence",
+    videoFormat: "9:16",
+    videoStyle: "Cinematic",
+    voiceType: "Echo",
+    status: "Completed",
+  },
+  {
+    id: "8",
+    title: "Story",
+    category: "Storytelling",
+    videoUrl: "/video/story.mp4",
+    createdAt: "Created 45min ago",
+    keywords: "Story, Narrative",
+    negativeKeywords: "Boring",
+    videoFormat: "9:16",
+    videoStyle: "Storytelling",
+    voiceType: "Griffin",
+    status: "Completed",
+  },
+  {
+    id: "9",
+    title: "The Insect That Can See Time Slower",
+    category: "Science",
+    videoUrl: "/video/the-insect-that-can-see-time-slowe.mp4",
+    createdAt: "Created 50min ago",
+    keywords: "Insect, Time, Science",
+    negativeKeywords: "Phobia",
+    videoFormat: "9:16",
+    videoStyle: "Educational",
+    voiceType: "Nova",
+    status: "Completed",
+  },
+  {
+    id: "10",
+    title: "The Village Where Everyone Shares One Clock",
+    category: "Story",
+    videoUrl: "/video/the-village-where-everyone-shares-one-clock_20260112_012548_883_f59617a9.mp4",
+    createdAt: "Created 1hr ago",
+    keywords: "Village, Clock, Community",
+    negativeKeywords: "Loneliness",
+    videoFormat: "9:16",
+    videoStyle: "Storytelling",
+    voiceType: "Shimmer",
+    status: "Completed",
+  },
+];
+
 // FAQ Section Data
 export const faqs = [
   {

@@ -104,7 +104,7 @@ export default function Navbar() {
         <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 h-full flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/logo.png"
+              src="/logo/sidebarLogo.png"
               alt="Clipforge Logo"
               width={48}
             height={48}

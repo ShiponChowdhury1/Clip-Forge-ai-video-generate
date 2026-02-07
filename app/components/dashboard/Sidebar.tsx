@@ -58,7 +58,7 @@ export default function Sidebar() {
       <div className="pb-6 flex justify-center">
         <Link href="/dashboard">
           <Image
-            src="/logo.png"
+            src="/logo/sidebarLogo.png"
             alt="Clipforge Logo"
             width={100}
             height={100}
