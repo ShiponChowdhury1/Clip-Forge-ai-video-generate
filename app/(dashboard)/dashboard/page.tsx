@@ -1,4 +1,4 @@
-import { Film } from "lucide-react";
+import Image from "next/image";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import VideoCard from "@/app/components/dashboard/VideoCard";
 import { videoCardData } from "@/app/data";
@@ -8,9 +8,13 @@ export default function DashboardPage() {
     <div>
       <DashboardHeader
         icon={
-          <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
-            <Film className="w-6 h-6 text-white" />
-          </div>
+          <Image
+            src="/logo/logo.png"
+            alt="Clipforge"
+            width={48}
+            height={48}
+            className="w-12 h-12 rounded-xl object-cover"
+          />
         }
         title="Clipforge"
         description="Transform scripts into AI-generated videos"

@@ -1,6 +1,6 @@
 "use client";
 
-import { Video } from "lucide-react";
+import Image from "next/image";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import VideoCard from "@/app/components/dashboard/VideoCard";
 import { useState } from "react";
@@ -20,9 +20,13 @@ export default function AllVideosPage() {
       {/* Header - Reusable */}
       <DashboardHeader
         icon={
-          <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center">
-            <Video className="w-6 h-6 text-white" />
-          </div>
+          <Image
+            src="/logo/video.png"
+            alt="All Videos"
+            width={48}
+            height={48}
+            className="w-12 h-12 rounded-xl object-cover"
+          />
         }
         title="All Generated Video"
         description="Manage & Review Your Generated Videos"

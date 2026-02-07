@@ -1,114 +1,216 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
-import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import { useState } from "react";
+import {
+  CreateVideoHeader,
+  StepProgress,
+  StepNavigation,
+  GeneratingProgress,
+} from "@/app/components/dashboard/create";
+import Step1VideoDetails from "@/app/components/dashboard/create/steps/Step1VideoDetails";
+import Step2VideoStyle from "@/app/components/dashboard/create/steps/Step2VideoStyle";
+import Step3VoiceScript from "@/app/components/dashboard/create/steps/Step3VoiceScript";
+import Step4MusicFormat from "@/app/components/dashboard/create/steps/Step4MusicFormat";
+import Step5Subtitles from "@/app/components/dashboard/create/steps/Step5Subtitles";
+import Step6Review from "@/app/components/dashboard/create/steps/Step6Review";
+
+import type { SceneMediaOption } from "@/app/components/dashboard/create/steps/Step1VideoDetails";
+import type { VideoStyleOption } from "@/app/components/dashboard/create/steps/Step2VideoStyle";
+import type { VoiceId } from "@/app/components/dashboard/create/steps/Step3VoiceScript";
+import type { MusicOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step4MusicFormat";
+import type { SubtitleStyle } from "@/app/components/dashboard/create/steps/Step5Subtitles";
+
+const TOTAL_STEPS = 6;
 
 export default function CreateVideoPage() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generationSteps, setGenerationSteps] = useState([
+    { label: "Generating Prompts", completed: false, active: true },
+    { label: "Creating Image", completed: false, active: false },
+    { label: "Creating narration", completed: false, active: false },
+    { label: "Building Video", completed: false, active: false },
+  ]);
+
+  // Step 1 - Video Details
+  const [videoTitle, setVideoTitle] = useState("");
+  const [keywords, setKeywords] = useState("");
+  const [negativeKeywords, setNegativeKeywords] = useState("");
+  const [sceneMedia, setSceneMedia] = useState<SceneMediaOption>("all-images");
+
+  // Step 2 - Video Style
+  const [videoStyle, setVideoStyle] = useState<VideoStyleOption>("3d-cartoon");
+
+  // Step 3 - Voice & Script
+  const [selectedVoice, setSelectedVoice] = useState<VoiceId>("hope");
   const [script, setScript] = useState("");
-  const [voiceStyle, setVoiceStyle] = useState("Natural");
-  const [visualStyle, setVisualStyle] = useState("Cinematic");
-  const [musicStyle, setMusicStyle] = useState("None");
+
+  // Step 4 - Music & Format
+  const [backgroundMusic, setBackgroundMusic] = useState<MusicOption>("no-music");
+  const [videoFormat, setVideoFormat] = useState<VideoFormat>("9:16");
+
+  // Step 5 - Subtitles
+  const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
+  const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>("none");
+
+  const handleBack = () => {
+    if (isGenerating) {
+      setIsGenerating(false);
+      return;
+    }
+    if (currentStep > 1) setCurrentStep((prev) => prev - 1);
+  };
+
+  const handleContinue = () => {
+    if (currentStep < TOTAL_STEPS) {
+      setCurrentStep((prev) => prev + 1);
+    }
+  };
+
+  const handleGenerate = () => {
+    setIsGenerating(true);
+    setGenerationProgress(0);
+
+    // Simulate generation progress
+    const stepLabels = [
+      "Generating Prompts",
+      "Creating Image",
+      "Creating narration",
+      "Building Video",
+    ];
+
+    let currentGenStep = 0;
+    const interval = setInterval(() => {
+      setGenerationProgress((prev) => {
+        const next = Math.min(prev + 2, 100);
+        const stepThreshold = ((currentGenStep + 1) / stepLabels.length) * 100;
+
+        if (next >= stepThreshold && currentGenStep < stepLabels.length) {
+          setGenerationSteps((prevSteps) =>
+            prevSteps.map((s, i) => ({
+              ...s,
+              completed: i <= currentGenStep,
+              active: i === currentGenStep + 1,
+            }))
+          );
+          currentGenStep++;
+        }
+
+        if (next >= 100) {
+          clearInterval(interval);
+        }
+        return next;
+      });
+    }, 200);
+  };
+
+  // Show generating progress screen
+  if (isGenerating) {
+    return (
+      <div>
+        <GeneratingProgress
+          progress={generationProgress}
+          steps={generationSteps}
+          onBack={handleBack}
+          onNext={() => {
+            // Navigate to video page after completion
+            setIsGenerating(false);
+          }}
+        />
+      </div>
+    );
+  }
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <Step1VideoDetails
+            videoTitle={videoTitle}
+            setVideoTitle={setVideoTitle}
+            keywords={keywords}
+            setKeywords={setKeywords}
+            negativeKeywords={negativeKeywords}
+            setNegativeKeywords={setNegativeKeywords}
+            sceneMedia={sceneMedia}
+            setSceneMedia={setSceneMedia}
+          />
+        );
+      case 2:
+        return (
+          <Step4MusicFormat
+            backgroundMusic={backgroundMusic}
+            setBackgroundMusic={setBackgroundMusic}
+            videoFormat={videoFormat}
+            setVideoFormat={setVideoFormat}
+          />
+        );
+      case 3:
+        return (
+          <Step2VideoStyle
+            videoStyle={videoStyle}
+            setVideoStyle={setVideoStyle}
+            sceneMedia={sceneMedia}
+            setSceneMedia={setSceneMedia}
+          />
+        );
+      case 4:
+        return (
+          <Step3VoiceScript
+            selectedVoice={selectedVoice}
+            setSelectedVoice={setSelectedVoice}
+            script={script}
+            setScript={setScript}
+          />
+        );
+      case 5:
+        return (
+          <Step5Subtitles
+            subtitlesEnabled={subtitlesEnabled}
+            setSubtitlesEnabled={setSubtitlesEnabled}
+            subtitleStyle={subtitleStyle}
+            setSubtitleStyle={setSubtitleStyle}
+          />
+        );
+      case 6:
+        return (
+          <Step6Review
+            script={script}
+            selectedVoice={selectedVoice}
+            sceneMedia={sceneMedia}
+            backgroundMusic={backgroundMusic}
+            subtitleStyle={subtitleStyle}
+            subtitlesEnabled={subtitlesEnabled}
+            onGenerate={handleGenerate}
+            isGenerating={isGenerating}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div>
-      {/* Header - Reusable */}
-      <DashboardHeader
-        icon={
-          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-white" />
-          </div>
-        }
-        title="Create New Video"
-        description="Generate AI-powered videos from your script"
-        showCreateButton={false}
-      />
+      {/* Header */}
+      <CreateVideoHeader credits={450} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Script Input */}
-        <div className="lg:col-span-2">
-          <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6">
-            <label className="block text-white text-sm font-semibold mb-3">
-              Your Script
-            </label>
-            <textarea
-              value={script}
-              onChange={(e) => setScript(e.target.value)}
-              placeholder="Paste your script here or describe what you want to create..."
-              rows={12}
-              className="w-full bg-[#0B0E12] border border-[#1A3155] rounded-xl px-4 py-3 text-white text-sm placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors resize-none"
-            />
-            <div className="flex justify-between items-center mt-3">
-              <p className="text-gray-500 text-xs">
-                {script.length} characters
-              </p>
-              <button className="text-[#3B82F6] text-sm font-medium hover:text-[#60A5FA] transition-colors">
-                Generate with AI
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Step Progress */}
+      <StepProgress currentStep={currentStep} totalSteps={TOTAL_STEPS} />
 
-        {/* Settings */}
-        <div className="space-y-4">
-          {/* Voice Style */}
-          <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6">
-            <label className="block text-white text-sm font-semibold mb-3">
-              Voice Style
-            </label>
-            <select
-              value={voiceStyle}
-              onChange={(e) => setVoiceStyle(e.target.value)}
-              className="w-full bg-[#0B0E12] border border-[#1A3155] rounded-lg px-4 py-3 text-white text-sm focus:border-[#3B82F6] focus:outline-none transition-colors appearance-none cursor-pointer"
-            >
-              <option value="Natural">Natural</option>
-              <option value="Professional">Professional</option>
-              <option value="Energetic">Energetic</option>
-              <option value="Calm">Calm</option>
-            </select>
-          </div>
+      {/* Current Step Content */}
+      {renderStep()}
 
-          {/* Visual Style */}
-          <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6">
-            <label className="block text-white text-sm font-semibold mb-3">
-              Visual Style
-            </label>
-            <select
-              value={visualStyle}
-              onChange={(e) => setVisualStyle(e.target.value)}
-              className="w-full bg-[#0B0E12] border border-[#1A3155] rounded-lg px-4 py-3 text-white text-sm focus:border-[#3B82F6] focus:outline-none transition-colors appearance-none cursor-pointer"
-            >
-              <option value="Cinematic">Cinematic</option>
-              <option value="Anime">Anime</option>
-              <option value="Realistic">Realistic</option>
-              <option value="Cartoon">Cartoon</option>
-            </select>
-          </div>
-
-          {/* Music */}
-          <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6">
-            <label className="block text-white text-sm font-semibold mb-3">
-              Background Music
-            </label>
-            <select
-              value={musicStyle}
-              onChange={(e) => setMusicStyle(e.target.value)}
-              className="w-full bg-[#0B0E12] border border-[#1A3155] rounded-lg px-4 py-3 text-white text-sm focus:border-[#3B82F6] focus:outline-none transition-colors appearance-none cursor-pointer"
-            >
-              <option value="None">None</option>
-              <option value="Upbeat">Upbeat</option>
-              <option value="Dramatic">Dramatic</option>
-              <option value="Relaxing">Relaxing</option>
-            </select>
-          </div>
-
-          {/* Generate Button */}
-          <button className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm">
-            <Sparkles className="w-4 h-4" />
-            Generate Video
-          </button>
-        </div>
-      </div>
+      {/* Navigation - hidden on Step 6 since it has its own Generate button */}
+      {currentStep < TOTAL_STEPS && (
+        <StepNavigation
+          currentStep={currentStep}
+          totalSteps={TOTAL_STEPS}
+          onBack={handleBack}
+          onContinue={handleContinue}
+        />
+      )}
     </div>
   );
 }
