@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -11,6 +12,7 @@ import {
   Headphones,
   User,
   LogOut,
+  AlertTriangle,
 } from "lucide-react";
 
 const navItems = [
@@ -51,9 +53,16 @@ const accountItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    // Handle actual logout logic here
+    setShowLogoutModal(false);
+  };
 
   return (
-    <aside className="w-74 bg-[#0A0A0A] border border-[#1F1F1F] rounded-xl flex flex-col fixed left-6 top-6 p-6" style={{ justifyContent: "space-between", minHeight: "calc(100vh - 48px)" }}>
+    <>
+    <aside className="w-74 bg-[#0A0A0A] border border-[#1F1F1F] rounded-xl flex flex-col fixed left-6 top-6 p-6 z-40" style={{ justifyContent: "space-between", minHeight: "calc(100vh - 48px)" }}>
       {/* Logo */}
       <div className="pb-6 flex justify-center">
         <Link href="/dashboard">
@@ -127,11 +136,61 @@ export default function Sidebar() {
             <p className="text-xs text-gray-500 truncate">john@example.com</p>
           </div>
         </div>
-        <button className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-[#1A1A1A] w-full transition-all duration-200 border border-[#1F1F1F]">
+        <button
+          onClick={() => setShowLogoutModal(true)}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 w-full transition-all duration-200 border border-[#1F1F1F] hover:border-red-500/30"
+        >
           <LogOut className="w-5 h-5" />
           Logout
         </button>
       </div>
     </aside>
+
+    {/* Logout Confirmation Modal */}
+    {showLogoutModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* Backdrop with blur */}
+        <div
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowLogoutModal(false)}
+        />
+
+        {/* Modal */}
+        <div className="relative bg-[#0D1117] border border-[#1A3155] rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl shadow-black/50 animate-in">
+          {/* Warning Icon */}
+          <div className="flex justify-center mb-5">
+            <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
+              <AlertTriangle className="w-8 h-8 text-red-400" />
+            </div>
+          </div>
+
+          <h3 className="text-xl font-bold text-white text-center mb-2">
+            Confirm Logout
+          </h3>
+          <p className="text-gray-400 text-sm text-center mb-8">
+            Are you sure you want to sign out of your account? You will need to
+            log in again to access your dashboard.
+          </p>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowLogoutModal(false)}
+              className="flex-1 bg-[#1A1F2E] hover:bg-[#252B3B] border border-[#2A3040] text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Yes, Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
