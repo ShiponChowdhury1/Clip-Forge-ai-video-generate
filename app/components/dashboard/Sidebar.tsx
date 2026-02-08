@@ -13,6 +13,8 @@ import {
   User,
   LogOut,
   AlertTriangle,
+  MessageCircle,
+  Settings,
 } from "lucide-react";
 
 const navItems = [
@@ -42,12 +44,12 @@ const accountItems = [
   {
     name: "Contact Support",
     href: "/dashboard/support",
-    icon: Headphones,
+    icon: MessageCircle,
   },
   {
-    name: "Profile & Settings",
+    name: "Settings",
     href: "/dashboard/settings",
-    icon: User,
+    icon: Settings ,
   },
 ];
 

@@ -108,7 +108,7 @@ export default function CreateVideoPage() {
   // Show generating progress screen
   if (isGenerating) {
     return (
-      <div>
+      <div className="w-full max-w-[1108px] mx-auto" style={{ minHeight: "844px" }}>
         <GeneratingProgress
           progress={generationProgress}
           steps={generationSteps}
@@ -192,7 +192,7 @@ export default function CreateVideoPage() {
   };
 
   return (
-    <div>
+    <div className="w-full max-w-[1108px] mx-auto" style={{ minHeight: "844px" }}>
       {/* Header */}
       <CreateVideoHeader credits={450} />
 

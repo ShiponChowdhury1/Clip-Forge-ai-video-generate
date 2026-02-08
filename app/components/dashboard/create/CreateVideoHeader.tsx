@@ -11,7 +11,7 @@ export default function CreateVideoHeader({
   credits = 450,
 }: CreateVideoHeaderProps) {
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 mb-6">
+    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 mb-6 w-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Image

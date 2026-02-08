@@ -10,7 +10,7 @@ export default function StepProgress({
   totalSteps = 6,
 }: StepProgressProps) {
   return (
-    <div className="flex items-center gap-2 mb-6">
+    <div className="flex items-center gap-2 mb-6 w-full">
       {Array.from({ length: totalSteps }, (_, i) => (
         <div
           key={i}
