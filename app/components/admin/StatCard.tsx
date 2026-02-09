@@ -1,6 +1,6 @@
 "use client";
 
-import { type LucideIcon } from "lucide-react";
+import { type LucideIcon, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 interface StatCardProps {
   icon: LucideIcon;
@@ -24,13 +24,18 @@ export default function StatCard({
           <Icon className="w-5 h-5 text-cyan-400" />
         </div>
         <span
-          className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+          className={`flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full ${
             positive
-              ? "bg-green-500/10 text-green-400"
-              : "bg-red-500/10 text-red-400"
+              ? "bg-[#00D492]/10 text-[#00D492]"
+              : "bg-[#FF6467]/10 text-[#FF6467]"
           }`}
         >
-          {positive ? "↗" : "↘"} {change}
+          {positive ? (
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          ) : (
+            <ArrowDownRight className="w-3.5 h-3.5" />
+          )}
+          {change}
         </span>
       </div>
       <div>

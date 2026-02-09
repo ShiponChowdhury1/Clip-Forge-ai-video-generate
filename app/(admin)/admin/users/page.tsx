@@ -1,125 +1,303 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Trash2 } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
 
-const mockUsers = [
-  { id: "USR-001", name: "Alice Johnson", email: "alice@example.com", plan: "Pro", credits: 1200, status: "Active", joined: "2025-12-15" },
-  { id: "USR-002", name: "Bob Smith", email: "bob@example.com", plan: "Starter", credits: 340, status: "Active", joined: "2025-11-20" },
-  { id: "USR-003", name: "Carol Davis", email: "carol@example.com", plan: "Free", credits: 12, status: "Inactive", joined: "2025-10-05" },
-  { id: "USR-004", name: "Dan Wilson", email: "dan@example.com", plan: "Enterprise", credits: 8500, status: "Active", joined: "2025-09-01" },
-  { id: "USR-005", name: "Eve Martinez", email: "eve@example.com", plan: "Pro", credits: 780, status: "Active", joined: "2025-08-18" },
-  { id: "USR-006", name: "Frank Lee", email: "frank@example.com", plan: "Free", credits: 0, status: "Suspended", joined: "2025-07-22" },
-  { id: "USR-007", name: "Grace Chen", email: "grace@example.com", plan: "Starter", credits: 150, status: "Active", joined: "2026-01-03" },
-  { id: "USR-008", name: "Henry Patel", email: "henry@example.com", plan: "Pro", credits: 2100, status: "Active", joined: "2026-01-12" },
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  initials: string;
+  plan: "Pro" | "Enterprise" | "Starter" | "Free";
+  payment: number;
+  paymentDate: string;
+  creditsUsed: number;
+  creditsLeft: number;
+  videos: number;
+  status: "Active" | "Suspended";
+}
+
+const mockUsers: User[] = [
+  {
+    id: "1",
+    name: "Alex Johnson",
+    email: "alex@example.com",
+    initials: "AJ",
+    plan: "Pro",
+    payment: 49.0,
+    paymentDate: "FEB 1, 2026",
+    creditsUsed: 450,
+    creditsLeft: 550,
+    videos: 24,
+    status: "Active",
+  },
+  {
+    id: "2",
+    name: "Sarah Miller",
+    email: "sarah.m@design.io",
+    initials: "SM",
+    plan: "Enterprise",
+    payment: 299.0,
+    paymentDate: "JAN 28, 2026",
+    creditsUsed: 1200,
+    creditsLeft: 3800,
+    videos: 82,
+    status: "Active",
+  },
+  {
+    id: "3",
+    name: "David Chen",
+    email: "dchen@tech.com",
+    initials: "DC",
+    plan: "Starter",
+    payment: 19.0,
+    paymentDate: "FEB 2, 2026",
+    creditsUsed: 80,
+    creditsLeft: 120,
+    videos: 5,
+    status: "Suspended",
+  },
+  {
+    id: "4",
+    name: "Emma Wilson",
+    email: "emma.w@gmail.com",
+    initials: "EW",
+    plan: "Free",
+    payment: 0.0,
+    paymentDate: "JAN 15, 2026",
+    creditsUsed: 45,
+    creditsLeft: 5,
+    videos: 3,
+    status: "Active",
+  },
+  {
+    id: "5",
+    name: "Michael Brown",
+    email: "mbrown@creative.co",
+    initials: "MB",
+    plan: "Pro",
+    payment: 49.0,
+    paymentDate: "FEB 1, 2026",
+    creditsUsed: 310,
+    creditsLeft: 690,
+    videos: 18,
+    status: "Active",
+  },
+  {
+    id: "6",
+    name: "Sophia Garcia",
+    email: "sophia@studio.net",
+    initials: "SG",
+    plan: "Pro",
+    payment: 49.0,
+    paymentDate: "JAN 20, 2026",
+    creditsUsed: 600,
+    creditsLeft: 400,
+    videos: 31,
+    status: "Active",
+  },
 ];
 
-const statusColor: Record<string, string> = {
-  Active: "text-green-400 bg-green-400/10",
-  Inactive: "text-yellow-400 bg-yellow-400/10",
-  Suspended: "text-red-400 bg-red-400/10",
+const planStyles: Record<string, { bg: string; text: string; border: string }> = {
+  Pro: { bg: "bg-transparent", text: "text-cyan-400", border: "border-cyan-400" },
+  Enterprise: { bg: "bg-transparent", text: "text-pink-400", border: "border-pink-400" },
+  Starter: { bg: "bg-transparent", text: "text-emerald-400", border: "border-emerald-400" },
+  Free: { bg: "bg-transparent", text: "text-gray-400", border: "border-gray-500" },
 };
+
+const statusStyles: Record<string, { dot: string; text: string }> = {
+  Active: { dot: "bg-[#00D492]", text: "text-[#00D492]" },
+  Suspended: { dot: "bg-[#FF3C3C]", text: "text-[#FF3C3C]" },
+};
+
+const avatarColors = [
+  "bg-blue-600",
+  "bg-purple-600",
+  "bg-cyan-600",
+  "bg-pink-600",
+  "bg-indigo-600",
+  "bg-teal-600",
+];
 
 export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 6;
+  const totalUsers = 1284;
+
   const filtered = mockUsers.filter(
     (u) =>
       u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      u.id.toLowerCase().includes(search.toLowerCase())
+      u.email.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div>
       <AdminHeader />
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">Users</h1>
-          <p className="text-sm text-gray-400 mt-1">Manage platform users and accounts</p>
-        </div>
-      </div>
+      {/* Description and Search */}
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
+        <p className="text-gray-400 text-sm">
+          Manage user accounts, credits, and platform access
+        </p>
 
-      {/* Search & Filter */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
-        <div className="relative flex-1 sm:max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search users..."
-            className="w-full bg-[#0D1117] border border-[#1A3155] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#2563EB] transition-colors"
-          />
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search users..."
+              className="bg-[#0D1117] border border-[#1A3155] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#2563EB] transition-colors w-[200px] lg:w-[240px]"
+            />
+          </div>
+          <button className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:border-[#2563EB] transition-colors">
+            <Filter className="w-4 h-4" />
+            Filters
+          </button>
         </div>
-        <button className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:border-[#2563EB] transition-colors">
-          <Filter className="w-4 h-4" />
-          Filter
-        </button>
       </div>
 
       {/* Table */}
       <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-        <table className="w-full text-sm min-w-[640px]">
-          <thead>
-            <tr className="border-b border-[#1A3155]">
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">User</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">Plan</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">Credits</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">Status</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">Joined</th>
-              <th className="text-right py-3 px-4 text-gray-500 font-medium"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((user) => (
-              <tr
-                key={user.id}
-                className="border-b border-[#1A3155]/50 hover:bg-[#1A2332]/40 transition-colors"
-              >
-                <td className="py-3 px-4">
-                  <div>
-                    <p className="text-white font-medium">{user.name}</p>
-                    <p className="text-gray-500 text-xs">{user.email}</p>
-                  </div>
-                </td>
-                <td className="py-3 px-4 text-gray-300">{user.plan}</td>
-                <td className="py-3 px-4 text-gray-300">{user.credits.toLocaleString()}</td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor[user.status]}`}
-                  >
-                    {user.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4 text-gray-400">{user.joined}</td>
-                <td className="py-3 px-4 text-right">
-                  <button className="text-gray-500 hover:text-white transition-colors">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
-                </td>
+          <table className="w-full text-sm min-w-[900px]">
+            <thead>
+              <tr className="border-b border-[#1A3155]">
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  User
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Plan
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Payment
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Credits
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Videos
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="py-4 px-5"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((user, index) => {
+                const totalCredits = user.creditsUsed + user.creditsLeft;
+                const usedPercentage = (user.creditsUsed / totalCredits) * 100;
+                const avatarColor = avatarColors[index % avatarColors.length];
+
+                return (
+                  <tr
+                    key={user.id}
+                    className="border-b border-[#1A3155]/50 hover:bg-[#1A2332]/40 transition-colors"
+                  >
+                    {/* User */}
+                    <td className="py-4 px-5">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-10 h-10 rounded-full ${avatarColor} flex items-center justify-center text-white text-xs font-semibold`}
+                        >
+                          {user.initials}
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">{user.name}</p>
+                          <p className="text-gray-500 text-xs">{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Plan */}
+                    <td className="py-4 px-5">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${planStyles[user.plan].bg} ${planStyles[user.plan].text} ${planStyles[user.plan].border}`}
+                      >
+                        {user.plan}
+                      </span>
+                    </td>
+
+                    {/* Payment */}
+                    <td className="py-4 px-5">
+                      <p className="text-white font-medium">
+                        ${user.payment.toFixed(2)}
+                      </p>
+                      <p className="text-gray-500 text-xs">{user.paymentDate}</p>
+                    </td>
+
+                    {/* Credits */}
+                    <td className="py-4 px-5">
+                      <div className="w-32">
+                        <div className="flex items-center justify-between text-xs mb-1.5">
+                          <span className="text-gray-400">
+                            {user.creditsUsed} used
+                          </span>
+                          <span className="text-gray-500">
+                            {user.creditsLeft} left
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-[#1A2332] rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-cyan-500 rounded-full transition-all"
+                            style={{ width: `${usedPercentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Videos */}
+                    <td className="py-4 px-5">
+                      <span className="text-white font-medium">{user.videos}</span>
+                    </td>
+
+                    {/* Status */}
+                    <td className="py-4 px-5">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-2 h-2 rounded-full ${statusStyles[user.status].dot}`}
+                        />
+                        <span className={statusStyles[user.status].text}>
+                          {user.status}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-4 px-5">
+                      <button className="text-[#FF3C3C] hover:text-[#FF3C3C]/80 transition-colors">
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[#1A3155]">
-          <p className="text-xs text-gray-500">
-            Showing {filtered.length} of {mockUsers.length} users
+        <div className="flex items-center justify-between px-5 py-4 border-t border-[#1A3155]">
+          <p className="text-sm text-gray-500">
+            Showing {filtered.length} of {totalUsers.toLocaleString()} users
           </p>
-          <div className="flex items-center gap-1">
-            <button className="w-8 h-8 rounded-lg bg-[#1A2332] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-              <ChevronLeft className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 rounded-lg bg-[#1A2332] border border-[#1A3155] text-sm text-gray-400 hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
             </button>
-            <button className="w-8 h-8 rounded-lg bg-[#2563EB] text-white text-xs font-medium flex items-center justify-center">
-              1
-            </button>
-            <button className="w-8 h-8 rounded-lg bg-[#1A2332] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-              <ChevronRight className="w-4 h-4" />
+            <button
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="px-4 py-2 rounded-lg bg-cyan-500 text-sm text-white font-medium hover:bg-cyan-600 transition-colors"
+            >
+              Next
             </button>
           </div>
         </div>

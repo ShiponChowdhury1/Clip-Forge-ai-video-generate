@@ -1,56 +1,105 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Filter, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { Filter, Trash2, ArrowUpRight, ArrowDownRight, User } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
 
-const mockHistory = [
-  { id: "LOG-001", user: "Alice Johnson", action: "Generated Video", credits: -25, timestamp: "2026-02-09 14:32", details: "AI Shorts - 2min" },
-  { id: "LOG-002", user: "Bob Smith", action: "Purchased Credits", credits: 500, timestamp: "2026-02-09 13:15", details: "Starter Plan" },
-  { id: "LOG-003", user: "Carol Davis", action: "Generated Video", credits: -40, timestamp: "2026-02-09 12:45", details: "Product Ad - 3min" },
-  { id: "LOG-004", user: "Dan Wilson", action: "Refund Issued", credits: 100, timestamp: "2026-02-09 11:20", details: "Failed generation" },
-  { id: "LOG-005", user: "Eve Martinez", action: "Generated Video", credits: -15, timestamp: "2026-02-08 22:10", details: "Social Reel - 1min" },
-  { id: "LOG-006", user: "Frank Lee", action: "Admin Grant", credits: 200, timestamp: "2026-02-08 18:35", details: "Bonus credits" },
-  { id: "LOG-007", user: "Grace Chen", action: "Generated Video", credits: -30, timestamp: "2026-02-08 16:50", details: "Tutorial - 2min" },
-  { id: "LOG-008", user: "Henry Patel", action: "Purchased Credits", credits: 3000, timestamp: "2026-02-08 14:22", details: "Growth Plan" },
+interface HistoryEntry {
+  id: string;
+  name: string;
+  email: string;
+  dateTime: string;
+  actionType: "Video Generation" | "Credit Purchase" | "Admin Grant" | "Plan Upgrade";
+  credits: number;
+  referenceId: string;
+  status: "SUCCESS" | "FAILED";
+}
+
+const mockHistory: HistoryEntry[] = [
+  {
+    id: "1",
+    name: "Alex Johnson",
+    email: "alex@example.com",
+    dateTime: "Feb 3, 2026 14:22",
+    actionType: "Video Generation",
+    credits: -25,
+    referenceId: "VID-09283",
+    status: "SUCCESS",
+  },
+  {
+    id: "2",
+    name: "Sarah Miller",
+    email: "sarah.m@design.io",
+    dateTime: "Feb 3, 2026 13:45",
+    actionType: "Credit Purchase",
+    credits: 1000,
+    referenceId: "PAY-11202",
+    status: "SUCCESS",
+  },
+  {
+    id: "3",
+    name: "David Chen",
+    email: "dchen@tech.com",
+    dateTime: "Feb 3, 2026 12:10",
+    actionType: "Admin Grant",
+    credits: 50,
+    referenceId: "ADM-5541",
+    status: "SUCCESS",
+  },
+  {
+    id: "4",
+    name: "Emma Wilson",
+    email: "emma.w@gmail.com",
+    dateTime: "Feb 3, 2026 11:30",
+    actionType: "Video Generation",
+    credits: -25,
+    referenceId: "VID-09211",
+    status: "FAILED",
+  },
+  {
+    id: "5",
+    name: "Michael Brown",
+    email: "mbrown@creative.co",
+    dateTime: "Feb 3, 2026 10:15",
+    actionType: "Video Generation",
+    credits: -25,
+    referenceId: "VID-09192",
+    status: "SUCCESS",
+  },
+  {
+    id: "6",
+    name: "Alex Johnson",
+    email: "alex@example.com",
+    dateTime: "Feb 2, 2026 18:40",
+    actionType: "Video Generation",
+    credits: -25,
+    referenceId: "VID-09155",
+    status: "SUCCESS",
+  },
+  {
+    id: "7",
+    name: "Sophia Garcia",
+    email: "sophia@studio.net",
+    dateTime: "Feb 2, 2026 17:20",
+    actionType: "Plan Upgrade",
+    credits: 500,
+    referenceId: "PAY-11188",
+    status: "SUCCESS",
+  },
 ];
 
 export default function AdminUsageHistoryPage() {
-  const [search, setSearch] = useState("");
-  const filtered = mockHistory.filter(
-    (h) =>
-      h.user.toLowerCase().includes(search.toLowerCase()) ||
-      h.action.toLowerCase().includes(search.toLowerCase()) ||
-      h.id.toLowerCase().includes(search.toLowerCase())
-  );
+  const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <div>
       <AdminHeader />
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">Usage History</h1>
-          <p className="text-sm text-gray-400 mt-1">Track all platform activity and credit usage</p>
-        </div>
-        <button className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:border-[#2563EB] transition-colors">
-          <Download className="w-4 h-4" />
-          Export CSV
-        </button>
-      </div>
-
-      {/* Search & Filter */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
-        <div className="relative flex-1 sm:max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search logs..."
-            className="w-full bg-[#0D1117] border border-[#1A3155] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#2563EB] transition-colors"
-          />
-        </div>
+      {/* Description & Filter */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <p className="text-gray-400 text-sm">
+          Real-time log of all platform transactions and credit changes
+        </p>
         <button className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:border-[#2563EB] transition-colors">
           <Filter className="w-4 h-4" />
           Filter
@@ -60,58 +109,130 @@ export default function AdminUsageHistoryPage() {
       {/* Table */}
       <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
-        <table className="w-full text-sm min-w-[640px]">
-          <thead>
-            <tr className="border-b border-[#1A3155]">
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">ID</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">User</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">Action</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">Credits</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">Details</th>
-              <th className="text-left py-3 px-4 text-gray-500 font-medium">Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((log) => (
-              <tr
-                key={log.id}
-                className="border-b border-[#1A3155]/50 hover:bg-[#1A2332]/40 transition-colors"
-              >
-                <td className="py-3 px-4 text-gray-400 font-mono text-xs">{log.id}</td>
-                <td className="py-3 px-4 text-white">{log.user}</td>
-                <td className="py-3 px-4 text-gray-300">{log.action}</td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`font-medium ${
-                      log.credits > 0 ? "text-green-400" : "text-red-400"
-                    }`}
-                  >
-                    {log.credits > 0 ? "+" : ""}
-                    {log.credits}
-                  </span>
-                </td>
-                <td className="py-3 px-4 text-gray-400">{log.details}</td>
-                <td className="py-3 px-4 text-gray-500 text-xs">{log.timestamp}</td>
+          <table className="w-full text-sm min-w-[900px]">
+            <thead>
+              <tr className="border-b border-[#1A3155]">
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  User
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Date & Time
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Action Type
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Credits Change
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Reference ID
+                </th>
+                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="py-4 px-5"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {mockHistory.map((entry) => (
+                <tr
+                  key={entry.id}
+                  className="border-b border-[#1A3155]/50 hover:bg-[#1A2332]/40 transition-colors"
+                >
+                  {/* User */}
+                  <td className="py-4 px-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#1A2332] border border-[#1A3155] flex items-center justify-center text-gray-500">
+                        <User className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{entry.name}</p>
+                        <p className="text-gray-500 text-xs">{entry.email}</p>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Date & Time */}
+                  <td className="py-4 px-5">
+                    <span className="text-gray-300 font-mono text-sm">
+                      {entry.dateTime}
+                    </span>
+                  </td>
+
+                  {/* Action Type */}
+                  <td className="py-4 px-5">
+                    <span className="text-gray-300">{entry.actionType}</span>
+                  </td>
+
+                  {/* Credits Change */}
+                  <td className="py-4 px-5">
+                    <div className="flex items-center gap-1.5">
+                      {entry.credits > 0 ? (
+                        <ArrowUpRight className="w-4 h-4 text-[#00D492]" />
+                      ) : (
+                        <ArrowDownRight className="w-4 h-4 text-[#FF6467]" />
+                      )}
+                      <span
+                        className={`font-semibold ${
+                          entry.credits > 0 ? "text-[#00D492]" : "text-[#FF6467]"
+                        }`}
+                      >
+                        {entry.credits > 0 ? "+" : ""}
+                        {entry.credits}
+                      </span>
+                    </div>
+                  </td>
+
+                  {/* Reference ID */}
+                  <td className="py-4 px-5">
+                    <span className="text-gray-400 font-mono text-sm">
+                      {entry.referenceId}
+                    </span>
+                  </td>
+
+                  {/* Status */}
+                  <td className="py-4 px-5">
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border ${
+                        entry.status === "SUCCESS"
+                          ? "text-[#00D492] border-[#00D492] bg-[#00D492]/10"
+                          : "text-[#FF3C3C] border-[#FF3C3C] bg-[#FF3C3C]/10"
+                      }`}
+                    >
+                      {entry.status}
+                    </span>
+                  </td>
+
+                  {/* Delete */}
+                  <td className="py-4 px-5">
+                    <button className="text-[#FF3C3C] hover:text-[#FF3C3C]/80 transition-colors">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[#1A3155]">
-          <p className="text-xs text-gray-500">
-            Showing {filtered.length} of {mockHistory.length} records
+        <div className="flex items-center justify-between px-5 py-4 border-t border-[#1A3155]">
+          <p className="text-sm text-gray-500">
+            Showing 7 of 2,481 records
           </p>
-          <div className="flex items-center gap-1">
-            <button className="w-8 h-8 rounded-lg bg-[#1A2332] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-              <ChevronLeft className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 rounded-lg bg-[#1A2332] border border-[#1A3155] text-sm text-gray-400 hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
             </button>
-            <button className="w-8 h-8 rounded-lg bg-[#2563EB] text-white text-xs font-medium flex items-center justify-center">
-              1
-            </button>
-            <button className="w-8 h-8 rounded-lg bg-[#1A2332] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-              <ChevronRight className="w-4 h-4" />
+            <button
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="px-4 py-2 rounded-lg bg-cyan-500 text-sm text-white font-medium hover:bg-cyan-600 transition-colors"
+            >
+              Next
             </button>
           </div>
         </div>

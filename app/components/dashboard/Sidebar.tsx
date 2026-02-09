@@ -246,8 +246,7 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
             Confirm Logout
           </h3>
           <p className="text-gray-400 text-sm text-center mb-8">
-            Are you sure you want to sign out of your account? You will need to
-            log in again to access your dashboard.
+            Are you sure you want to sign out of your account? 
           </p>
 
           {/* Buttons */}
