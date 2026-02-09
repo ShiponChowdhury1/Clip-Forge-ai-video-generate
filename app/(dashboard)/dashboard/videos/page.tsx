@@ -3,17 +3,63 @@
 import Image from "next/image";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import VideoCard from "@/app/components/dashboard/VideoCard";
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { videoCardData } from "@/app/data";
+import { Calendar, X } from "lucide-react";
+import DatePicker from "react-datepicker";
+import { format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
+
+// Custom Input for DatePicker
+const CustomDateInput = forwardRef<
+  HTMLButtonElement,
+  { value?: string; onClick?: () => void; onClear?: () => void }
+>(({ value, onClick, onClear }, ref) => (
+  <button
+    ref={ref}
+    onClick={onClick}
+    className={`flex items-center gap-2 bg-[#0D1117] border rounded-xl px-4 py-3.5 text-sm transition-all ${
+      value
+        ? "border-[#3B82F6] text-white"
+        : "border-[#1A3155] text-gray-400 hover:text-white hover:border-[#3B82F6]"
+    }`}
+  >
+    <Calendar className="w-5 h-5" />
+    {value ? (
+      <>
+        <span>{value}</span>
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            onClear?.();
+          }}
+          className="ml-1 p-0.5 rounded-full hover:bg-[#1A3155] transition-colors cursor-pointer"
+        >
+          <X className="w-3.5 h-3.5" />
+        </span>
+      </>
+    ) : null}
+  </button>
+));
+CustomDateInput.displayName = "CustomDateInput";
 
 export default function AllVideosPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const filteredVideos = videoCardData.filter(
-    (video) =>
+  const filteredVideos = videoCardData.filter((video) => {
+    const matchesSearch =
       video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      video.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      video.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Date filtering logic (if video has a date property)
+    if (selectedDate) {
+      // For now, just return search matches since videoCardData may not have dates
+      return matchesSearch;
+    }
+    
+    return matchesSearch;
+  });
 
   return (
     <div>
@@ -34,7 +80,7 @@ export default function AllVideosPage() {
 
       {/* Search Bar */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="flex-1 relative">
+        <div className="w-full lg:w-1/2 relative">
           <svg
             className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"
             fill="none"
@@ -53,20 +99,21 @@ export default function AllVideosPage() {
             className="w-full bg-[#0D1117] border border-[#1A3155] rounded-xl pl-12 pr-4 py-3.5 text-white text-sm placeholder:text-gray-500 focus:border-[#3B82F6] focus:outline-none transition-colors"
           />
         </div>
-        <button className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-3.5 text-gray-400 hover:text-white hover:border-[#3B82F6] transition-all">
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-        </button>
+        <DatePicker
+          selected={selectedDate}
+          onChange={(date: Date | null) => setSelectedDate(date)}
+          dateFormat="MMM d, yyyy"
+          customInput={
+            <CustomDateInput
+              value={selectedDate ? format(selectedDate, "MMM d, yyyy") : ""}
+              onClear={() => setSelectedDate(null)}
+            />
+          }
+          popperClassName="date-picker-popper"
+          calendarClassName="custom-datepicker"
+          showPopperArrow={false}
+          todayButton="Today"
+        />
       </div>
 
       {/* Stats Cards */}

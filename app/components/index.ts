@@ -9,3 +9,13 @@ export * from "./auth";
 
 // Dashboard components
 export { Sidebar, DashboardHeader, VideoCard } from "./dashboard";
+
+// Admin components
+export {
+  AdminHeader,
+  StatCard,
+  CreditsChart,
+  VideosChart,
+  PlanDistribution,
+  QuickActions,
+} from "./admin";

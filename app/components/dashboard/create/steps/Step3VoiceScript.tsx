@@ -154,7 +154,7 @@ export default function Step3VoiceScript({
       {/* Voice Type */}
       <div>
         <h3 className="text-white text-lg font-semibold mb-5">Voice Type</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {voices.map((voice) => (
             <button
               key={voice.id}

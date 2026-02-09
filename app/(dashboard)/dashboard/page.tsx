@@ -22,10 +22,10 @@ export default function DashboardPage() {
 
       {/* Recently Generated Videos */}
       <div>
-        <h2 className="text-2xl font-bold text-white mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
           Recently Generated Video
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
           {videoCardData.slice(0, 8).map((video) => (
             <VideoCard key={video.id} {...video} />
           ))}

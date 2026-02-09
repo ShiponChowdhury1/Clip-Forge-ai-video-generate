@@ -120,25 +120,7 @@ export default function ProfileSection({
           </button>
         </div>
       </div>
-
-      {/* Logout */}
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6">
-        <div className="border-t border-[#1A2332] pt-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-white font-semibold">Logout</h3>
-              <p className="text-gray-500 text-sm">Sign out of your account</p>
-            </div>
-            <button
-              onClick={onLogout}
-              className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 px-5 py-2.5 rounded-xl font-medium transition-colors text-sm"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
+     
     </div>
   );
 }
