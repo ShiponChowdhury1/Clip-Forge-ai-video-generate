@@ -1,12 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { AuthCard, AuthInput, AuthButton } from "@/app/components/auth";
 
 export default function ForgotPasswordForm() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Test mode: navigate to verify-email page directly
+    if (email.trim()) {
+      router.push("/verify-email");
+    }
   };
 
   return (
@@ -33,6 +42,8 @@ export default function ForgotPasswordForm() {
             type="email"
             placeholder="Enter your email"
             autoComplete="off"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-[#0d1117] border border-gray-700/50 rounded-xl px-4 py-4 text-sm outline-none focus:border-[#00A6F4]/50 transition [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_9999px_#0d1117_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:rgba(255,255,255,0.5)]"
             style={{ color: "#FFFFFF80", backgroundColor: "#0d1117" }}
           />
