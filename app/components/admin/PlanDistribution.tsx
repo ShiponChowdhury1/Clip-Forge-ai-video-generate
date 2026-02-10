@@ -46,13 +46,13 @@ export default function PlanDistribution() {
   }, []);
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-6">
-      <h3 className="text-white font-semibold text-lg mb-6">Plan Distribution</h3>
+    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-6">
+      <h3 className="text-white font-semibold text-base sm:text-lg mb-4 sm:mb-6">Plan Distribution</h3>
 
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-4 sm:mb-6">
         <canvas
           ref={canvasRef}
-          className="w-[200px] h-[200px]"
+          className="w-[160px] h-[160px] sm:w-[200px] sm:h-[200px]"
           style={{ width: 200, height: 200 }}
         />
       </div>

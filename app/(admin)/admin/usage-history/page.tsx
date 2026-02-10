@@ -216,21 +216,21 @@ export default function AdminUsageHistoryPage() {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-5 py-4 border-t border-[#1A3155]">
-          <p className="text-sm text-gray-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-5 py-3 sm:py-4 border-t border-[#1A3155]">
+          <p className="text-xs sm:text-sm text-gray-500">
             Showing 7 of 2,481 records
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 rounded-lg bg-[#1A2332] border border-[#1A3155] text-sm text-gray-400 hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 sm:px-4 py-2 rounded-lg bg-[#1A2332] border border-[#1A3155] text-xs sm:text-sm text-gray-400 hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
             <button
               onClick={() => setCurrentPage((p) => p + 1)}
-              className="px-4 py-2 rounded-lg bg-cyan-500 text-sm text-white font-medium hover:bg-cyan-600 transition-colors"
+              className="px-3 sm:px-4 py-2 rounded-lg bg-cyan-500 text-xs sm:text-sm text-white font-medium hover:bg-cyan-600 transition-colors"
             >
               Next
             </button>

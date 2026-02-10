@@ -98,12 +98,12 @@ export default function VideosChart() {
   }, []);
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-6">
-      <h3 className="text-white font-semibold text-lg mb-4">Videos Generated</h3>
+    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-6">
+      <h3 className="text-white font-semibold text-base sm:text-lg mb-4">Videos Generated</h3>
       <canvas
         ref={canvasRef}
-        className="w-full h-[220px]"
-        style={{ width: "100%", height: 220 }}
+        className="w-full h-[180px] sm:h-[220px]"
+        style={{ width: "100%", height: "auto" }}
       />
     </div>
   );

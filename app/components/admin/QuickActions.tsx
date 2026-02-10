@@ -28,8 +28,8 @@ const actions = [
 
 export default function QuickActions() {
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-6">
-      <h3 className="text-white font-semibold text-lg mb-6">Quick Actions</h3>
+    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-6">
+      <h3 className="text-white font-semibold text-base sm:text-lg mb-4 sm:mb-6">Quick Actions</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {actions.map((action) => {

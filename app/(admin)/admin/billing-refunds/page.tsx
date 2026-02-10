@@ -49,18 +49,18 @@ export default function AdminBillingRefundsPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wider">Total Revenue</p>
-          <p className="text-2xl font-bold text-white mt-1">$42,850</p>
+          <p className="text-xl sm:text-2xl font-bold text-white mt-1">$42,850</p>
         </div>
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-5">
+        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wider">Refunds Issued</p>
-          <p className="text-2xl font-bold text-white mt-1">$350</p>
+          <p className="text-xl sm:text-2xl font-bold text-white mt-1">$350</p>
         </div>
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-5">
+        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wider">Net Revenue</p>
-          <p className="text-2xl font-bold text-white mt-1">$42,500</p>
+          <p className="text-xl sm:text-2xl font-bold text-white mt-1">$42,500</p>
         </div>
       </div>
 
@@ -138,7 +138,7 @@ export default function AdminBillingRefundsPage() {
         </table>
         </div>
 
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[#1A3155]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-3 sm:px-4 py-3 border-t border-[#1A3155]">
           <p className="text-xs text-gray-500">
             Showing {filtered.length} of {mockTransactions.length} transactions
           </p>
