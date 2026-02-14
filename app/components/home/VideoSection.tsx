@@ -67,9 +67,9 @@ export default function VideoSection() {
       >
         {/* Slider */}
         <div className="overflow-hidden">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+          <div className="flex flex-wrap xl:flex-nowrap gap-4 sm:gap-5 items-end justify-center">
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
-              {visibleItems.map((item) => (
+              {visibleItems.map((item, index) => (
                 <motion.div
                   key={item.uniqueKey}
                   layout
@@ -84,7 +84,9 @@ export default function VideoSection() {
                     scale: { duration: 0.25 },
                     layout: { type: "spring", stiffness: 260, damping: 28 },
                   }}
-                  className="relative aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer group border border-gray-800/50 hover:border-gray-700/50 transition-colors duration-300"
+                  className={`relative rounded-2xl overflow-hidden cursor-pointer group border border-gray-800/50 hover:border-gray-700/50 transition-colors duration-300 w-full sm:w-[calc(50%-10px)] xl:w-[calc(25%-15px)] ${
+                    index === 1 || index === 2 ? "aspect-[3/4]" : "aspect-[4/5]"
+                  }`}
                 >
                   {/* Background Image */}
                   <Image
