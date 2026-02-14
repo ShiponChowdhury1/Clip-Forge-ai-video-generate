@@ -9,13 +9,9 @@ export type MusicOption =
   | "modern-business"
   | "epic-journey";
 
-export type VideoFormat = "9:16" | "1:1" | "16:9";
-
 interface Step2MediaSettingsProps {
   backgroundMusic: MusicOption;
   setBackgroundMusic: (value: MusicOption) => void;
-  videoFormat: VideoFormat;
-  setVideoFormat: (value: VideoFormat) => void;
 }
 
 const musicOptions: {
@@ -68,37 +64,9 @@ const musicOptions: {
   },
 ];
 
-const formatOptions: {
-  value: VideoFormat;
-  label: string;
-  widthClass: string;
-  heightClass: string;
-}[] = [
-  {
-    value: "9:16",
-    label: "9:16",
-    widthClass: "w-12",
-    heightClass: "h-20",
-  },
-  {
-    value: "1:1",
-    label: "1:1",
-    widthClass: "w-14",
-    heightClass: "h-14",
-  },
-  {
-    value: "16:9",
-    label: "16:9",
-    widthClass: "w-20",
-    heightClass: "h-12",
-  },
-];
-
 export default function Step2MediaSettings({
   backgroundMusic,
   setBackgroundMusic,
-  videoFormat,
-  setVideoFormat,
 }: Step2MediaSettingsProps) {
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-8">
@@ -146,46 +114,6 @@ export default function Step2MediaSettings({
                   <Play className="w-3 h-3 text-gray-400 ml-0.5" />
                 </div>
               ) : null}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Video Format */}
-      <div>
-        <h3 className="text-white text-base font-semibold mb-4">
-          Video Format
-        </h3>
-        <div className="flex items-end gap-4">
-          {formatOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setVideoFormat(option.value)}
-              className={`flex flex-col items-center gap-3 p-4 rounded-xl border transition-all ${
-                videoFormat === option.value
-                  ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-[#1A3155] bg-[#0B0E12] hover:border-[#2A4A7A]"
-              }`}
-            >
-              {/* Device mockup */}
-              <div className="flex items-center justify-center h-20">
-                <div
-                  className={`${option.widthClass} ${option.heightClass} rounded-md border-2 ${
-                    videoFormat === option.value
-                      ? "border-[#3B82F6]"
-                      : "border-[#2A3A50]"
-                  } transition-colors`}
-                />
-              </div>
-              <span
-                className={`text-sm font-medium ${
-                  videoFormat === option.value
-                    ? "text-white"
-                    : "text-gray-400"
-                }`}
-              >
-                {option.label}
-              </span>
             </button>
           ))}
         </div>

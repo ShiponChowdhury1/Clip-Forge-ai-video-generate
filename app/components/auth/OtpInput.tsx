@@ -4,26 +4,18 @@ import { useRef, useState } from "react";
 
 interface OtpInputProps {
   length?: number;
-  onChange?: (otp: string) => void;
 }
 
-export default function OtpInput({ length = 6, onChange }: OtpInputProps) {
+export default function OtpInput({ length = 6 }: OtpInputProps) {
   const [otp, setOtp] = useState<string[]>(new Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  const updateOtp = (newOtp: string[]) => {
-    setOtp(newOtp);
-    if (onChange) {
-      onChange(newOtp.join(""));
-    }
-  };
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value.slice(-1);
-    updateOtp(newOtp);
+    setOtp(newOtp);
 
     if (value && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
@@ -45,7 +37,7 @@ export default function OtpInput({ length = 6, onChange }: OtpInputProps) {
     pasteData.split("").forEach((char, i) => {
       newOtp[i] = char;
     });
-    updateOtp(newOtp);
+    setOtp(newOtp);
 
     const nextIndex = Math.min(pasteData.length, length - 1);
     inputRefs.current[nextIndex]?.focus();

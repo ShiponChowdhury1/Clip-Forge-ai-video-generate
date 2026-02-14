@@ -1,20 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AuthCard, AuthButton, OtpInput } from "@/app/components/auth";
 
 export default function VerifyEmailForm() {
-  const router = useRouter();
-  const [otp, setOtp] = useState("");
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Test mode: accept any 6-digit OTP
-    if (otp.length === 6) {
-      router.push("/reset-password");
-    }
   };
 
   return (
@@ -24,7 +15,7 @@ export default function VerifyEmailForm() {
       variant="small"
     >
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
-        <OtpInput length={6} onChange={setOtp} />
+        <OtpInput length={6} />
 
         <AuthButton text="Verify" />
 

@@ -3,6 +3,8 @@
 import Image from "next/image";
 import type { SceneMediaOption } from "./Step1VideoDetails";
 
+export type VideoFormat = "9:16" | "1:1" | "16:9";
+
 export type VideoStyleOption =
   | "3d-cartoon"
   | "anime"
@@ -16,6 +18,8 @@ export type VideoStyleOption =
   | "warm-fable";
 
 interface Step2VideoStyleProps {
+  videoFormat: VideoFormat;
+  setVideoFormat: (value: VideoFormat) => void;
   videoStyle: VideoStyleOption;
   setVideoStyle: (value: VideoStyleOption) => void;
   sceneMedia: SceneMediaOption;
@@ -79,22 +83,39 @@ const videoStyles: {
   },
 ];
 
-const sceneMediaOptions: {
-  value: SceneMediaOption;
+const formatOptions: {
+  value: VideoFormat;
   label: string;
-  credits: number;
+  cardHeight: string;
+  innerWidth: string;
+  innerHeight: string;
 }[] = [
-  { value: "all-images", label: "Use all images", credits: 0 },
-  { value: "first-scene-video", label: "First Scene video", credits: 30 },
-  { value: "last-scene-video", label: "Last Scene video", credits: 30 },
   {
-    value: "first-last-scene-video",
-    label: "First & Last Scene video",
-    credits: 60,
+    value: "9:16",
+    label: "9:16",
+    cardHeight: "h-[250px]",
+    innerWidth: "w-[100px]",
+    innerHeight: "h-[120px]",
+  },
+  {
+    value: "1:1",
+    label: "1:1",
+    cardHeight: "h-[194px]",
+    innerWidth: "w-[100px]",
+    innerHeight: "h-[120px]",
+  },
+  {
+    value: "16:9",
+    label: "16:9",
+    cardHeight: "h-[134px]",
+    innerWidth: "w-[110px]",
+    innerHeight: "h-[60px]",
   },
 ];
 
 export default function Step2VideoStyle({
+  videoFormat,
+  setVideoFormat,
   videoStyle,
   setVideoStyle,
   sceneMedia,
@@ -102,6 +123,46 @@ export default function Step2VideoStyle({
 }: Step2VideoStyleProps) {
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-8">
+      {/* Video Format */}
+      <div>
+        <h3 className="text-white text-base font-semibold mb-4">
+          Video Format
+        </h3>
+        <div className="flex items-end gap-3">
+          {formatOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setVideoFormat(option.value)}
+              className={`flex flex-col items-center gap-3 w-[150px] ${option.cardHeight} p-5 rounded-xl border transition-all ${
+                videoFormat === option.value
+                  ? "border-[#3B82F6] bg-[#3B82F6]/5"
+                  : "border-[#1A3155] bg-[#0B0E12] hover:border-[#2A4A7A]"
+              }`}
+            >
+              {/* Device mockup */}
+              <div className="flex-1 flex items-end justify-center">
+                <div
+                  className={`${option.innerWidth} ${option.innerHeight} rounded-lg border-2 ${
+                    videoFormat === option.value
+                      ? "border-[#3B82F6]"
+                      : "border-[#2A3A50]"
+                  } transition-colors`}
+                />
+              </div>
+              <span
+                className={`text-sm font-medium ${
+                  videoFormat === option.value
+                    ? "text-white"
+                    : "text-gray-400"
+                }`}
+              >
+                {option.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Video Style */}
       <div>
         <h3 className="text-white text-lg font-semibold mb-5">Video Style</h3>
@@ -143,35 +204,9 @@ export default function Step2VideoStyle({
         </div>
       </div>
 
-      {/* Scene Media Options */}
-      <div>
-        <h3 className="text-gray-400 text-sm font-medium mb-3">
-          Scene Media Options
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {sceneMediaOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setSceneMedia(option.value)}
-              className={`relative flex flex-col items-start p-4 rounded-xl border transition-all text-left ${
-                sceneMedia === option.value
-                  ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-[#1A3155] bg-[#0B0E12] hover:border-[#2A4A7A]"
-              }`}
-            >
-              <span className="text-white text-sm font-medium">
-                {option.label}
-              </span>
-              <span className="text-gray-500 text-xs mt-0.5">
-                {option.credits} additional credits
-              </span>
-              {sceneMedia === option.value && (
-                <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
+   
+      
+     
     </div>
   );
 }

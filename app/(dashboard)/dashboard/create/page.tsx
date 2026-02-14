@@ -9,15 +9,16 @@ import {
 } from "@/app/components/dashboard/create";
 import Step1VideoDetails from "@/app/components/dashboard/create/steps/Step1VideoDetails";
 import Step2VideoStyle from "@/app/components/dashboard/create/steps/Step2VideoStyle";
+import Step2MediaSettings from "@/app/components/dashboard/create/steps/Step2MediaSettings";
 import Step3VoiceScript from "@/app/components/dashboard/create/steps/Step3VoiceScript";
 import Step4MusicFormat from "@/app/components/dashboard/create/steps/Step4MusicFormat";
 import Step5Subtitles from "@/app/components/dashboard/create/steps/Step5Subtitles";
 import Step6Review from "@/app/components/dashboard/create/steps/Step6Review";
 
 import type { SceneMediaOption } from "@/app/components/dashboard/create/steps/Step1VideoDetails";
-import type { VideoStyleOption } from "@/app/components/dashboard/create/steps/Step2VideoStyle";
+import type { VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2VideoStyle";
+import type { MusicOption } from "@/app/components/dashboard/create/steps/Step2MediaSettings";
 import type { VoiceId } from "@/app/components/dashboard/create/steps/Step3VoiceScript";
-import type { MusicOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step4MusicFormat";
 import type { SubtitleStyle } from "@/app/components/dashboard/create/steps/Step5Subtitles";
 
 const TOTAL_STEPS = 6;
@@ -139,20 +140,20 @@ export default function CreateVideoPage() {
         );
       case 2:
         return (
-          <Step4MusicFormat
-            backgroundMusic={backgroundMusic}
-            setBackgroundMusic={setBackgroundMusic}
+          <Step2VideoStyle
             videoFormat={videoFormat}
             setVideoFormat={setVideoFormat}
-          />
-        );
-      case 3:
-        return (
-          <Step2VideoStyle
             videoStyle={videoStyle}
             setVideoStyle={setVideoStyle}
             sceneMedia={sceneMedia}
             setSceneMedia={setSceneMedia}
+          />
+        );
+      case 3:
+        return (
+          <Step2MediaSettings
+            backgroundMusic={backgroundMusic}
+            setBackgroundMusic={setBackgroundMusic}
           />
         );
       case 4:

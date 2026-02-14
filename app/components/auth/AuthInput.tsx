@@ -9,8 +9,6 @@ interface AuthInputProps {
   placeholder: string;
   rightLabel?: string;
   onRightLabelClick?: () => void;
-  value?: string;
-  onChange?: (value: string) => void;
 }
 
 const iconMap = {
@@ -25,20 +23,9 @@ export default function AuthInput({
   placeholder,
   rightLabel,
   onRightLabelClick,
-  value: controlledValue,
-  onChange,
 }: AuthInputProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [internalValue, setInternalValue] = useState("");
-  
-  const value = controlledValue !== undefined ? controlledValue : internalValue;
-  const setValue = (newValue: string) => {
-    if (onChange) {
-      onChange(newValue);
-    } else {
-      setInternalValue(newValue);
-    }
-  };
+  const [value, setValue] = useState("");
 
   const Icon = iconMap[type];
   const inputType = type === "password" && showPassword ? "text" : type;
