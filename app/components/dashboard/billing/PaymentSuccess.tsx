@@ -50,7 +50,7 @@ export default function PaymentSuccess({
         <div className="flex items-center justify-center gap-4">
           <Link
             href="/dashboard/create"
-            className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
+            className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
           >
             <LayoutDashboard className="w-4 h-4" />
             Start Creating

@@ -244,7 +244,7 @@ export default function AdminSettingsPage() {
             <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-4 sm:p-6 md:p-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
                 <h2 className="text-white text-lg sm:text-xl font-bold">Subscription Plans</h2>
-                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm transition-colors">
+                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm transition-colors">
                   <Plus className="w-4 h-4" />
                   Add New Plan
                 </button>
@@ -326,7 +326,7 @@ export default function AdminSettingsPage() {
 
               {/* Save Button */}
               <div className="flex justify-end">
-                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-medium px-6 py-3 rounded-lg text-sm transition-colors">
+                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-6 py-3 rounded-lg text-sm transition-colors">
                   <Save className="w-4 h-4" />
                   Save Changes
                 </button>
@@ -341,7 +341,7 @@ export default function AdminSettingsPage() {
                 <h2 className="text-white text-lg sm:text-xl font-bold">
                   Payment & Refund Rules
                 </h2>
-                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm transition-colors">
+                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm transition-colors">
                   <Pencil className="w-4 h-4" />
                   Edit Rules
                 </button>
@@ -413,7 +413,7 @@ export default function AdminSettingsPage() {
                       </button>
                       <button
                         onClick={() => setIsEditingPolicy(false)}
-                        className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
                       >
                         <Save className="w-4 h-4" />
                         Save Changes
@@ -423,7 +423,7 @@ export default function AdminSettingsPage() {
                     <>
                       <button
                         onClick={() => setIsEditingPolicy(true)}
-                        className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
                       >
                         <Pencil className="w-4 h-4" />
                         Edit
@@ -612,7 +612,7 @@ export default function AdminSettingsPage() {
                 <h2 className="text-white text-lg sm:text-xl font-bold">
                   Admin Roles & Permissions
                 </h2>
-                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm transition-colors">
+                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm transition-colors">
                   <Plus className="w-4 h-4" />
                   Add Admin
                 </button>

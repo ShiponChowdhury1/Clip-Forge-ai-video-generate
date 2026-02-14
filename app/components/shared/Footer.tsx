@@ -74,7 +74,7 @@ export default function Footer() {
                 className="flex-1 bg-transparent border border-gray-700 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 transition"
               />
               <button 
-                className="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition text-xs sm:text-sm whitespace-nowrap"
+                className="bg-cyan-500 hover:bg-cyan-400 text-white font-semibold px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition text-xs sm:text-sm whitespace-nowrap"
               >
                 Join
               </button>

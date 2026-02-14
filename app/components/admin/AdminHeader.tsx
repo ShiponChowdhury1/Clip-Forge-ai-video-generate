@@ -137,7 +137,7 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
                 </button>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="px-6 py-2.5 rounded-full bg-cyan-500 hover:bg-cyan-600 text-black text-sm font-medium transition-colors"
+                  className="px-6 py-2.5 rounded-full bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium transition-colors"
                 >
                   Save Changes
                 </button>
@@ -340,7 +340,7 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
           {/* Update Password Button */}
           <button
             onClick={onClose}
-            className="w-full mt-6 flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-3.5 rounded-xl text-sm transition-colors"
+            className="w-full mt-6 flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3.5 rounded-xl text-sm transition-colors"
           >
             <ShieldCheck className="w-4.5 h-4.5" />
             Update Password
@@ -426,7 +426,7 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
           {/* Export button */}
           <button
             onClick={onExport}
-            className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-medium px-3 sm:px-4 py-2.5 rounded-lg text-sm transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-3 sm:px-4 py-2.5 rounded-lg text-sm transition-colors whitespace-nowrap"
           >
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">Export Data</span>

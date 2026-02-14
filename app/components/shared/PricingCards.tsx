@@ -87,7 +87,7 @@ export default function PricingCards({
             {/* Badge */}
             {plan.badge && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-cyan-500 text-black text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                <span className="bg-cyan-500 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap">
                   {plan.badge}
                 </span>
               </div>
@@ -137,7 +137,7 @@ export default function PricingCards({
                   onClick={() => onSelectPlan?.(plan.name)}
                   className={`w-full py-3 font-medium transition text-sm ${
                     plan.highlighted
-                      ? "bg-cyan-500 hover:bg-cyan-400 text-black"
+                      ? "bg-cyan-500 hover:bg-cyan-400 text-white"
                       : "bg-transparent border border-gray-700 hover:border-gray-600 text-white"
                   }`}
                   style={{ borderRadius: "12px" }}

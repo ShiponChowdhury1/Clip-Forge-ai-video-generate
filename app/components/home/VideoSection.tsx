@@ -108,7 +108,7 @@ export default function VideoSection() {
                       whileTap={{ scale: 0.95 }}
                       className="w-12 h-12 sm:w-14 sm:h-14 bg-cyan-500/80 rounded-full flex items-center justify-center group-hover:bg-cyan-500 transition-all duration-300 backdrop-blur-sm shadow-lg shadow-cyan-500/20"
                     >
-                      <Play className="w-5 h-5 sm:w-6 sm:h-6 text-black fill-black ml-1" />
+                      <Play className="w-5 h-5 sm:w-6 sm:h-6 text-white fill-white ml-1" />
                     </motion.div>
                   </div>
 

@@ -47,7 +47,7 @@ export default function PaymentCheckout({
               onClick={() => setPaymentMethod("card")}
               className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 paymentMethod === "card"
-                  ? "bg-cyan-500 text-black"
+                  ? "bg-cyan-500 text-white"
                   : "bg-[#1A1F2E] text-gray-300 border border-[#2A3040] hover:border-gray-600"
               }`}
             >
@@ -57,7 +57,7 @@ export default function PaymentCheckout({
               onClick={() => setPaymentMethod("stripe")}
               className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 paymentMethod === "stripe"
-                  ? "bg-cyan-500 text-black"
+                  ? "bg-cyan-500 text-white"
                   : "bg-[#1A1F2E] text-gray-300 border border-[#2A3040] hover:border-gray-600"
               }`}
             >
@@ -204,7 +204,7 @@ export default function PaymentCheckout({
           {/* Buttons */}
           <button
             onClick={onConfirmPayment}
-            className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-semibold py-3 rounded-xl transition-colors text-sm mb-3"
+            className="w-full bg-cyan-500 hover:bg-cyan-400 text-white font-semibold py-3 rounded-xl transition-colors text-sm mb-3"
           >
             Confirm Payment
           </button>

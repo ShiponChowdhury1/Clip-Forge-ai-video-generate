@@ -142,7 +142,7 @@ export default function Navbar() {
           <Link href="/login" className="text-gray-400 hover:text-white transition text-sm">
             Login
           </Link>
-          <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-black font-medium px-4 lg:px-5 py-2 rounded-lg transition text-sm">
+          <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-white font-medium px-4 lg:px-5 py-2 rounded-lg transition text-sm">
             Get Started
           </Link>
         </div>
@@ -179,7 +179,7 @@ export default function Navbar() {
               <Link href="/login" className="text-gray-400 hover:text-white transition text-sm text-left py-2 px-3" onClick={() => setIsOpen(false)}>
                 Login
               </Link>
-              <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-black font-medium px-4 py-3 rounded-lg transition text-sm w-full text-center" onClick={() => setIsOpen(false)}>
+              <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-white font-medium px-4 py-3 rounded-lg transition text-sm w-full text-center" onClick={() => setIsOpen(false)}>
                 Get Started
               </Link>
             </div>
