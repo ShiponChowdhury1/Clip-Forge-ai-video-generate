@@ -4,9 +4,9 @@ export { default as StepNavigation } from "./StepNavigation";
 export { default as GeneratingProgress } from "./GeneratingProgress";
 
 // Steps
-export { default as Step1VideoDetails } from "./steps/Step1VideoDetails";
-export { default as Step2VideoStyle } from "./steps/Step2VideoStyle";
-export { default as Step3VoiceScript } from "./steps/Step3VoiceScript";
-export { default as Step4MusicFormat } from "./steps/Step4MusicFormat";
-export { default as Step5Subtitles } from "./steps/Step5Subtitles";
-export { default as Step6Review } from "./steps/Step6Review";
+export { default as Step1TitleKeywordsScript } from "./steps/Step1TitleKeywordsScript";
+export { default as Step2FormatStyleMedia } from "./steps/Step2FormatStyleMedia";
+export { default as Step3BackgroundMusic } from "./steps/Step3BackgroundMusic";
+export { default as Step4VoiceNarration } from "./steps/Step4VoiceNarration";
+export { default as Step5SubtitleSettings } from "./steps/Step5SubtitleSettings";
+export { default as Step6ReviewGenerate } from "./steps/Step6ReviewGenerate";

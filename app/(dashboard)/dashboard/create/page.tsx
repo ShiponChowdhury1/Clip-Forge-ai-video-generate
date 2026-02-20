@@ -7,18 +7,17 @@ import {
   StepNavigation,
   GeneratingProgress,
 } from "@/app/components/dashboard/create";
-import Step1VideoDetails from "@/app/components/dashboard/create/steps/Step1VideoDetails";
-import Step2VideoStyle from "@/app/components/dashboard/create/steps/Step2VideoStyle";
-import Step2MediaSettings from "@/app/components/dashboard/create/steps/Step2MediaSettings";
-import Step3VoiceScript from "@/app/components/dashboard/create/steps/Step3VoiceScript";
-import Step4MusicFormat from "@/app/components/dashboard/create/steps/Step4MusicFormat";
-import Step5Subtitles from "@/app/components/dashboard/create/steps/Step5Subtitles";
-import Step6Review from "@/app/components/dashboard/create/steps/Step6Review";
+import Step1TitleKeywordsScript from "@/app/components/dashboard/create/steps/Step1TitleKeywordsScript";
+import Step2FormatStyleMedia from "@/app/components/dashboard/create/steps/Step2FormatStyleMedia";
+import Step3BackgroundMusic from "@/app/components/dashboard/create/steps/Step3BackgroundMusic";
+import Step4VoiceNarration from "@/app/components/dashboard/create/steps/Step4VoiceNarration";
+import Step5SubtitleSettings from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
+import Step6ReviewGenerate from "@/app/components/dashboard/create/steps/Step6ReviewGenerate";
 
-import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2VideoStyle";
-import type { MusicOption } from "@/app/components/dashboard/create/steps/Step2MediaSettings";
-import type { VoiceId } from "@/app/components/dashboard/create/steps/Step3VoiceScript";
-import type { SubtitleStyle } from "@/app/components/dashboard/create/steps/Step5Subtitles";
+import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2FormatStyleMedia";
+import type { MusicOption } from "@/app/components/dashboard/create/steps/Step3BackgroundMusic";
+import type { VoiceId } from "@/app/components/dashboard/create/steps/Step4VoiceNarration";
+import type { SubtitleStyle } from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
 
 const TOTAL_STEPS = 6;
 
@@ -126,7 +125,7 @@ export default function CreateVideoPage() {
     switch (currentStep) {
       case 1:
         return (
-          <Step1VideoDetails
+          <Step1TitleKeywordsScript
             videoTitle={videoTitle}
             setVideoTitle={setVideoTitle}
             keywords={keywords}
@@ -139,7 +138,7 @@ export default function CreateVideoPage() {
         );
       case 2:
         return (
-          <Step2VideoStyle
+          <Step2FormatStyleMedia
             videoFormat={videoFormat}
             setVideoFormat={setVideoFormat}
             videoStyle={videoStyle}
@@ -150,14 +149,14 @@ export default function CreateVideoPage() {
         );
       case 3:
         return (
-          <Step2MediaSettings
+          <Step3BackgroundMusic
             backgroundMusic={backgroundMusic}
             setBackgroundMusic={setBackgroundMusic}
           />
         );
       case 4:
         return (
-          <Step3VoiceScript
+          <Step4VoiceNarration
             selectedVoice={selectedVoice}
             setSelectedVoice={setSelectedVoice}
             script={script}
@@ -166,7 +165,7 @@ export default function CreateVideoPage() {
         );
       case 5:
         return (
-          <Step5Subtitles
+          <Step5SubtitleSettings
             subtitlesEnabled={subtitlesEnabled}
             setSubtitlesEnabled={setSubtitlesEnabled}
             subtitleStyle={subtitleStyle}
@@ -175,7 +174,7 @@ export default function CreateVideoPage() {
         );
       case 6:
         return (
-          <Step6Review
+          <Step6ReviewGenerate
             script={script}
             selectedVoice={selectedVoice}
             sceneMedia={sceneMedia}

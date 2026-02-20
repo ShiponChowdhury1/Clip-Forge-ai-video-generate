@@ -2,7 +2,7 @@
 
 import { Info, Wand2 } from "lucide-react";
 
-interface Step1VideoDetailsProps {
+interface Step1TitleKeywordsScriptProps {
   videoTitle: string;
   setVideoTitle: (value: string) => void;
   keywords: string;
@@ -13,7 +13,7 @@ interface Step1VideoDetailsProps {
   setScript: (value: string) => void;
 }
 
-export default function Step1VideoDetails({
+export default function Step1TitleKeywordsScript({
   videoTitle,
   setVideoTitle,
   keywords,
@@ -22,7 +22,7 @@ export default function Step1VideoDetails({
   setNegativeKeywords,
   script,
   setScript,
-}: Step1VideoDetailsProps) {
+}: Step1TitleKeywordsScriptProps) {
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-6">
       {/* Video Title */}

@@ -22,7 +22,7 @@ export type VideoStyleOption =
   | "retro-noir"
   | "warm-fable";
 
-interface Step2VideoStyleProps {
+interface Step2FormatStyleMediaProps {
   videoFormat: VideoFormat;
   setVideoFormat: (value: VideoFormat) => void;
   videoStyle: VideoStyleOption;
@@ -133,14 +133,14 @@ const sceneMediaOptions: {
   },
 ];
 
-export default function Step2VideoStyle({
+export default function Step2FormatStyleMedia({
   videoFormat,
   setVideoFormat,
   videoStyle,
   setVideoStyle,
   sceneMedia,
   setSceneMedia,
-}: Step2VideoStyleProps) {
+}: Step2FormatStyleMediaProps) {
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-8">
       {/* Video Format */}

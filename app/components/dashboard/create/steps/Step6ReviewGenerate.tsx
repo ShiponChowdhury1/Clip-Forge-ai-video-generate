@@ -1,12 +1,12 @@
 "use client";
 
 import { Mic, Film, Music2, Subtitles } from "lucide-react";
-import type { SceneMediaOption } from "./Step2VideoStyle";
-import type { VoiceId } from "./Step3VoiceScript";
-import type { MusicOption } from "./Step4MusicFormat";
-import type { SubtitleStyle } from "./Step5Subtitles";
+import type { SceneMediaOption } from "./Step2FormatStyleMedia";
+import type { VoiceId } from "./Step4VoiceNarration";
+import type { MusicOption } from "./Step3BackgroundMusic";
+import type { SubtitleStyle } from "./Step5SubtitleSettings";
 
-interface Step6ReviewProps {
+interface Step6ReviewGenerateProps {
   script: string;
   selectedVoice: VoiceId;
   sceneMedia: SceneMediaOption;
@@ -23,7 +23,7 @@ const formatLabel = (value: string) =>
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
-export default function Step6Review({
+export default function Step6ReviewGenerate({
   script,
   selectedVoice,
   sceneMedia,
@@ -32,7 +32,7 @@ export default function Step6Review({
   subtitlesEnabled,
   onGenerate,
   isGenerating,
-}: Step6ReviewProps) {
+}: Step6ReviewGenerateProps) {
   // Word count & estimated duration
   const wordCount = script.trim() ? script.trim().split(/\s+/).length : 0;
   const estimatedMinutes = Math.max(1, Math.ceil(wordCount / 150));

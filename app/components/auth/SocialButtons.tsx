@@ -1,4 +1,4 @@
-import { Globe, Facebook } from "lucide-react";
+import Image from "next/image";
 
 export default function SocialButtons() {
   return (
@@ -15,29 +15,23 @@ export default function SocialButtons() {
       {/* Buttons */}
       <div className="w-full flex gap-4">
         <button
-          className="flex-1 flex items-center justify-center gap-2 bg-[#1e2a30] hover:bg-[#253540] border border-gray-700/50 text-white font-semibold text-sm transition"
+          className="w-full flex items-center justify-center gap-2 bg-[#1e2a30] hover:bg-[#253540] border border-gray-700/50 text-white font-semibold text-sm transition"
           style={{
-            maxWidth: "240px",
             height: "58px",
             borderRadius: "16px",
             borderWidth: "1.11px",
           }}
         >
-          <Globe className="w-5 h-5" />
+          <Image 
+            src="/google/google.png" 
+            alt="Google" 
+            width={20} 
+            height={20}
+            className="w-5 h-5"
+          />
           Google
         </button>
-        <button
-          className="flex-1 flex items-center justify-center gap-2 bg-[#1e2a30] hover:bg-[#253540] border border-gray-700/50 text-white font-semibold text-sm transition"
-          style={{
-            maxWidth: "240px",
-            height: "58px",
-            borderRadius: "16px",
-            borderWidth: "1.11px",
-          }}
-        >
-          <Facebook className="w-5 h-5" />
-          Facebook
-        </button>
+       
       </div>
     </div>
   );

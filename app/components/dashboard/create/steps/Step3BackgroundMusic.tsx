@@ -9,7 +9,7 @@ export type MusicOption =
   | "modern-business"
   | "epic-journey";
 
-interface Step2MediaSettingsProps {
+interface Step3BackgroundMusicProps {
   backgroundMusic: MusicOption;
   setBackgroundMusic: (value: MusicOption) => void;
 }
@@ -64,10 +64,10 @@ const musicOptions: {
   },
 ];
 
-export default function Step2MediaSettings({
+export default function Step3BackgroundMusic({
   backgroundMusic,
   setBackgroundMusic,
-}: Step2MediaSettingsProps) {
+}: Step3BackgroundMusicProps) {
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-8">
       {/* Background Music */}

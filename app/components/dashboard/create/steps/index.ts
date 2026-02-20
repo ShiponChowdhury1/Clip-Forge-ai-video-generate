@@ -1,12 +1,12 @@
-export { default as Step1VideoDetails } from "./Step1VideoDetails";
-export { default as Step2VideoStyle } from "./Step2VideoStyle";
-export { default as Step3VoiceScript } from "./Step3VoiceScript";
-export { default as Step4MusicFormat } from "./Step4MusicFormat";
-export { default as Step5Subtitles } from "./Step5Subtitles";
-export { default as Step6Review } from "./Step6Review";
+export { default as Step1TitleKeywordsScript } from "./Step1TitleKeywordsScript";
+export { default as Step2FormatStyleMedia } from "./Step2FormatStyleMedia";
+export { default as Step3BackgroundMusic } from "./Step3BackgroundMusic";
+export { default as Step4VoiceNarration } from "./Step4VoiceNarration";
+export { default as Step5SubtitleSettings } from "./Step5SubtitleSettings";
+export { default as Step6ReviewGenerate } from "./Step6ReviewGenerate";
 
 // Type exports
-export type { SceneMediaOption, VideoStyleOption, VideoFormat } from "./Step2VideoStyle";
-export type { VoiceId } from "./Step3VoiceScript";
-export type { MusicOption, VideoFormat as VideoFormat2 } from "./Step4MusicFormat";
-export type { SubtitleStyle } from "./Step5Subtitles";
+export type { SceneMediaOption, VideoStyleOption, VideoFormat } from "./Step2FormatStyleMedia";
+export type { VoiceId } from "./Step4VoiceNarration";
+export type { MusicOption } from "./Step3BackgroundMusic";
+export type { SubtitleStyle } from "./Step5SubtitleSettings";

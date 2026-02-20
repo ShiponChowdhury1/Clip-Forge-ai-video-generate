@@ -17,7 +17,7 @@ export type VoiceId =
   | "edward"
   | "archie";
 
-interface Step3VoiceScriptProps {
+interface Step4VoiceNarrationProps {
   selectedVoice: VoiceId;
   setSelectedVoice: (value: VoiceId) => void;
   script: string;
@@ -143,12 +143,12 @@ const voices: {
   },
 ];
 
-export default function Step3VoiceScript({
+export default function Step4VoiceNarration({
   selectedVoice,
   setSelectedVoice,
   script,
   setScript,
-}: Step3VoiceScriptProps) {
+}: Step4VoiceNarrationProps) {
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-8">
       {/* Voice Type */}

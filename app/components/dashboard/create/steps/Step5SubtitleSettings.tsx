@@ -8,7 +8,7 @@ export type SubtitleStyle =
   | "yellow-highlight"
   | "gradient";
 
-interface Step5SubtitlesProps {
+interface Step5SubtitleSettingsProps {
   subtitlesEnabled: boolean;
   setSubtitlesEnabled: (value: boolean) => void;
   subtitleStyle: SubtitleStyle;
@@ -71,12 +71,12 @@ const subtitleStyles: {
   },
 ];
 
-export default function Step5Subtitles({
+export default function Step5SubtitleSettings({
   subtitlesEnabled,
   setSubtitlesEnabled,
   subtitleStyle,
   setSubtitleStyle,
-}: Step5SubtitlesProps) {
+}: Step5SubtitleSettingsProps) {
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-6">
       {/* Header with toggle */}
