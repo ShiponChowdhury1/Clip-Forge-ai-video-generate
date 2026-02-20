@@ -204,21 +204,6 @@ export default function Step3VoiceScript({
           ))}
         </div>
       </div>
-
-      {/* Script */}
-      <div>
-        <h3 className="text-white text-lg font-semibold mb-3">Script</h3>
-        <textarea
-          value={script}
-          onChange={(e) => setScript(e.target.value)}
-          placeholder="Enter your video script here..."
-          rows={5}
-          className="w-full bg-[#0B0E12] border border-[#1A3155] rounded-xl px-4 py-3 text-white text-sm placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors resize-none"
-        />
-        <p className="text-gray-500 text-xs mt-2">
-          AI will generate visuals based on your script
-        </p>
-      </div>
     </div>
   );
 }

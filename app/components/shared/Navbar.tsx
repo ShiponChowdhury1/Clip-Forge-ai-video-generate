@@ -23,7 +23,6 @@ export default function Navbar() {
   useEffect(() => {
     // Only run scroll detection on home page
     if (!isHomePage) {
-      setActiveSection("");
       return;
     }
 

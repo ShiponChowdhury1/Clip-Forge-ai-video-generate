@@ -15,8 +15,7 @@ import Step4MusicFormat from "@/app/components/dashboard/create/steps/Step4Music
 import Step5Subtitles from "@/app/components/dashboard/create/steps/Step5Subtitles";
 import Step6Review from "@/app/components/dashboard/create/steps/Step6Review";
 
-import type { SceneMediaOption } from "@/app/components/dashboard/create/steps/Step1VideoDetails";
-import type { VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2VideoStyle";
+import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2VideoStyle";
 import type { MusicOption } from "@/app/components/dashboard/create/steps/Step2MediaSettings";
 import type { VoiceId } from "@/app/components/dashboard/create/steps/Step3VoiceScript";
 import type { SubtitleStyle } from "@/app/components/dashboard/create/steps/Step5Subtitles";
@@ -134,8 +133,8 @@ export default function CreateVideoPage() {
             setKeywords={setKeywords}
             negativeKeywords={negativeKeywords}
             setNegativeKeywords={setNegativeKeywords}
-            sceneMedia={sceneMedia}
-            setSceneMedia={setSceneMedia}
+            script={script}
+            setScript={setScript}
           />
         );
       case 2:

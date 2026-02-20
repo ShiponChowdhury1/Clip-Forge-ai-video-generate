@@ -1,7 +1,7 @@
 "use client";
 
 import { Mic, Film, Music2, Subtitles } from "lucide-react";
-import type { SceneMediaOption } from "./Step1VideoDetails";
+import type { SceneMediaOption } from "./Step2VideoStyle";
 import type { VoiceId } from "./Step3VoiceScript";
 import type { MusicOption } from "./Step4MusicFormat";
 import type { SubtitleStyle } from "./Step5Subtitles";

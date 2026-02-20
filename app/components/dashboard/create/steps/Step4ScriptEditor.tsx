@@ -74,13 +74,7 @@ export default function Step4ScriptEditor({
                     </button>
                   )}
                 </div>
-                <textarea
-                  value={scene.text}
-                  onChange={(e) => updateScene(scene.id, e.target.value)}
-                  placeholder={`Describe what happens in scene ${index + 1}...`}
-                  rows={3}
-                  className="w-full bg-transparent text-white text-sm placeholder:text-gray-600 focus:outline-none resize-none"
-                />
+               
               </div>
             </div>
           </div>

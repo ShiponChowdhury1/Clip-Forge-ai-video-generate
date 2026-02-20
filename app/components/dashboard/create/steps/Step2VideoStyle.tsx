@@ -1,9 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import type { SceneMediaOption } from "./Step1VideoDetails";
 
 export type VideoFormat = "9:16" | "1:1" | "16:9";
+
+export type SceneMediaOption =
+  | "all-images"
+  | "first-scene-video"
+  | "last-scene-video"
+  | "first-last-scene-video";
 
 export type VideoStyleOption =
   | "3d-cartoon"
@@ -113,6 +118,21 @@ const formatOptions: {
   },
 ];
 
+const sceneMediaOptions: {
+  value: SceneMediaOption;
+  label: string;
+  credits: number;
+}[] = [
+  { value: "all-images", label: "Use all images", credits: 0 },
+  { value: "first-scene-video", label: "First Scene video", credits: 30 },
+  { value: "last-scene-video", label: "Last Scene video", credits: 30 },
+  {
+    value: "first-last-scene-video",
+    label: "First & Last Scene video",
+    credits: 60,
+  },
+];
+
 export default function Step2VideoStyle({
   videoFormat,
   setVideoFormat,
@@ -204,9 +224,35 @@ export default function Step2VideoStyle({
         </div>
       </div>
 
-   
-      
-     
+      {/* Scene Media Options */}
+      <div>
+        <h3 className="text-white text-sm font-semibold mb-4">
+          Scene Media Options
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {sceneMediaOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setSceneMedia(option.value)}
+              className={`relative flex flex-col items-start p-4 rounded-xl border transition-all text-left ${
+                sceneMedia === option.value
+                  ? "border-[#3B82F6] bg-[#3B82F6]/5"
+                  : "border-[#1A3155] bg-[#0B0E12] hover:border-[#2A4A7A]"
+              }`}
+            >
+              <span className="text-white text-sm font-medium">
+                {option.label}
+              </span>
+              <span className="text-gray-500 text-xs mt-0.5">
+                {option.credits} additional credits
+              </span>
+              {sceneMedia === option.value && (
+                <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

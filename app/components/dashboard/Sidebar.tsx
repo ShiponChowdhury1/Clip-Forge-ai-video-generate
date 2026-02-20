@@ -42,7 +42,7 @@ const menusByRole: Record<SidebarRole, NavSection[]> = {
       items: [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Create Video", href: "/dashboard/create", icon: Plus },
-        { name: "All Video", href: "/dashboard/videos", icon: Video },
+        { name: "All Videos", href: "/dashboard/videos", icon: Video },
       ],
     },
     {
@@ -84,11 +84,6 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const sections = menusByRole[role];
   const profile = profileByRole[role];
-
-  // Close mobile sidebar on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
 
   // Prevent body scroll when mobile sidebar is open
   useEffect(() => {
@@ -156,6 +151,7 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border ${
                     isActive
                       ? "bg-[#2563EB] border-[#2563EB] text-white"
