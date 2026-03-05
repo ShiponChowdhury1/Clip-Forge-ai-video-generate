@@ -1,11 +1,59 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AuthCard, AuthButton, OtpInput } from "@/app/components/auth";
+import { useVerifyOtpMutation, useForgotPasswordMutation } from "@/lib/redux/features/auth/authApi";
+import { setOtpVerified } from "@/lib/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 
 export default function VerifyEmailForm() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const resetEmail = useAppSelector((state) => state.auth.resetEmail);
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
+  const [forgotPassword, { isLoading: isResending }] = useForgotPasswordMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    if (!resetEmail) {
+      setError("No email found. Please start from forgot password.");
+      return;
+    }
+
+    if (otp.length !== 6) {
+      setError("Please enter the 6-digit OTP.");
+      return;
+    }
+
+    try {
+      await verifyOtp({ email: resetEmail, otp }).unwrap();
+      dispatch(setOtpVerified(true));
+      router.push("/reset-password");
+    } catch (err: unknown) {
+      const apiError = err as { data?: { detail?: string } };
+      setError(apiError.data?.detail || "Invalid OTP. Please try again.");
+    }
+  };
+
+  const handleResend = async () => {
+    if (!resetEmail) return;
+    setError("");
+    setSuccess("");
+
+    try {
+      const result = await forgotPassword({ email: resetEmail }).unwrap();
+      setSuccess(result.message);
+    } catch {
+      setError("Failed to resend OTP.");
+    }
   };
 
   return (
@@ -15,15 +63,31 @@ export default function VerifyEmailForm() {
       variant="small"
     >
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
-        <OtpInput length={6} />
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-3 text-green-400 text-sm">
+            {success}
+          </div>
+        )}
 
-        <AuthButton text="Verify" />
+        <OtpInput length={6} onChange={setOtp} />
+
+        <AuthButton text="Verify" loading={isLoading} />
 
         <p className="text-gray-400 text-sm text-center">
           Didn&apos;t receive the code?{" "}
-          <Link href="#" className="text-[#00A6F4] font-bold hover:underline">
-            Resend
-          </Link>
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={isResending}
+            className="text-[#00A6F4] font-bold hover:underline disabled:opacity-50"
+          >
+            {isResending ? "Sending..." : "Resend"}
+          </button>
         </p>
       </form>
     </AuthCard>

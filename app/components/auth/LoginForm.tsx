@@ -1,29 +1,60 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthCard, AuthInput, AuthButton, SocialButtons } from "@/app/components/auth";
+import { useLoginMutation } from "@/lib/redux/features/auth/authApi";
+import { setCredentials, setUser } from "@/lib/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/lib/redux/hooks";
 
 export default function LoginForm() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [login, { isLoading }] = useLoginMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    try {
+      const result = await login({ email, password }).unwrap();
+      localStorage.setItem("token", result.access_token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      dispatch(setCredentials({ token: result.access_token }));
+      dispatch(setUser(result.user));
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      const apiError = err as { data?: { detail?: string } };
+      setError(apiError.data?.detail || "Invalid email or password.");
+    }
   };
 
   return (
     <AuthCard title="Welcome Back" variant="login">
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
-        <AuthInput label="Email Address" type="email" placeholder="name@example.com" />
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
+        <AuthInput label="Email Address" type="email" placeholder="name@example.com" value={email} onChange={setEmail} />
         <AuthInput
           label="Password"
           type="password"
           placeholder="••••••••"
           rightLabel="Forgot Password?"
           onRightLabelClick={() => router.push("/forgot-password")}
+          value={password}
+          onChange={setPassword}
         />
 
-        <AuthButton text="Log In" />
+        <AuthButton text="Log In" loading={isLoading} />
 
         <SocialButtons />
 

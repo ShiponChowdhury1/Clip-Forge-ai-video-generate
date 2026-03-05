@@ -4,9 +4,10 @@ import { useRef, useState } from "react";
 
 interface OtpInputProps {
   length?: number;
+  onChange?: (otp: string) => void;
 }
 
-export default function OtpInput({ length = 6 }: OtpInputProps) {
+export default function OtpInput({ length = 6, onChange }: OtpInputProps) {
   const [otp, setOtp] = useState<string[]>(new Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -16,6 +17,7 @@ export default function OtpInput({ length = 6 }: OtpInputProps) {
     const newOtp = [...otp];
     newOtp[index] = value.slice(-1);
     setOtp(newOtp);
+    onChange?.(newOtp.join(""));
 
     if (value && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
@@ -38,6 +40,7 @@ export default function OtpInput({ length = 6 }: OtpInputProps) {
       newOtp[i] = char;
     });
     setOtp(newOtp);
+    onChange?.(newOtp.join(""));
 
     const nextIndex = Math.min(pasteData.length, length - 1);
     inputRefs.current[nextIndex]?.focus();

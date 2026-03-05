@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
+import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import {
   LayoutDashboard,
   Plus,
@@ -67,11 +70,15 @@ const menusByRole: Record<SidebarRole, NavSection[]> = {
   ],
 };
 
-// ── Profile data per role (placeholder) ──────────────────────────────────────
-const profileByRole: Record<SidebarRole, { name: string; subtitle: string; initials: string }> = {
-  user: { name: "John Doe", subtitle: "john@example.com", initials: "JD" },
-  admin: { name: "Admin User", subtitle: "Super Admin", initials: "AU" },
-};
+// ── Helper: get initials from name ──────────────────────────────────────
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
 
 // ── Component ────────────────────────────────────────────────────────────────
 interface SidebarProps {
@@ -80,10 +87,21 @@ interface SidebarProps {
 
 export default function Sidebar({ role = "user" }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const token = useAppSelector((state) => state.auth.token);
+  const user = useAppSelector((state) => state.auth.user);
+  const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const sections = menusByRole[role];
-  const profile = profileByRole[role];
+
+  const profile = {
+    name: user?.name || "User",
+    subtitle: user?.email || "",
+    initials: user?.name ? getInitials(user.name) : "U",
+  };
 
   // Prevent body scroll when mobile sidebar is open
   useEffect(() => {
@@ -97,8 +115,15 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
     };
   }, [mobileOpen]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logoutApi().unwrap();
+    } catch {
+      // Even if API fails, clear local state
+    }
+    dispatch(logoutAction());
     setShowLogoutModal(false);
+    router.push("/login");
   };
 
   const sidebarContent = (
@@ -170,9 +195,18 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
       {/* User Profile & Logout */}
       <div className="pt-4 border-t border-[#1F1F1F] space-y-2">
         <div className="flex items-center gap-3 px-2">
-          <div className="w-10 h-10 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-sm shrink-0">
-            {profile.initials}
-          </div>
+          {user?.picture ? (
+            <img
+              src={user.picture}
+              alt={profile.name}
+              referrerPolicy="no-referrer"
+              className="w-10 h-10 rounded-full shrink-0 object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-sm shrink-0">
+              {profile.initials}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">{profile.name}</p>
             <p className="text-xs text-gray-500 truncate">{profile.subtitle}</p>
@@ -258,7 +292,7 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
               className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
             >
               <LogOut className="w-4 h-4" />
-              Yes, Logout
+              {isLoggingOut ? "Logging out..." : "Yes, Logout"}
             </button>
           </div>
         </div>

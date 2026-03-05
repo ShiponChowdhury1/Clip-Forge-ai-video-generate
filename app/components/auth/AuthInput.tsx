@@ -9,6 +9,8 @@ interface AuthInputProps {
   placeholder: string;
   rightLabel?: string;
   onRightLabelClick?: () => void;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 const iconMap = {
@@ -23,9 +25,17 @@ export default function AuthInput({
   placeholder,
   rightLabel,
   onRightLabelClick,
+  value: controlledValue,
+  onChange,
 }: AuthInputProps) {
+  const [internalValue, setInternalValue] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [value, setValue] = useState("");
+
+  const value = controlledValue !== undefined ? controlledValue : internalValue;
+  const handleChange = (val: string) => {
+    if (onChange) onChange(val);
+    else setInternalValue(val);
+  };
 
   const Icon = iconMap[type];
   const inputType = type === "password" && showPassword ? "text" : type;
@@ -65,7 +75,7 @@ export default function AuthInput({
         <input
           type={inputType}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           placeholder={placeholder}
           autoComplete="off"
           className="w-full bg-transparent px-3 py-4 text-sm outline-none [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_9999px_#0d1117_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:rgba(255,255,255,0.5)]"
