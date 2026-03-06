@@ -13,6 +13,7 @@ import Step3BackgroundMusic from "@/app/components/dashboard/create/steps/Step3B
 import Step4VoiceNarration from "@/app/components/dashboard/create/steps/Step4VoiceNarration";
 import Step5SubtitleSettings from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
 import Step6ReviewGenerate from "@/app/components/dashboard/create/steps/Step6ReviewGenerate";
+import { useCreateVideoMutation } from "@/lib/redux/features/videos/videosApi";
 
 import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2FormatStyleMedia";
 import type { MusicOption } from "@/app/components/dashboard/create/steps/Step3BackgroundMusic";
@@ -31,6 +32,8 @@ export default function CreateVideoPage() {
     { label: "Creating narration", completed: false, active: false },
     { label: "Building Video", completed: false, active: false },
   ]);
+
+  const [createVideo] = useCreateVideoMutation();
 
   // Step 1 - Video Details
   const [videoTitle, setVideoTitle] = useState("");
@@ -67,9 +70,27 @@ export default function CreateVideoPage() {
     }
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setIsGenerating(true);
     setGenerationProgress(0);
+
+    try {
+      await createVideo({
+        title: videoTitle,
+        script,
+        format: videoFormat,
+        style: videoStyle,
+        voice: selectedVoice,
+        category: videoStyle,
+        media_option: sceneMedia,
+        subtitle_id: subtitlesEnabled ? subtitleStyle : "none",
+        keywords,
+        negative_keywords: negativeKeywords,
+        music_id: backgroundMusic === "no-music" ? 0 : Number(backgroundMusic),
+      }).unwrap();
+    } catch (error) {
+      console.error("Create video failed:", error);
+    }
 
     // Simulate generation progress
     const stepLabels = [
