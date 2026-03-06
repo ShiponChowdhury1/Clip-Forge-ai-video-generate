@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   CreateVideoHeader,
   StepProgress,
@@ -14,6 +15,7 @@ import Step4VoiceNarration from "@/app/components/dashboard/create/steps/Step4Vo
 import Step5SubtitleSettings from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
 import Step6ReviewGenerate from "@/app/components/dashboard/create/steps/Step6ReviewGenerate";
 import { useCreateVideoMutation } from "@/lib/redux/features/videos/videosApi";
+import { useSelector } from "react-redux";
 
 import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2FormatStyleMedia";
 import type { MusicOption } from "@/app/components/dashboard/create/steps/Step3BackgroundMusic";
@@ -23,9 +25,13 @@ import type { SubtitleStyle } from "@/app/components/dashboard/create/steps/Step
 const TOTAL_STEPS = 6;
 
 export default function CreateVideoPage() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
+  const [generationComplete, setGenerationComplete] = useState(false);
+  const [generatedVideoId, setGeneratedVideoId] = useState<number | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const [generationSteps, setGenerationSteps] = useState([
     { label: "Generating Prompts", completed: false, active: true },
     { label: "Creating Image", completed: false, active: false },
@@ -34,6 +40,134 @@ export default function CreateVideoPage() {
   ]);
 
   const [createVideo] = useCreateVideoMutation();
+  const token = useSelector((state: { auth: { token: string | null } }) => state.auth.token);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, []);
+
+  const startPolling = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (createResponse: any) => {
+      const jobId = createResponse?.job_id || createResponse?.jobId;
+      const videoId = createResponse?.id || createResponse?.video_id;
+
+      console.log("[Polling] Create response:", JSON.stringify(createResponse));
+      console.log("[Polling] Extracted - jobId:", jobId, "videoId:", videoId);
+
+      if (videoId) setGeneratedVideoId(videoId);
+      setGenerationProgress(5);
+
+      const apiBase =
+        (process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api") +
+        "/v1";
+      let tick = 0;
+      let busy = false;
+
+      pollingRef.current = setInterval(async () => {
+        if (busy) return;
+        busy = true;
+        tick++;
+
+        try {
+          let status = "";
+          let vid: number | null = null;
+
+          // Strategy 1: job-status endpoint (no auth required)
+          if (jobId) {
+            try {
+              const resp = await fetch(
+                `${apiBase}/videos/job-status/${jobId}`
+              );
+              if (resp.ok) {
+                const data = await resp.json();
+                console.log("[Poll] job-status:", JSON.stringify(data));
+                status = String(data?.status || data?.state || "");
+                vid = data?.video_id ?? data?.id ?? null;
+              } else {
+                console.warn("[Poll] job-status HTTP", resp.status);
+              }
+            } catch (e) {
+              console.warn("[Poll] job-status error:", e);
+            }
+          }
+
+          // Strategy 2: video get endpoint (needs auth)
+          const checkVid = vid || videoId;
+          if (!status && checkVid && token) {
+            try {
+              const resp = await fetch(`${apiBase}/videos/get/${checkVid}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (resp.ok) {
+                const data = await resp.json();
+                console.log("[Poll] video-get:", JSON.stringify(data));
+                status = String(data?.status || "");
+                vid = data?.id ?? null;
+              }
+            } catch (e) {
+              console.warn("[Poll] video-get error:", e);
+            }
+          }
+
+          if (vid) setGeneratedVideoId(vid);
+
+          const s = status.toLowerCase().replace(/[\s-]+/g, "_").trim();
+
+          if (s === "completed" || s === "done") {
+            setGenerationProgress(100);
+            setGenerationComplete(true);
+            setGenerationSteps((prev) =>
+              prev.map((step) => ({
+                ...step,
+                completed: true,
+                active: false,
+              }))
+            );
+            if (pollingRef.current) {
+              clearInterval(pollingRef.current);
+              pollingRef.current = null;
+            }
+            return;
+          }
+
+          if (s === "failed" || s === "error") {
+            setGenerationError(
+              "Video generation failed. Please try again."
+            );
+            if (pollingRef.current) {
+              clearInterval(pollingRef.current);
+              pollingRef.current = null;
+            }
+            return;
+          }
+
+          // In-progress: smooth time-based progress (5% → 90% over ~45 polls)
+          const progress = Math.min(5 + tick * 2, 90);
+          setGenerationProgress(progress);
+
+          // Animate steps based on progress
+          const stepIdx = Math.min(Math.floor(progress / 25), 3);
+          setGenerationSteps((prev) =>
+            prev.map((step, i) => ({
+              ...step,
+              completed: i < stepIdx,
+              active: i === stepIdx,
+            }))
+          );
+        } catch (err) {
+          console.error("[Poll] Unexpected:", err);
+        } finally {
+          busy = false;
+        }
+      }, 3000);
+    },
+    [token]
+  );
 
   // Step 1 - Video Details
   const [videoTitle, setVideoTitle] = useState("");
@@ -98,7 +232,10 @@ export default function CreateVideoPage() {
 
     try {
       const response = await createVideo(requestBody).unwrap();
-      console.log("[Create Video] API success:", response);
+      console.log("[Create Video] API success:", JSON.stringify(response));
+
+      // Start polling with full response (handles job_id, id, video_id)
+      startPolling(response);
     } catch (error: unknown) {
       const err = error as { status?: number; data?: { detail?: string } };
       console.error("[Create Video] API failed:", { status: err.status, detail: err.data?.detail, full: err });
@@ -110,38 +247,6 @@ export default function CreateVideoPage() {
       alert(err.data?.detail || "Failed to create video");
       return;
     }
-
-    // Simulate generation progress
-    const stepLabels = [
-      "Generating Prompts",
-      "Creating Image",
-      "Creating narration",
-      "Building Video",
-    ];
-
-    let currentGenStep = 0;
-    const interval = setInterval(() => {
-      setGenerationProgress((prev) => {
-        const next = Math.min(prev + 2, 100);
-        const stepThreshold = ((currentGenStep + 1) / stepLabels.length) * 100;
-
-        if (next >= stepThreshold && currentGenStep < stepLabels.length) {
-          setGenerationSteps((prevSteps) =>
-            prevSteps.map((s, i) => ({
-              ...s,
-              completed: i <= currentGenStep,
-              active: i === currentGenStep + 1,
-            }))
-          );
-          currentGenStep++;
-        }
-
-        if (next >= 100) {
-          clearInterval(interval);
-        }
-        return next;
-      });
-    }, 200);
   };
 
   // Show generating progress screen
@@ -151,10 +256,29 @@ export default function CreateVideoPage() {
         <GeneratingProgress
           progress={generationProgress}
           steps={generationSteps}
-          onBack={handleBack}
-          onNext={() => {
-            // Navigate to video page after completion
+          error={generationError}
+          onBack={() => {
+            if (pollingRef.current) {
+              clearInterval(pollingRef.current);
+              pollingRef.current = null;
+            }
             setIsGenerating(false);
+            setGenerationProgress(0);
+            setGenerationComplete(false);
+            setGenerationError(null);
+            setGenerationSteps([
+              { label: "Generating Prompts", completed: false, active: true },
+              { label: "Creating Image", completed: false, active: false },
+              { label: "Creating narration", completed: false, active: false },
+              { label: "Building Video", completed: false, active: false },
+            ]);
+          }}
+          onNext={() => {
+            if (generationComplete && generatedVideoId) {
+              router.push(`/dashboard/videos/${generatedVideoId}`);
+            } else if (generationComplete) {
+              router.push("/dashboard/videos");
+            }
           }}
         />
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Loader2, AlertTriangle } from "lucide-react";
 
 interface GenerationStep {
   label: string;
@@ -11,6 +11,7 @@ interface GenerationStep {
 interface GeneratingProgressProps {
   progress: number;
   steps: GenerationStep[];
+  error?: string | null;
   onBack: () => void;
   onNext: () => void;
 }
@@ -18,9 +19,13 @@ interface GeneratingProgressProps {
 export default function GeneratingProgress({
   progress,
   steps,
+  error,
   onBack,
   onNext,
 }: GeneratingProgressProps) {
+  const isComplete = progress >= 100;
+  const isProcessing = !isComplete && !error;
+
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-6">
       {/* Header */}
@@ -35,18 +40,29 @@ export default function GeneratingProgress({
       </div>
 
       {/* Generate heading */}
-      <h3 className="text-white text-base font-semibold">Generate</h3>
+      <div className="flex items-center gap-3">
+        <h3 className="text-white text-base font-semibold">
+          {error ? "Generation Failed" : isComplete ? "Generation Complete" : "Generating..."}
+        </h3>
+        {isProcessing && (
+          <Loader2 className="w-4 h-4 text-[#3B82F6] animate-spin" />
+        )}
+      </div>
 
       {/* Progress bar */}
       <div>
         <div className="relative w-full h-2 bg-[#1A2332] rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#3B82F6] rounded-full transition-all duration-500"
+            className={`h-full rounded-full transition-all duration-1000 ease-out ${
+              error ? "bg-[#E33629]" : isComplete ? "bg-[#22C55E]" : "bg-[#3B82F6]"
+            }`}
             style={{ width: `${progress}%` }}
           />
           {/* Thumb indicator */}
           <div
-            className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#3B82F6] transition-all duration-500"
+            className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white border-2 transition-all duration-1000 ease-out ${
+              error ? "border-[#E33629]" : isComplete ? "border-[#22C55E]" : "border-[#3B82F6]"
+            }`}
             style={{ left: `calc(${progress}% - 7px)` }}
           />
         </div>
@@ -70,10 +86,16 @@ export default function GeneratingProgress({
               className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 ${
                 step.completed
                   ? "bg-white/20 border-white/40"
+                  : step.active
+                  ? "border-[#3B82F6] bg-transparent"
                   : "border-gray-600 bg-transparent"
               }`}
             >
-              {step.completed && <Check className="w-3 h-3 text-white" />}
+              {step.completed ? (
+                <Check className="w-3 h-3 text-white" />
+              ) : step.active ? (
+                <Loader2 className="w-3 h-3 text-[#3B82F6] animate-spin" />
+              ) : null}
             </div>
             <span className="text-sm font-medium">{step.label}</span>
           </div>
@@ -81,11 +103,19 @@ export default function GeneratingProgress({
       </div>
 
       {/* Completion message */}
-      {progress >= 100 && (
+      {isComplete && (
         <div className="bg-[#22C55E]/10 border border-[#22C55E]/30 rounded-xl p-4 text-center">
           <p className="text-[#22C55E] text-sm font-medium">
             Video generation complete! Review in the next step.
           </p>
+        </div>
+      )}
+
+      {/* Error message */}
+      {error && (
+        <div className="bg-[#E33629]/10 border border-[#E33629]/30 rounded-xl p-4 flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 text-[#E33629] shrink-0" />
+          <p className="text-[#E33629] text-sm font-medium">{error}</p>
         </div>
       )}
 
@@ -95,13 +125,18 @@ export default function GeneratingProgress({
           onClick={onBack}
           className="bg-[#1A2332] hover:bg-[#243044] text-white font-medium text-sm py-3 rounded-xl transition-colors border border-[#1A3155]"
         >
-          Back
+          {error ? "Try Again" : "Back"}
         </button>
         <button
           onClick={onNext}
-          className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-sm py-3 rounded-xl transition-colors"
+          disabled={!isComplete}
+          className={`font-medium text-sm py-3 rounded-xl transition-colors ${
+            isComplete
+              ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+              : "bg-[#1A2332] text-gray-500 cursor-not-allowed border border-[#1A3155]"
+          }`}
         >
-          Next
+          {isComplete ? "View Video" : "Generating..."}
         </button>
       </div>
     </div>

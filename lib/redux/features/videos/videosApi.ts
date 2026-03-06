@@ -73,6 +73,11 @@ export const videosApi = createApi({
       }),
       providesTags: ["Videos"],
     }),
+
+    // GET /api/v1/videos/job-status/{job_id}
+    getJobStatus: builder.query<JobStatus, string>({
+      query: (jobId) => `/videos/job-status/${jobId}`,
+    }),
   }),
 });
 
@@ -119,6 +124,15 @@ export interface Video {
   media_option: string;
   status: string;
   created_at: string;
+}
+
+export interface JobStatus {
+  job_id: string;
+  status: string;
+  progress?: number;
+  current_step?: string;
+  video_id?: number;
+  error?: string;
 }
 
 export const { useGetMusicQuery, useCreateVideoMutation, useGetAllVideosQuery, useDeleteVideoMutation } = videosApi;
