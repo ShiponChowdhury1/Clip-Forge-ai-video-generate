@@ -71,25 +71,44 @@ export default function CreateVideoPage() {
   };
 
   const handleGenerate = async () => {
+    const requestBody = {
+      title: videoTitle,
+      script,
+      format: videoFormat,
+      style: videoStyle,
+      voice: selectedVoice,
+      category: videoStyle,
+      media_option:
+        sceneMedia === "all-images" ? "all_images"
+        : sceneMedia === "first-scene-video" ? "first_scene"
+        : sceneMedia === "last-scene-video" ? "last_scene"
+        : "first_and_last_scene",
+      subtitle_id: subtitlesEnabled && subtitleStyle !== "none"
+        ? ["classic-white", "modern-box", "minimal-light", "yellow-highlight", "gradient"].indexOf(subtitleStyle) + 1
+        : 0,
+      keywords,
+      negative_keywords: negativeKeywords,
+      music_id: backgroundMusic === "no-music" ? 0 : Number(backgroundMusic),
+    };
+
+    console.log("[Create Video] Request body:", requestBody);
+
     setIsGenerating(true);
     setGenerationProgress(0);
 
     try {
-      await createVideo({
-        title: videoTitle,
-        script,
-        format: videoFormat,
-        style: videoStyle,
-        voice: selectedVoice,
-        category: videoStyle,
-        media_option: sceneMedia,
-        subtitle_id: subtitlesEnabled ? subtitleStyle : "none",
-        keywords,
-        negative_keywords: negativeKeywords,
-        music_id: backgroundMusic === "no-music" ? 0 : Number(backgroundMusic),
-      }).unwrap();
-    } catch (error) {
-      console.error("Create video failed:", error);
+      const response = await createVideo(requestBody).unwrap();
+      console.log("[Create Video] API success:", response);
+    } catch (error: unknown) {
+      const err = error as { status?: number; data?: { detail?: string } };
+      console.error("[Create Video] API failed:", { status: err.status, detail: err.data?.detail, full: err });
+      setIsGenerating(false);
+      if (err.status === 401) {
+        alert("Session expired. Please login again.");
+        return;
+      }
+      alert(err.data?.detail || "Failed to create video");
+      return;
     }
 
     // Simulate generation progress

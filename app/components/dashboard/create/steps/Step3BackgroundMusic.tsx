@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { useGetMusicQuery } from "@/lib/redux/features/videos/videosApi";
 
@@ -24,20 +24,33 @@ const colorPalette = [
   "bg-indigo-500",
 ];
 
-// Map API music names to local public/music/ file names
-const musicFileMap: Record<string, string> = {
-  "Cinematic Documentary": "/music/1. Cinematic Documentary.mp3",
-  "Dark Mystery Pulse": "/music/2. Dark Mystery Pulse.mp3",
-  "Motivational Rise": "/music/3. Motivational Rise.mp3",
-  "Calm Ambient Flow": "/music/4. Calm Ambient Flow.mp3",
-  "Modern Tech Energy": "/music/5. Modern Tech Energy.mp3",
-  "Light & Playful": "/music/6. Light _ Playful.mp3",
-  "Light _ Playful": "/music/6. Light _ Playful.mp3",
-  "Epic Build (Short)": "/music/7. Epic Build (Short).mp3",
-  "Minimal Corporate": "/music/8. Minimal Corporate.mp3",
-  "Emotional Reflection": "/music/9. Emotional Reflection.mp3",
-  "Elegant Escape": "/music/10. Elegant Escape.mp3",
-};
+// All local music files in public/music/
+const localMusicFiles = [
+  "/music/Cinematic-Documentary.mp3",
+  "/music/Dark-Mystery-Pulse.mp3",
+  "/music/Motivational-Rise.mp3",
+  "/music/Calm-Ambient-Flow.mp3",
+  "/music/Modern-Tech-Energy.mp3",
+  "/music/Light-Playful.mp3",
+  "/music/Epic-Build.mp3",
+  "/music/Minimal-Corporate.mp3",
+  "/music/Emotional-Reflection.mp3",
+  "/music/Elegant-Escape.mp3",
+];
+
+// Normalize a string for matching: lowercase, remove special chars
+function normalize(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Find matching local file for an API music name
+function findMusicFile(apiName: string): string | undefined {
+  const norm = normalize(apiName);
+  return localMusicFiles.find((f) => {
+    const namepart = f.replace("/music/", "").replace(".mp3", "");
+    return normalize(namepart).includes(norm) || norm.includes(normalize(namepart));
+  });
+}
 
 export default function Step3BackgroundMusic({
   backgroundMusic,
@@ -47,25 +60,44 @@ export default function Step3BackgroundMusic({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingId, setPlayingId] = useState<string | null>(null);
 
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   const handlePlay = (value: string, name: string) => {
     // If same track is playing, pause it
     if (playingId === value) {
-      audioRef.current?.pause();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
       setPlayingId(null);
       return;
     }
 
-    // Stop current audio if playing
+    // Stop current audio
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.src = "";
       audioRef.current = null;
     }
 
-    const src = musicFileMap[name];
+    const src = findMusicFile(name);
     if (!src) return;
 
     const audio = new Audio(src);
-    audio.onended = () => setPlayingId(null);
+    audio.onended = () => {
+      setPlayingId(null);
+      audioRef.current = null;
+    };
     audio.play();
     audioRef.current = audio;
     setPlayingId(value);
@@ -104,7 +136,12 @@ export default function Step3BackgroundMusic({
           {musicOptions.map((option) => (
             <button
               key={option.value}
-              onClick={() => setBackgroundMusic(option.value)}
+              onClick={() => {
+                setBackgroundMusic(option.value);
+                if (option.hasPreview) {
+                  handlePlay(option.value, option.label);
+                }
+              }}
               className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${
                 backgroundMusic === option.value
                   ? "border-[#3B82F6] bg-[#3B82F6]/5"
@@ -118,29 +155,19 @@ export default function Step3BackgroundMusic({
 
               {/* Info */}
               <div className="flex-1 text-left">
-                <div className="flex items-center gap-2">
-                  <span className="text-white text-sm font-medium">
-                    {option.label}
-                  </span>
-                  <span className="px-2 py-0.5 bg-[#1A2332] text-gray-400 text-[10px] font-medium rounded-md border border-[#1A3155]">
-                    {option.tag}
-                  </span>
-                </div>
-                <p className="text-gray-500 text-xs mt-0.5">
-                  {option.description}
-                </p>
+                <span className="text-white text-sm font-medium">
+                  {option.label}
+                </span>
               </div>
 
-              {/* Right side - selected dot or play button */}
-              {backgroundMusic === option.value ? (
-                <div className="w-2.5 h-2.5 rounded-full bg-[#3B82F6] shrink-0" />
-              ) : option.hasPreview ? (
+              {/* Right side - play/pause icon */}
+              {option.hasPreview ? (
                 <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlay(option.value, option.label);
-                  }}
-                  className="w-8 h-8 rounded-full bg-[#1A2332] border border-[#1A3155] flex items-center justify-center shrink-0 hover:bg-[#243044] transition-colors"
+                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                    playingId === option.value
+                      ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
+                      : "bg-[#1A2332] border border-[#1A3155]"
+                  }`}
                 >
                   {playingId === option.value ? (
                     <Pause className="w-3 h-3 text-[#3B82F6]" />

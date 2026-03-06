@@ -15,25 +15,72 @@ import {
   Minimize,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDeleteVideoMutation } from "@/lib/redux/features/videos/videosApi";
 
 interface VideoCardProps {
-  id: string;
+  id: number;
   title: string;
-  category: string;
-  videoUrl: string;
-  createdAt: string;
+  style: string;
+  path: string;
+  created_at: string;
+  status?: string;
+}
+
+const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api").replace(/\/api$/, "");
+
+function buildVideoUrl(path: string): string {
+  if (path.startsWith("http")) return path;
+  // Extract relative path starting from "outputs/" (handles absolute server filesystem paths)
+  const match = path.match(/outputs\/.+$/);
+  const relativePath = match ? `/${match[0]}` : path;
+  // Use Next.js proxy to avoid cross-origin cache issues
+  return `/api/video-proxy?path=${encodeURIComponent(relativePath)}`;
+}
+
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "Just now";
+  if (diffMin < 60) return `${diffMin}min ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}hr ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay < 30) return `${diffDay}d ago`;
+  return date.toLocaleDateString();
 }
 
 export default function VideoCard({
   id,
   title,
-  category,
-  videoUrl,
-  createdAt,
+  style,
+  path,
+  created_at,
 }: VideoCardProps) {
   const router = useRouter();
+  const videoUrl = buildVideoUrl(path);
+  const category = style;
+  const createdAt = formatDate(created_at);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [deleteVideo, { isLoading: isDeleting }] = useDeleteVideoMutation();
+
+  const handleDelete = async () => {
+    try {
+      await deleteVideo(id).unwrap();
+      setShowDeleteConfirm(false);
+    } catch (error: unknown) {
+      const err = error as { status?: number; data?: { detail?: string } };
+      if (err.status === 404) {
+        alert("Video not found. It may have already been deleted.");
+        setShowDeleteConfirm(false);
+      } else {
+        alert(err.data?.detail || "Failed to delete video. Please try again.");
+      }
+    }
+  };
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -243,12 +290,57 @@ export default function VideoCard({
               <Download className="w-6 h-4" />
               Download
             </button>
-            <button className="bg-[#1A1A1A] hover:bg-[#1A1A1A] border border-[#1F1F1F] hover:border-[#E33629] rounded-lg transition-all duration-200 flex items-center justify-center" style={{ width: '40px', height: '40px', padding: '12px' }}>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="bg-[#1A1A1A] hover:bg-[#1A1A1A] border border-[#1F1F1F] hover:border-[#E33629] rounded-lg transition-all duration-200 flex items-center justify-center"
+              style={{ width: '40px', height: '40px', padding: '12px' }}
+            >
               <Trash2 className="w-6 h-6 text-[#E33629]" />
             </button>
           </div>
         </div>
       </motion.div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 w-full max-w-sm mx-4"
+            >
+              <h3 className="text-white text-lg font-bold mb-2">Delete Video</h3>
+              <p className="text-gray-400 text-sm mb-6">
+                Are you sure you want to delete <span className="text-white font-medium">&quot;{title}&quot;</span>? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-[#1A3155] text-gray-300 text-sm font-medium hover:border-gray-500 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 rounded-xl bg-[#E33629] hover:bg-[#c42d22] disabled:opacity-50 text-white text-sm font-medium transition-colors"
+                >
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Professional Video Player Modal */}
       <AnimatePresence>

@@ -4,10 +4,10 @@ import Image from "next/image";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import VideoCard from "@/app/components/dashboard/VideoCard";
 import { useState, forwardRef } from "react";
-import { videoCardData } from "@/app/data";
+import { useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
 import { Calendar, X } from "lucide-react";
 import DatePicker from "react-datepicker";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 
 // Custom Input for DatePicker
@@ -46,20 +46,25 @@ CustomDateInput.displayName = "CustomDateInput";
 export default function AllVideosPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const { data: videos = [], isLoading } = useGetAllVideosQuery({ skip: 0, limit: 100 });
 
-  const filteredVideos = videoCardData.filter((video) => {
+  const filteredVideos = videos.filter((video) => {
     const matchesSearch =
       video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      video.category.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Date filtering logic (if video has a date property)
-    if (selectedDate) {
-      // For now, just return search matches since videoCardData may not have dates
-      return matchesSearch;
-    }
-    
-    return matchesSearch;
+      video.style.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      video.status.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesDate = selectedDate
+      ? isSameDay(new Date(video.created_at), selectedDate)
+      : true;
+
+    return matchesSearch && matchesDate;
   });
+
+  const totalVideos = videos.length;
+  const completedCount = videos.filter((v) => v.status.toLowerCase() === "completed").length;
+  const processingCount = videos.filter((v) => v.status.toLowerCase() === "processing").length;
+  const failedCount = videos.filter((v) => v.status.toLowerCase() === "failed").length;
 
   return (
     <div>
@@ -120,28 +125,43 @@ export default function AllVideosPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-5">
           <p className="text-gray-400 text-sm mb-2">Total Videos</p>
-          <p className="text-white text-3xl font-bold">10</p>
+          <p className="text-white text-3xl font-bold">{totalVideos}</p>
         </div>
         <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-5">
           <p className="text-gray-400 text-sm mb-2">Completed</p>
-          <p className="text-[#009927] text-3xl font-bold">10</p>
+          <p className="text-[#009927] text-3xl font-bold">{completedCount}</p>
         </div>
         <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-5">
           <p className="text-gray-400 text-sm mb-2">Processing</p>
-          <p className="text-[#F59E0B] text-3xl font-bold">0</p>
+          <p className="text-[#F59E0B] text-3xl font-bold">{processingCount}</p>
         </div>
         <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-5">
           <p className="text-gray-400 text-sm mb-2">Failed</p>
-          <p className="text-[#E33629] text-3xl font-bold">0</p>
+          <p className="text-[#E33629] text-3xl font-bold">{failedCount}</p>
         </div>
       </div>
 
       {/* Video Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {filteredVideos.map((video) => (
-          <VideoCard key={video.id} {...video} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="bg-[#111111] border border-[#1F1F1F] rounded-2xl overflow-hidden animate-pulse">
+              <div className="h-[230px] bg-[#1A1A1A]" />
+              <div className="p-5 space-y-3">
+                <div className="h-5 bg-[#1A1A1A] rounded w-3/4" />
+                <div className="h-4 bg-[#1A1A1A] rounded w-1/2" />
+                <div className="h-3 bg-[#1A1A1A] rounded w-1/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {filteredVideos.map((video) => (
+            <VideoCard key={video.id} {...video} />
+          ))}
+        </div>
+      )}
 
       {filteredVideos.length === 0 && (
         <div className="text-center py-16">

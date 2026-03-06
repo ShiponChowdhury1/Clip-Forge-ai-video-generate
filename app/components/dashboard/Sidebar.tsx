@@ -95,12 +95,17 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const sections = menusByRole[role];
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const profile = {
-    name: user?.name || "User",
-    subtitle: user?.email || "",
-    initials: user?.name ? getInitials(user.name) : "U",
+    name: mounted ? (user?.name || "User") : "User",
+    subtitle: mounted ? (user?.email || "") : "",
+    initials: mounted && user?.name ? getInitials(user.name) : "U",
   };
 
   // Prevent body scroll when mobile sidebar is open
@@ -195,7 +200,7 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
       {/* User Profile & Logout */}
       <div className="pt-4 border-t border-[#1F1F1F] space-y-2">
         <div className="flex items-center gap-3 px-2">
-          {user?.picture ? (
+          {mounted && user?.picture ? (
             <img
               src={user.picture}
               alt={profile.name}

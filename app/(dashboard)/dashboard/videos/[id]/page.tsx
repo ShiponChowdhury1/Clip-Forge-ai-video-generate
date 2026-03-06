@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { videoCardData } from "@/app/data";
+import { useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
 import {
   ArrowLeft,
   Play,
@@ -12,13 +12,34 @@ import {
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 
+const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api").replace(/\/api$/, "");
+
+function buildVideoUrl(path: string): string {
+  if (path.startsWith("http")) return path;
+  const match = path.match(/outputs\/.+$/);
+  const relativePath = match ? `/${match[0]}` : path;
+  return `/api/video-proxy?path=${encodeURIComponent(relativePath)}`;
+}
+
 export default function VideoDetailsPage() {
   const params = useParams();
   const router = useRouter();
-  const videoId = params.id as string;
-  const video = videoCardData.find((v) => v.id === videoId);
+  const videoId = Number(params.id);
+  const { data: videos = [], isLoading } = useGetAllVideosQuery({ skip: 0, limit: 100 });
+  const video = videos.find((v) => v.id === videoId);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 text-sm">Loading video...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!video) {
     return (
@@ -52,9 +73,11 @@ export default function VideoDetailsPage() {
     }
   };
 
+  const videoUrl = buildVideoUrl(video.path);
+
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = video.videoUrl;
+    link.href = videoUrl;
     link.download = `${video.title}.mp4`;
     document.body.appendChild(link);
     link.click();
@@ -63,11 +86,11 @@ export default function VideoDetailsPage() {
 
   const detailRows = [
     { label: "Video Title:", value: video.title },
-    { label: "Keywords:", value: video.keywords || "N/A" },
-    { label: "Negative Keywords:", value: video.negativeKeywords || "N/A" },
-    { label: "Video Format:", value: video.videoFormat || "9:16" },
-    { label: "Video Style:", value: video.videoStyle || video.category },
-    { label: "Voice Type:", value: video.voiceType || "Griffin" },
+    { label: "Video Format:", value: video.format || "9:16" },
+    { label: "Video Style:", value: video.style },
+    { label: "Voice Type:", value: video.voice || "N/A" },
+    { label: "Media Option:", value: video.media_option || "N/A" },
+    { label: "Duration:", value: video.duration ? `${video.duration}s` : "N/A" },
   ];
 
   return (
@@ -90,15 +113,15 @@ export default function VideoDetailsPage() {
 
         {/* Status Badge */}
         <div
-          className={`px-5 py-2 rounded-full text-sm font-semibold ${
-            video.status === "Completed"
+          className={`px-5 py-2 rounded-full text-sm font-semibold capitalize ${
+            video.status.toLowerCase() === "completed"
               ? "bg-[#009927] text-white"
-              : video.status === "Processing"
+              : video.status.toLowerCase() === "processing"
                 ? "bg-[#F59E0B] text-black"
                 : "bg-[#E33629] text-white"
           }`}
         >
-          {video.status || "Completed"}
+          {video.status}
         </div>
       </div>
 
@@ -113,7 +136,7 @@ export default function VideoDetailsPage() {
           <div className="relative aspect-video bg-black rounded-xl overflow-hidden">
             <video
               ref={videoRef}
-              src={video.videoUrl}
+              src={videoUrl}
               className="w-full h-full object-contain"
               preload="metadata"
               controls={isPlaying}

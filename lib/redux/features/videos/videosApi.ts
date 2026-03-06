@@ -16,6 +16,7 @@ export const videosApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ["Videos"],
   endpoints: (builder) => ({
     // GET /api/v1/music/get?skip=0&limit=100
     getMusic: builder.query<MusicItem[], { skip?: number; limit?: number }>({
@@ -32,6 +33,45 @@ export const videosApi = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Videos"],
+    }),
+
+    // DELETE /api/v1/videos/delete/{id}
+    deleteVideo: builder.mutation<{ status: string }, number>({
+      query: (id) => ({
+        url: `/videos/delete/${id}`,
+        method: "DELETE",
+      }),
+      onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
+        // Optimistically remove from all getAllVideos cache entries
+        const patchResult = dispatch(
+          videosApi.util.updateQueryData("getAllVideos", { skip: 0, limit: 100 }, (draft) => {
+            const index = draft.findIndex((v) => v.id === id);
+            if (index !== -1) draft.splice(index, 1);
+          })
+        );
+        const patchResult2 = dispatch(
+          videosApi.util.updateQueryData("getAllVideos", { skip: 0, limit: 8 }, (draft) => {
+            const index = draft.findIndex((v) => v.id === id);
+            if (index !== -1) draft.splice(index, 1);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+          patchResult2.undo();
+        }
+      },
+    }),
+
+    // GET /api/v1/videos/get-all?skip=0&limit=100
+    getAllVideos: builder.query<Video[], { skip?: number; limit?: number }>({
+      query: ({ skip = 0, limit = 100 } = {}) => ({
+        url: "/videos/get-all",
+        params: { skip, limit },
+      }),
+      providesTags: ["Videos"],
     }),
   }),
 });
@@ -52,7 +92,7 @@ export interface CreateVideoRequest {
   voice: string;
   category: string;
   media_option: string;
-  subtitle_id: string;
+  subtitle_id: number;
   keywords: string;
   negative_keywords: string;
   music_id: number;
@@ -64,4 +104,21 @@ export interface CreateVideoResponse {
   queue_position: number;
 }
 
-export const { useGetMusicQuery, useCreateVideoMutation } = videosApi;
+export interface Video {
+  id: number;
+  user_id: number;
+  title: string;
+  format: string;
+  style: string;
+  voice: string;
+  script: string;
+  path: string;
+  duration: number;
+  music_id: number;
+  subtitle_id: number;
+  media_option: string;
+  status: string;
+  created_at: string;
+}
+
+export const { useGetMusicQuery, useCreateVideoMutation, useGetAllVideosQuery, useDeleteVideoMutation } = videosApi;
