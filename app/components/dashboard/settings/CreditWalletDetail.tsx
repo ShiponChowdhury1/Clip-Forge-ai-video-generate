@@ -12,6 +12,7 @@ import {
   RotateCcw,
   CheckCircle,
 } from "lucide-react";
+import { useAppSelector } from "@/lib/redux/hooks";
 
 interface Transaction {
   date: string;
@@ -82,6 +83,10 @@ export default function CreditWalletDetail({
   onBack,
   onBuyCredits,
 }: CreditWalletDetailProps) {
+  const user = useAppSelector((state) => state.auth.user);
+  const credits = user?.credits ?? 0;
+  const userName = user?.name || "User";
+
   const getActionIcon = (type: Transaction["type"]) => {
     switch (type) {
       case "Usage":
@@ -145,11 +150,11 @@ export default function CreditWalletDetail({
               </span>
             </div>
           </div>
-          <p className="text-blue-200 text-xs mb-1">for John Doe</p>
-          <p className="text-4xl font-bold text-white mb-3">150</p>
+          <p className="text-blue-200 text-xs mb-1">for {userName}</p>
+          <p className="text-4xl font-bold text-white mb-3">{credits}</p>
           <p className="text-blue-200 text-xs flex items-center gap-1">
             <Sparkles className="w-3 h-3" />
-            Approximately 15 standard videos
+            Approximately {Math.floor(credits / 10)} standard videos
           </p>
         </div>
 
@@ -194,7 +199,7 @@ export default function CreditWalletDetail({
           <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
             Remaining
           </p>
-          <p className="text-3xl font-bold text-white mb-1">150</p>
+          <p className="text-3xl font-bold text-white mb-1">{credits}</p>
           <p className="text-blue-400 text-xs">Current balance</p>
         </div>
       </div>

@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Menu, X, ChevronDown, LayoutDashboard, Settings, LogOut, Shield, User } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
+import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
+import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
 
 const navLinks = [
   { name: "Features", href: "#features" },
@@ -13,18 +16,49 @@ const navLinks = [
   { name: "FAQ", href: "#faq" },
 ];
 
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isHomePage = pathname === "/";
 
+  const token = useAppSelector((state) => state.auth.token);
+  const user = useAppSelector((state) => state.auth.user);
+  const [logoutApi] = useLogoutMutation();
+
+  const isLoggedIn = mounted && !!token;
+
   useEffect(() => {
-    // Only run scroll detection on home page
-    if (!isHomePage) {
-      return;
-    }
+    setMounted(true);
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (!isHomePage) return;
 
     const handleScroll = () => {
       const sections = navLinks.map((link) => link.href.replace("#", ""));
@@ -43,19 +77,17 @@ export default function Navbar() {
         }
       }
 
-      // If at the top, no active section
       if (window.scrollY < 100) {
         setActiveSection("");
       }
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Check initial position
+    handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHomePage]);
 
-  // Handle hash scrolling when coming from another page
   useEffect(() => {
     if (isHomePage && window.location.hash) {
       const hash = window.location.hash;
@@ -77,13 +109,11 @@ export default function Navbar() {
     e.preventDefault();
     setIsOpen(false);
 
-    // If not on home page, navigate to home with hash
     if (!isHomePage) {
       router.push(`/${href}`);
       return;
     }
 
-    // On home page, smooth scroll to section
     const element = document.querySelector(href);
     if (element) {
       const offsetTop = element.getBoundingClientRect().top + window.scrollY - 80;
@@ -95,9 +125,23 @@ export default function Navbar() {
     }
   };
 
+  const handleLogout = async () => {
+    setDropdownOpen(false);
+    setIsOpen(false);
+    try {
+      await logoutApi().unwrap();
+    } catch {
+      // Even if API fails, clear local state
+    }
+    dispatch(logoutAction());
+    router.push("/");
+  };
+
+  const dashboardHref = user?.role === "admin" ? "/admin" : "/dashboard";
+  const settingsHref = user?.role === "admin" ? "/admin/settings" : "/dashboard/settings";
+
   return (
     <>
-      {/* Spacer to prevent content from hiding behind fixed navbar */}
       <div className="h-16 md:h-20" />
       <header className="w-full h-16 md:h-20 border-b border-zinc-800/50 fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md">
         <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 h-full flex items-center justify-between">
@@ -125,7 +169,6 @@ export default function Navbar() {
               }`}
             >
               {link.name}
-              {/* Underline animation - only active state */}
               <span
                 className={`absolute -bottom-1 left-0 h-0.5 bg-cyan-400 transition-all duration-300 ease-out ${
                   activeSection === link.href
@@ -137,13 +180,92 @@ export default function Navbar() {
           ))}
         </nav>
         
+        {/* Desktop: Auth buttons or User dropdown */}
         <div className="hidden md:flex items-center gap-3 lg:gap-4">
-          <Link href="/login" className="text-gray-400 hover:text-white transition text-sm">
-            Login
-          </Link>
-          <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-white font-medium px-4 lg:px-5 py-2 rounded-lg transition text-sm">
-            Get Started
-          </Link>
+          {isLoggedIn ? (
+            <div ref={dropdownRef} className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2.5 bg-[#0D1117] border border-[#1A3155] hover:border-[#3B82F6] rounded-xl px-3 py-2 transition-all"
+              >
+                {user?.picture ? (
+                  <img
+                    src={user.picture}
+                    alt={user.name}
+                    referrerPolicy="no-referrer"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-xs">
+                    {user?.name ? getInitials(user.name) : "U"}
+                  </div>
+                )}
+                <span className="text-white text-sm font-medium max-w-[120px] truncate">
+                  {user?.name || "User"}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {/* Dropdown menu */}
+              {dropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-[#0D1117] border border-[#1A3155] rounded-xl shadow-2xl shadow-black/50 overflow-hidden z-50">
+                  {/* User info */}
+                  <div className="px-4 py-3 border-b border-[#1A3155]">
+                    <p className="text-white text-sm font-medium truncate">{user?.name || "User"}</p>
+                    <p className="text-gray-500 text-xs truncate">{user?.email || ""}</p>
+                  </div>
+
+                  <div className="py-1.5">
+                    <Link
+                      href={dashboardHref}
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#1A2332] transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
+                    </Link>
+                    <Link
+                      href={settingsHref}
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#1A2332] transition-colors"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Settings
+                    </Link>
+                    {user?.role === "admin" && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/5 transition-colors"
+                      >
+                        <Shield className="w-4 h-4" />
+                        Admin Panel
+                      </Link>
+                    )}
+                  </div>
+
+                  <div className="border-t border-[#1A3155] py-1.5">
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors w-full"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link href="/login" className="text-gray-400 hover:text-white transition text-sm">
+                Login
+              </Link>
+              <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-white font-medium px-4 lg:px-5 py-2 rounded-lg transition text-sm">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -174,13 +296,62 @@ export default function Navbar() {
                 {link.name}
               </a>
             ))}
-            <div className="flex flex-col gap-3 pt-4 mt-2 border-t border-zinc-800/50">
-              <Link href="/login" className="text-gray-400 hover:text-white transition text-sm text-left py-2 px-3" onClick={() => setIsOpen(false)}>
-                Login
-              </Link>
-              <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-white font-medium px-4 py-3 rounded-lg transition text-sm w-full text-center" onClick={() => setIsOpen(false)}>
-                Get Started
-              </Link>
+            <div className="flex flex-col gap-1 pt-4 mt-2 border-t border-zinc-800/50">
+              {isLoggedIn ? (
+                <>
+                  {/* Mobile user info */}
+                  <div className="flex items-center gap-3 px-3 py-3">
+                    {user?.picture ? (
+                      <img
+                        src={user.picture}
+                        alt={user.name}
+                        referrerPolicy="no-referrer"
+                        className="w-9 h-9 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-xs">
+                        {user?.name ? getInitials(user.name) : "U"}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-white text-sm font-medium truncate">{user?.name || "User"}</p>
+                      <p className="text-gray-500 text-xs truncate">{user?.email || ""}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href={dashboardHref}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Link>
+                  <Link
+                    href={settingsHref}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 text-red-400 hover:text-red-300 hover:bg-red-500/5 text-sm py-3 px-3 rounded-lg transition w-full text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="text-gray-400 hover:text-white transition text-sm text-left py-2 px-3" onClick={() => setIsOpen(false)}>
+                    Login
+                  </Link>
+                  <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-white font-medium px-4 py-3 rounded-lg transition text-sm w-full text-center" onClick={() => setIsOpen(false)}>
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>

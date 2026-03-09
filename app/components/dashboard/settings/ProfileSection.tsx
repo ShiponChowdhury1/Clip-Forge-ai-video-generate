@@ -10,6 +10,7 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
+import { useAppSelector } from "@/lib/redux/hooks";
 
 interface ProfileSectionProps {
   onNavigate: (view: "wallet" | "password" | "notifications") => void;
@@ -20,6 +21,8 @@ export default function ProfileSection({
   onNavigate,
   onLogout,
 }: ProfileSectionProps) {
+  const user = useAppSelector((state) => state.auth.user);
+
   return (
     <div>
       {/* Page Title */}
@@ -45,15 +48,15 @@ export default function ProfileSection({
 
           {/* Info */}
           <div>
-            <h2 className="text-xl font-bold text-white">John Doe</h2>
+            <h2 className="text-xl font-bold text-white">{user?.name || "User"}</h2>
             <div className="flex items-center gap-3 mt-1 flex-wrap">
               <span className="flex items-center gap-1.5 text-gray-400 text-sm">
                 <Mail className="w-3.5 h-3.5" />
-                john.doe@example.com
+                {user?.email || "—"}
               </span>
               <span className="flex items-center gap-1.5 bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-3 py-1 rounded-full">
                 <Crown className="w-3 h-3" />
-                Pro Plan
+                {user?.subscription_plan || "Free"} Plan
               </span>
             </div>
 
@@ -65,7 +68,7 @@ export default function ProfileSection({
                   Available Credits
                 </p>
                 <p className="text-white font-bold text-lg leading-tight">
-                  150
+                  {user?.credits ?? 0}
                 </p>
               </div>
             </div>

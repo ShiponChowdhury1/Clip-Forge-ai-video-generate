@@ -81,7 +81,8 @@ export default function SocialButtons() {
           dispatch(setUser(fallbackUser));
         }
       }
-      router.push("/dashboard");
+      const role = userData?.role || "user";
+      router.push(role === "admin" ? "/admin" : "/dashboard");
     } catch (err: unknown) {
       const apiError = err as { data?: { detail?: string } };
       setError(apiError.data?.detail || "Google sign-in failed. Please try again.");

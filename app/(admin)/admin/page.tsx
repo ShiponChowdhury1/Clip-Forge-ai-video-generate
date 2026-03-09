@@ -8,7 +8,6 @@ import {
   CreditsChart,
   VideosChart,
   PlanDistribution,
-  QuickActions,
 } from "@/app/components/admin";
 
 const stats = [
@@ -82,9 +81,8 @@ export default function AdminOverview() {
       </div>
 
       {/* Bottom Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6">
         <PlanDistribution />
-        <QuickActions />
       </div>
     </div>
   );

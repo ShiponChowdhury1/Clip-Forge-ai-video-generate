@@ -74,9 +74,37 @@ export const videosApi = createApi({
       providesTags: ["Videos"],
     }),
 
+    // GET /api/v1/videos/get/{video_id}
+    getVideo: builder.query<Video, number>({
+      query: (videoId) => `/videos/get/${videoId}`,
+      providesTags: ["Videos"],
+    }),
+
     // GET /api/v1/videos/job-status/{job_id}
     getJobStatus: builder.query<JobStatus, string>({
       query: (jobId) => `/videos/job-status/${jobId}`,
+    }),
+
+    // PUT /api/v1/videos/update/{id}
+    updateVideo: builder.mutation<Video, { id: number; body: UpdateVideoRequest }>({
+      query: ({ id, body }) => ({
+        url: `/videos/update/${id}`,
+        method: "PUT",
+        body,
+      }),
+      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            videosApi.util.updateQueryData("getVideo", id, () => data)
+          );
+        } catch {}
+      },
+    }),
+
+    // GET /api/v1/videos/queue
+    getQueue: builder.query<QueueResponse, void>({
+      query: () => "/videos/queue",
     }),
   }),
 });
@@ -103,6 +131,19 @@ export interface CreateVideoRequest {
   music_id: number;
 }
 
+export interface UpdateVideoRequest {
+  title: string;
+  format: string;
+  style: string;
+  voice: string;
+  script: string;
+  keywords: string;
+  negative_keywords: string;
+  music_id: number;
+  subtitle_id: number;
+  media_option: string;
+}
+
 export interface CreateVideoResponse {
   job_id: string;
   status: string;
@@ -117,6 +158,8 @@ export interface Video {
   style: string;
   voice: string;
   script: string;
+  keywords: string | null;
+  negative_keywords: string | null;
   path: string;
   duration: number;
   music_id: number;
@@ -135,4 +178,46 @@ export interface JobStatus {
   error?: string;
 }
 
-export const { useGetMusicQuery, useCreateVideoMutation, useGetAllVideosQuery, useDeleteVideoMutation } = videosApi;
+export interface QueueVideoData {
+  title: string;
+  script: string;
+  format: string;
+  style: string;
+  voice: string;
+  keywords: string;
+  negative_keywords: string;
+  music_id: number;
+  subtitle_id: number;
+  media_option: string;
+  user_id: number;
+}
+
+export interface QueueItem {
+  id: string;
+  status: string;
+  progress: number;
+  message: string;
+  video_data: QueueVideoData;
+  created_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  result: unknown;
+  error: string | null;
+}
+
+export interface QueueResponse {
+  queued: QueueItem[];
+  processing: QueueItem[];
+  total_queued: number;
+  total_processing: number;
+}
+
+export const {
+  useGetMusicQuery,
+  useCreateVideoMutation,
+  useGetAllVideosQuery,
+  useGetVideoQuery,
+  useDeleteVideoMutation,
+  useUpdateVideoMutation,
+  useGetQueueQuery,
+} = videosApi;

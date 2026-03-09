@@ -128,7 +128,7 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
     }
     dispatch(logoutAction());
     setShowLogoutModal(false);
-    router.push("/login");
+    router.push("/");
   };
 
   const sidebarContent = (

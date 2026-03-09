@@ -21,6 +21,7 @@ import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/comp
 import type { MusicOption } from "@/app/components/dashboard/create/steps/Step3BackgroundMusic";
 import type { VoiceId } from "@/app/components/dashboard/create/steps/Step4VoiceNarration";
 import type { SubtitleStyle } from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
+import { subtitleStyles } from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
 
 const TOTAL_STEPS = 6;
 
@@ -190,6 +191,46 @@ export default function CreateVideoPage() {
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>("none");
 
+  // Pre-fill from Edit & Regenerate
+  useEffect(() => {
+    const raw = sessionStorage.getItem("editVideoData");
+    if (!raw) return;
+    sessionStorage.removeItem("editVideoData");
+    try {
+      const d = JSON.parse(raw);
+      if (d.title) setVideoTitle(d.title);
+      if (d.script) setScript(d.script);
+      if (d.keywords) setKeywords(d.keywords);
+      if (d.negative_keywords) setNegativeKeywords(d.negative_keywords);
+      if (d.format) setVideoFormat(d.format as VideoFormat);
+      if (d.style) setVideoStyle(d.style as VideoStyleOption);
+      if (d.voice) setSelectedVoice(d.voice as VoiceId);
+
+      // Map media_option back to frontend value
+      const mediaMap: Record<string, SceneMediaOption> = {
+        all_images: "all-images",
+        first_scene: "first-scene-video",
+        last_scene: "last-scene-video",
+        first_and_last_scene: "first-last-scene-video",
+      };
+      if (d.media_option && mediaMap[d.media_option]) setSceneMedia(mediaMap[d.media_option]);
+
+      // Map subtitle_id back to SubtitleStyle
+      if (d.subtitle_id) {
+        const found = subtitleStyles.find((s) => s.id === d.subtitle_id);
+        if (found) {
+          setSubtitleStyle(found.value);
+          setSubtitlesEnabled(found.value !== "none");
+        }
+      }
+
+      // Map music_id
+      if (d.music_id && d.music_id > 0) {
+        setBackgroundMusic(String(d.music_id));
+      }
+    } catch {}
+  }, []);
+
   const handleBack = () => {
     if (isGenerating) {
       setIsGenerating(false);
@@ -217,9 +258,7 @@ export default function CreateVideoPage() {
         : sceneMedia === "first-scene-video" ? "first_scene"
         : sceneMedia === "last-scene-video" ? "last_scene"
         : "first_and_last_scene",
-      subtitle_id: subtitlesEnabled && subtitleStyle !== "none"
-        ? ["classic-white", "modern-box", "minimal-light", "yellow-highlight", "gradient"].indexOf(subtitleStyle) + 1
-        : 0,
+      subtitle_id: subtitleStyles.find((s) => s.value === subtitleStyle)?.id ?? 1,
       keywords,
       negative_keywords: negativeKeywords,
       music_id: backgroundMusic === "no-music" ? 0 : Number(backgroundMusic),

@@ -104,7 +104,13 @@ export default function Step1TitleKeywordsScript({
           onChange={(e) => setScript(e.target.value)}
           placeholder="Write your script here or use AI to generate one..."
           rows={6}
-          className="w-full bg-[#0B0E12] border border-[#1A3155] rounded-xl px-4 py-3 text-white text-sm placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors resize-none"
+          className="w-full bg-[#0B0E12] border border-[#1A3155] rounded-xl px-4 py-3 text-white text-sm leading-relaxed placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors resize-none whitespace-pre-wrap overflow-hidden"
+          style={{ overflow: "hidden" }}
+          onInput={(e) => {
+            const el = e.currentTarget;
+            el.style.height = "auto";
+            el.style.height = el.scrollHeight + "px";
+          }}
         />
         <div className="flex justify-end mt-2">
           <span className="text-gray-500 text-xs">

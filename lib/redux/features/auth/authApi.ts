@@ -1,6 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "../../store";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 
 export const authApi = createApi({
@@ -8,7 +6,8 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_BASE_URL}/v1/auth`,
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
+      const state = getState() as { auth: { token: string | null } };
+      const token = state.auth.token;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -96,8 +95,53 @@ export const authApi = createApi({
         method: "GET",
       }),
     }),
+
+    // 9. Request OTP for Change Password (Authenticated)
+    requestChangePasswordOtp: builder.mutation<MessageResponse, void>({
+      query: () => ({
+        url: "/change-password/request-otp",
+        method: "POST",
+      }),
+    }),
+
+    // 10. Verify OTP for Change Password
+    verifyChangePasswordOtp: builder.mutation<MessageResponse, ChangePasswordVerifyOtpRequest>({
+      query: (body) => ({
+        url: "/change-password/verify-otp",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // 11. Change Password
+    changePassword: builder.mutation<MessageResponse, ChangePasswordRequest>({
+      query: (body) => ({
+        url: "/change-password",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // 12. Verify Register OTP
+    verifyRegisterOtp: builder.mutation<MessageResponse, VerifyOtpRequest>({
+      query: (body) => ({
+        url: "/register-otp",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // 13. Resend OTP
+    resendOtp: builder.mutation<MessageResponse, ForgotPasswordRequest>({
+      query: (body) => ({
+        url: "/resend-otp",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
+
 
 // Types
 export interface RegisterRequest {
@@ -152,6 +196,14 @@ export interface GoogleAuthRequest {
   token: string;
 }
 
+export interface ChangePasswordVerifyOtpRequest {
+  otp: string;
+}
+
+export interface ChangePasswordRequest {
+  new_password: string;
+}
+
 export interface MessageResponse {
   message: string;
 }
@@ -174,4 +226,9 @@ export const {
   useGoogleAuthMutation,
   useLogoutMutation,
   useGetMeQuery,
+  useRequestChangePasswordOtpMutation,
+  useVerifyChangePasswordOtpMutation,
+  useChangePasswordMutation,
+  useVerifyRegisterOtpMutation,
+  useResendOtpMutation,
 } = authApi;

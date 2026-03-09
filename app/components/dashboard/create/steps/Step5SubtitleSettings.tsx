@@ -6,7 +6,7 @@ export type SubtitleStyle =
   | "modern-box"
   | "minimal-light"
   | "yellow-highlight"
-  | "gradient";
+  | "pink-highlight";
 
 interface Step5SubtitleSettingsProps {
   subtitlesEnabled: boolean;
@@ -15,7 +15,8 @@ interface Step5SubtitleSettingsProps {
   setSubtitleStyle: (value: SubtitleStyle) => void;
 }
 
-const subtitleStyles: {
+export const subtitleStyles: {
+  id: number;
   value: SubtitleStyle;
   label: string;
   credits: string;
@@ -23,6 +24,7 @@ const subtitleStyles: {
   previewStyle: string;
 }[] = [
   {
+    id: 1,
     value: "none",
     label: "None",
     credits: "Free",
@@ -30,6 +32,7 @@ const subtitleStyles: {
     previewStyle: "text-gray-500 text-xs",
   },
   {
+    id: 2,
     value: "classic-white",
     label: "Classic White",
     credits: "10cr",
@@ -38,6 +41,7 @@ const subtitleStyles: {
       "text-white text-xs font-medium px-3 py-1 bg-black/50 rounded",
   },
   {
+    id: 3,
     value: "modern-box",
     label: "Modern Box",
     credits: "10cr",
@@ -46,6 +50,7 @@ const subtitleStyles: {
       "text-white text-xs font-bold px-3 py-1.5 bg-black/80 rounded-lg",
   },
   {
+    id: 4,
     value: "minimal-light",
     label: "Minimal Light",
     credits: "10cr",
@@ -54,6 +59,7 @@ const subtitleStyles: {
       "text-gray-900 text-xs font-medium px-3 py-1 bg-white/90 rounded-md",
   },
   {
+    id: 5,
     value: "yellow-highlight",
     label: "Yellow Highlight",
     credits: "15cr",
@@ -62,12 +68,13 @@ const subtitleStyles: {
       "text-gray-900 text-xs font-bold px-3 py-1 bg-yellow-400 rounded-md",
   },
   {
-    value: "gradient",
-    label: "Gradient",
+    id: 6,
+    value: "pink-highlight",
+    label: "Pink Highlight",
     credits: "15cr",
     previewText: "Sample Text",
     previewStyle:
-      "text-white text-xs font-bold px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg",
+      "text-white text-xs font-bold px-3 py-1.5 bg-pink-500 to-pink-500 rounded-lg",
   },
 ];
 
@@ -83,7 +90,11 @@ export default function Step5SubtitleSettings({
       <div className="flex items-center justify-between">
         <h3 className="text-white text-lg font-semibold">Subtitles</h3>
         <button
-          onClick={() => setSubtitlesEnabled(!subtitlesEnabled)}
+          onClick={() => {
+            const next = !subtitlesEnabled;
+            setSubtitlesEnabled(next);
+            if (!next) setSubtitleStyle("none");
+          }}
           className={`relative w-12 h-6 rounded-full transition-colors ${
             subtitlesEnabled ? "bg-[#3B82F6]" : "bg-[#1A2332]"
           }`}
@@ -96,14 +107,25 @@ export default function Step5SubtitleSettings({
         </button>
       </div>
 
+      {/* Disabled message */}
+      {!subtitlesEnabled && (
+        <p className="text-gray-500 text-sm">Subtitles are disabled. Toggle on to choose a style.</p>
+      )}
+
       {/* Subtitle style cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 transition-opacity ${
+        !subtitlesEnabled ? "opacity-40 pointer-events-none" : ""
+      }`}>
         {subtitleStyles.map((style) => (
           <button
             key={style.value}
             onClick={() => {
               setSubtitleStyle(style.value);
-              if (style.value !== "none") setSubtitlesEnabled(true);
+              if (style.value === "none") {
+                setSubtitlesEnabled(false);
+              } else {
+                setSubtitlesEnabled(true);
+              }
             }}
             className={`flex flex-col rounded-xl border transition-all overflow-hidden ${
               subtitleStyle === style.value
