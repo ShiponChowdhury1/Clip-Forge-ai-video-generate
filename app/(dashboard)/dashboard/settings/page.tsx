@@ -8,16 +8,23 @@ import {
   NotificationSettings,
 } from "@/app/components/dashboard/settings";
 
-type SettingsView = "profile" | "wallet" | "password" | "notifications";
+type SettingsView = "profile" | "wallet" | "notifications";
 
 export default function SettingsPage() {
   const [view, setView] = useState<SettingsView>("profile");
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   return (
     <div>
       {view === "profile" && (
         <ProfileSection
-          onNavigate={(v) => setView(v)}
+          onNavigate={(v) => {
+            if (v === "password") {
+              setShowChangePassword(true);
+            } else {
+              setView(v);
+            }
+          }}
           onLogout={() => {}}
         />
       )}
@@ -29,12 +36,12 @@ export default function SettingsPage() {
         />
       )}
 
-      {view === "password" && (
-        <ChangePassword onBack={() => setView("profile")} />
-      )}
-
       {view === "notifications" && (
         <NotificationSettings onBack={() => setView("profile")} />
+      )}
+
+      {showChangePassword && (
+        <ChangePassword onClose={() => setShowChangePassword(false)} />
       )}
     </div>
   );

@@ -208,7 +208,7 @@ export default function Navbar() {
 
               {/* Dropdown menu */}
               {dropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-56 bg-[#0D1117] border border-[#1A3155] rounded-xl shadow-2xl shadow-black/50 overflow-hidden z-50">
+                <div className="absolute right-0 top-full mt-2 w-full min-w-[220px] bg-[#0D1117] border border-[#1A3155] rounded-xl shadow-2xl shadow-black/50 overflow-hidden z-50">
                   {/* User info */}
                   <div className="px-4 py-3 border-b border-[#1A3155]">
                     <p className="text-white text-sm font-medium truncate">{user?.name || "User"}</p>
@@ -221,8 +221,11 @@ export default function Navbar() {
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#1A2332] transition-colors"
                     >
-                      <LayoutDashboard className="w-4 h-4" />
-                      Dashboard
+                      {user?.role === "admin" ? (
+                        <><Shield className="w-4 h-4" /> Admin Panel</>
+                      ) : (
+                        <><LayoutDashboard className="w-4 h-4" /> Dashboard</>
+                      )}
                     </Link>
                     <Link
                       href={settingsHref}
@@ -232,16 +235,6 @@ export default function Navbar() {
                       <Settings className="w-4 h-4" />
                       Settings
                     </Link>
-                    {user?.role === "admin" && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/5 transition-colors"
-                      >
-                        <Shield className="w-4 h-4" />
-                        Admin Panel
-                      </Link>
-                    )}
                   </div>
 
                   <div className="border-t border-[#1A3155] py-1.5">
@@ -323,8 +316,11 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
                   >
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
+                    {user?.role === "admin" ? (
+                      <><Shield className="w-4 h-4" /> Admin Panel</>
+                    ) : (
+                      <><LayoutDashboard className="w-4 h-4" /> Dashboard</>
+                    )}
                   </Link>
                   <Link
                     href={settingsHref}
