@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "./features/auth/authApi";
 import authReducer from "./features/auth/authSlice";
 import { videosApi } from "./features/videos/videosApi";
+import { adminApi } from "./features/admin/adminApi";
 
 export const makeStore = () =>
   configureStore({
@@ -9,9 +10,10 @@ export const makeStore = () =>
       [authApi.reducerPath]: authApi.reducer,
       auth: authReducer,
       [videosApi.reducerPath]: videosApi.reducer,
+      [adminApi.reducerPath]: adminApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(authApi.middleware, videosApi.middleware),
+      getDefaultMiddleware().concat(authApi.middleware, videosApi.middleware, adminApi.middleware),
   });
 
 export type AppStore = ReturnType<typeof makeStore>;

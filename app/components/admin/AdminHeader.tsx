@@ -19,12 +19,17 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
+  Camera,
+  Check,
 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
-import { useLogoutMutation, useRequestChangePasswordOtpMutation, useVerifyChangePasswordOtpMutation, useChangePasswordMutation } from "@/lib/redux/features/auth/authApi";
-import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
+import { useLogoutMutation, useRequestChangePasswordOtpMutation, useVerifyChangePasswordOtpMutation, useChangePasswordMutation, useUpdateProfileMutation } from "@/lib/redux/features/auth/authApi";
+import { logout as logoutAction, setUser } from "@/lib/redux/features/auth/authSlice";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
+const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
 
 interface AdminHeaderProps {
   onExport?: () => void;
@@ -34,59 +39,150 @@ const timeRanges = ["Last 7 Days", "Last 30 Days", "Last 90 Days", "All Time"];
 
 // ─── My Profile Modal ────────────────────────────────────────────
 function ProfileModal({ onClose }: { onClose: () => void }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [fullName, setFullName] = useState("Admin User");
-  const [email, setEmail] = useState("superadmin@vidflow.io");
-  const [role] = useState("Super Admin");
+  const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const [updateProfile] = useUpdateProfileMutation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editName, setEditName] = useState(user?.name || "");
+  const [nameLoading, setNameLoading] = useState(false);
+  const [pictureLoading, setPictureLoading] = useState(false);
+
+  const getInitials = (name: string) =>
+    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+
+  const handleSaveName = async () => {
+    const trimmed = editName.trim();
+    if (!trimmed || trimmed === user?.name) {
+      setIsEditingName(false);
+      setEditName(user?.name || "");
+      return;
+    }
+    setNameLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", trimmed);
+      const res = await updateProfile(formData).unwrap();
+      const updatedUser = {
+        id: res.id, name: res.name, email: res.email,
+        credits: res.credits, subscription_plan: res.subscription_plan,
+        role: res.role,
+        picture: res.profile_image_url ? `${ORIGIN}${res.profile_image_url}` : user?.picture,
+      };
+      dispatch(setUser(updatedUser));
+      if (typeof window !== "undefined") localStorage.setItem("user", JSON.stringify(updatedUser));
+      setIsEditingName(false);
+    } catch {
+      setEditName(user?.name || "");
+      setIsEditingName(false);
+    } finally {
+      setNameLoading(false);
+    }
+  };
+
+  const handlePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPictureLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", user?.name || "");
+      formData.append("profile_image", file);
+      const res = await updateProfile(formData).unwrap();
+      const updatedUser = {
+        id: res.id, name: res.name, email: res.email,
+        credits: res.credits, subscription_plan: res.subscription_plan,
+        role: res.role,
+        picture: res.profile_image_url ? `${ORIGIN}${res.profile_image_url}` : user?.picture,
+      };
+      dispatch(setUser(updatedUser));
+      if (typeof window !== "undefined") localStorage.setItem("user", JSON.stringify(updatedUser));
+    } catch {
+      // silently fail
+    } finally {
+      setPictureLoading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="relative bg-[#111827] rounded-2xl w-full max-w-md mx-auto shadow-2xl border border-[#1E293B] overflow-hidden">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10">
           <X className="w-5 h-5" />
         </button>
 
         <div className="p-6 sm:p-8">
-          {/* Description */}
-          <p className="text-gray-400 text-sm text-center mb-6">
-            Manage your administrative identity and personal information
-          </p>
+          <h3 className="text-xl font-bold text-white text-center mb-1">My Profile</h3>
+          <p className="text-gray-400 text-sm text-center mb-6">Update your name and profile picture</p>
 
-          {/* Avatar */}
-          <div className="flex justify-center mb-8">
-            <div className="w-20 h-20 rounded-2xl bg-cyan-500/10 border-2 border-cyan-500/30 flex items-center justify-center">
-              <CircleUserRound className="w-10 h-10 text-cyan-400" />
+          {/* Avatar with camera overlay */}
+          <div className="flex justify-center mb-6">
+            <div className="relative group">
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePictureChange} className="hidden" />
+              <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-cyan-500/30 bg-cyan-500/10">
+                {user?.picture ? (
+                  <img src={user.picture} alt={user?.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-cyan-400 font-bold text-2xl">{user?.name ? getInitials(user.name) : "A"}</span>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={pictureLoading}
+                className="absolute inset-0 rounded-2xl bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer backdrop-blur-[2px]"
+              >
+                {pictureLoading ? (
+                  <Loader2 className="w-5 h-5 text-white animate-spin" />
+                ) : (
+                  <div className="flex flex-col items-center gap-1">
+                    <Camera className="w-5 h-5 text-white" />
+                    <span className="text-[10px] text-white/80">Change</span>
+                  </div>
+                )}
+              </button>
             </div>
           </div>
 
           {/* Info Card */}
-          <div className="bg-[#1E293B]/60 rounded-2xl p-5 sm:p-6 space-y-5">
-            {/* Full Name */}
+          <div className="bg-[#1E293B]/60 rounded-2xl p-5 space-y-4">
+            {/* Name */}
             <div>
               <label className="flex items-center gap-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
                 <User className="w-3.5 h-3.5" />
                 Full Name
               </label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-[#1A3155] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                />
+              {isEditingName ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveName();
+                      if (e.key === "Escape") { setIsEditingName(false); setEditName(user?.name || ""); }
+                    }}
+                    autoFocus
+                    className="flex-1 bg-[#0D1117] border border-[#1A3155] rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+                  />
+                  <button onClick={handleSaveName} disabled={nameLoading} className="w-9 h-9 bg-cyan-500 hover:bg-cyan-600 rounded-lg flex items-center justify-center text-white shrink-0">
+                    {nameLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  </button>
+                  <button onClick={() => { setIsEditingName(false); setEditName(user?.name || ""); }} className="w-9 h-9 bg-[#1A2332] hover:bg-[#252B3B] border border-[#2A3040] rounded-lg flex items-center justify-center text-gray-400 hover:text-white shrink-0">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               ) : (
-                <p className="text-white text-sm font-medium">{fullName}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-white text-sm font-medium">{user?.name || "—"}</p>
+                  <button onClick={() => { setEditName(user?.name || ""); setIsEditingName(true); }} className="w-7 h-7 bg-white/5 hover:bg-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               )}
             </div>
 
@@ -96,67 +192,23 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
                 <Mail className="w-3.5 h-3.5" />
                 Email Address
               </label>
-              {isEditing ? (
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-[#1A3155] rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                />
-              ) : (
-                <p className="text-white text-sm font-medium">{email}</p>
-              )}
+              <p className="text-white text-sm font-medium">{user?.email || "—"}</p>
             </div>
 
             {/* Role */}
             <div>
               <label className="flex items-center gap-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
                 <Shield className="w-3.5 h-3.5" />
-                Administrative Role
+                Role
               </label>
-              <p className="text-white text-sm font-medium">{role}</p>
+              <p className="text-white text-sm font-medium capitalize">{user?.role || "admin"}</p>
             </div>
 
-            {/* Identity Verified */}
+            {/* Verified */}
             <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 flex items-center gap-2.5">
               <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
-              <div>
-                <p className="text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-                  Identity Verified
-                </p>
-                <p className="text-emerald-400/60 text-[11px] mt-0.5">
-                  Last verified: February 1, 2026
-                </p>
-              </div>
+              <p className="text-emerald-400 text-xs font-semibold uppercase tracking-wider">Identity Verified</p>
             </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mt-6 flex justify-center">
-            {isEditing ? (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setIsEditing(false)}
-                  className="px-6 py-2.5 rounded-full bg-[#1E293B] text-gray-300 text-sm font-medium hover:bg-[#2D3B4E] transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => setIsEditing(false)}
-                  className="px-6 py-2.5 rounded-full bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium transition-colors"
-                >
-                  Save Changes
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#1E293B] border border-[#2D3B4E] text-gray-300 text-sm font-medium hover:bg-[#2D3B4E] hover:text-white transition-colors"
-              >
-                <Pencil className="w-4 h-4" />
-                Edit Profile
-              </button>
-            )}
           </div>
         </div>
       </div>

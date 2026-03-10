@@ -6,7 +6,6 @@ import {
   Settings2,
   CreditCard,
   Gauge,
-  Wallet,
   Scale,
   ShieldCheck,
   ChevronDown,
@@ -47,7 +46,6 @@ const tabs = [
   { id: "credit-settings", label: "Credit Settings", icon: Settings2 },
   { id: "plan-pricing", label: "Plan & Pricing", icon: CreditCard },
   { id: "usage-limits", label: "Usage Limits", icon: Gauge },
-  { id: "payment-rules", label: "Payment Rules", icon: Wallet },
   { id: "legal-policy", label: "Legal & Policy", icon: Scale },
   { id: "admins-security", label: "Admins & Security", icon: ShieldCheck },
 ];
@@ -330,56 +328,6 @@ export default function AdminSettingsPage() {
                   <Save className="w-4 h-4" />
                   Save Changes
                 </button>
-              </div>
-            </div>
-          )}
-
-          {/* Payment Rules Tab */}
-          {activeTab === "payment-rules" && (
-            <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-4 sm:p-6 md:p-8">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-                <h2 className="text-white text-lg sm:text-xl font-bold">
-                  Payment & Refund Rules
-                </h2>
-                <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm transition-colors">
-                  <Pencil className="w-4 h-4" />
-                  Edit Rules
-                </button>
-              </div>
-
-              <div className="bg-[#0A0F18] border border-[#1A3155] rounded-xl p-4 sm:p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
-                  <div>
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-                      Refund Allowed
-                    </p>
-                    <p className="text-white text-sm font-medium">Yes</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-                      Refund Window
-                    </p>
-                    <p className="text-white text-sm font-medium">30 days</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-                      Partial Refunds
-                    </p>
-                    <p className="text-white text-sm font-medium">Enabled</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-                      Return Credits
-                    </p>
-                    <p className="text-white text-sm font-medium">On Refund</p>
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-                      Default Currency
-                    </p>
-                    <p className="text-white text-sm font-medium">USD - US Dollar</p>
-                  </div>
-                </div>
               </div>
             </div>
           )}
