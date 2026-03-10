@@ -38,9 +38,7 @@ export default function AdminBillingRefundsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white">Billing / Refunds</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Manage transactions, payments and refund requests
-          </p>
+        
         </div>
         <button className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:border-[#2563EB] transition-colors">
           <Download className="w-4 h-4" />

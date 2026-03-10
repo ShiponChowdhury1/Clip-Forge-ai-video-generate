@@ -76,6 +76,20 @@ export const adminApi = createApi({
         method: "PUT",
       }),
     }),
+
+    // 8. Get Privacy Policy
+    getPrivacyPolicy: builder.query<PrivacyPolicy, void>({
+      query: () => `${API_BASE_URL}/v1/privacy-policy/`,
+    }),
+
+    // 9. Update Privacy Policy
+    updatePrivacyPolicy: builder.mutation<PrivacyPolicy, { content: string }>({
+      query: (body) => ({
+        url: `${API_BASE_URL}/v1/privacy-policy/`,
+        method: "PUT",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -87,6 +101,8 @@ export const {
   useUpdateSubscriptionMutation,
   useDeleteSubscriptionMutation,
   useToggleSubscriptionStatusMutation,
+  useGetPrivacyPolicyQuery,
+  useUpdatePrivacyPolicyMutation,
 } = adminApi;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -127,4 +143,10 @@ export interface AdminUser {
   status: "active" | "suspended";
   role: string;
   created_at: string;
+}
+
+export interface PrivacyPolicy {
+  id: number;
+  content: string;
+  updated_at: string;
 }

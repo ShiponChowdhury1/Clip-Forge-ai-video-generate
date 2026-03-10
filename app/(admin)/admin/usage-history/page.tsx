@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Filter, Trash2, ArrowUpRight, ArrowDownRight, User } from "lucide-react";
+import { Filter, Trash2, User } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
 
 interface HistoryEntry {
@@ -122,9 +122,6 @@ export default function AdminUsageHistoryPage() {
                   Action Type
                 </th>
                 <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                  Credits Change
-                </th>
-                <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                   Reference ID
                 </th>
                 <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
@@ -162,25 +159,6 @@ export default function AdminUsageHistoryPage() {
                   {/* Action Type */}
                   <td className="py-4 px-5">
                     <span className="text-gray-300">{entry.actionType}</span>
-                  </td>
-
-                  {/* Credits Change */}
-                  <td className="py-4 px-5">
-                    <div className="flex items-center gap-1.5">
-                      {entry.credits > 0 ? (
-                        <ArrowUpRight className="w-4 h-4 text-[#00D492]" />
-                      ) : (
-                        <ArrowDownRight className="w-4 h-4 text-[#FF6467]" />
-                      )}
-                      <span
-                        className={`font-semibold ${
-                          entry.credits > 0 ? "text-[#00D492]" : "text-[#FF6467]"
-                        }`}
-                      >
-                        {entry.credits > 0 ? "+" : ""}
-                        {entry.credits}
-                      </span>
-                    </div>
                   </td>
 
                   {/* Reference ID */}

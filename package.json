@@ -19,7 +19,8 @@
     "react-datepicker": "^9.1.0",
     "react-dom": "19.2.3",
     "react-player": "^3.4.0",
-    "react-redux": "^9.2.0"
+    "react-redux": "^9.2.0",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

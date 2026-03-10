@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Save, Plus, Pencil, ChevronDown, X, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 import { Toggle } from "./Toggle";
 import {
   useGetSubscriptionsQuery,
@@ -91,33 +92,46 @@ export function SubscriptionPlans() {
     try {
       if (editingPlanId !== null) {
         await updateSubscription({ id: editingPlanId, ...payload }).unwrap();
+        toast.success(`"${planForm.name}" plan updated successfully!`);
       } else {
         await createSubscription(payload).unwrap();
+        toast.success(`"${planForm.name}" plan created successfully!`);
       }
       refetchSubs();
       closeModal();
     } catch (err: unknown) {
       const msg = (err as { data?: { detail?: string } })?.data?.detail;
-      setPlanError(msg || (editingPlanId !== null ? "Failed to update plan. Please try again." : "Failed to create plan. Please try again."));
+      const fallback = editingPlanId !== null ? "Failed to update plan. Please try again." : "Failed to create plan. Please try again.";
+      setPlanError(msg || fallback);
+      toast.error(msg || fallback);
     }
   };
 
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [statusDropdownId, setStatusDropdownId] = useState<number | null>(null);
+
   const handleDeletePlan = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this plan?")) return;
+    const plan = subscriptions?.find((p) => p.id === id);
+    setDeletingId(id);
     try {
       await deleteSubscription(id).unwrap();
       refetchSubs();
+      toast.success(`"${plan?.name || "Plan"}" has been deleted.`);
     } catch {
-      alert("Failed to delete plan.");
+      toast.error("Failed to delete plan. Please try again.");
+    } finally {
+      setDeletingId(null);
     }
   };
 
   const handleToggleStatus = async (id: number) => {
     try {
-      await toggleSubscriptionStatus(id).unwrap();
+      const result = await toggleSubscriptionStatus(id).unwrap();
       refetchSubs();
+      const newStatus = result.plan_status === "active" ? "activated" : "deactivated";
+      toast.success(`"${result.name}" plan ${newStatus} successfully!`);
     } catch {
-      alert("Failed to toggle plan status.");
+      toast.error("Failed to update plan status. Please try again.");
     }
   };
 
@@ -248,48 +262,95 @@ export function SubscriptionPlans() {
             <p className="text-gray-500 text-sm text-center py-8">No plans found.</p>
           ) : (
             (subscriptions ?? []).map((plan) => (
-              <div
-                key={plan.id}
-                className="bg-[#0A0F18] border border-[#1A3155] rounded-xl p-3 sm:p-4 md:p-5 flex items-center justify-between gap-3"
-              >
-                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#1A3155] flex items-center justify-center text-white font-semibold text-xs sm:text-sm shrink-0">
-                    {plan.name.charAt(0).toUpperCase()}
+              <div key={plan.id} className="space-y-0">
+                <div className="bg-[#0A0F18] border border-[#1A3155] rounded-xl p-3 sm:p-4 md:p-5 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#1A3155] flex items-center justify-center text-white font-semibold text-xs sm:text-sm shrink-0">
+                      {plan.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-white font-semibold text-sm truncate">{plan.name}</p>
+                      <p className="text-gray-400 text-xs mt-0.5 truncate">
+                        ${plan.monthly_price}/mo &bull; {plan.monthly_credits.toLocaleString()} credits &bull; {plan.video_limit_per_month} videos/mo
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-white font-semibold text-sm truncate">{plan.name}</p>
-                    <p className="text-gray-400 text-xs mt-0.5 truncate">
-                      ${plan.monthly_price}/mo &bull; {plan.monthly_credits.toLocaleString()} credits &bull; {plan.video_limit_per_month} videos/mo
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <button
+                        onClick={() => setStatusDropdownId(statusDropdownId === plan.id ? null : plan.id)}
+                        className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full cursor-pointer transition-colors ${
+                          plan.plan_status === "active"
+                            ? "text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20"
+                            : "text-gray-400 bg-gray-400/10 hover:bg-gray-400/20"
+                        }`}
+                      >
+                        {plan.plan_status.charAt(0).toUpperCase() + plan.plan_status.slice(1)}
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                      {statusDropdownId === plan.id && (
+                        <div className="absolute right-0 top-full mt-1 z-20 bg-[#0D1117] border border-[#1A3155] rounded-lg shadow-xl overflow-hidden min-w-[120px]">
+                          <button
+                            onClick={() => { if (plan.plan_status !== "active") handleToggleStatus(plan.id); setStatusDropdownId(null); }}
+                            className={`w-full text-left px-4 py-2 text-xs transition-colors ${
+                              plan.plan_status === "active"
+                                ? "text-emerald-400 bg-emerald-400/10 cursor-default"
+                                : "text-gray-300 hover:bg-[#1A2332] hover:text-emerald-400"
+                            }`}
+                          >
+                            Active
+                          </button>
+                          <button
+                            onClick={() => { if (plan.plan_status !== "inactive") handleToggleStatus(plan.id); setStatusDropdownId(null); }}
+                            className={`w-full text-left px-4 py-2 text-xs transition-colors ${
+                              plan.plan_status === "inactive"
+                                ? "text-gray-400 bg-gray-400/10 cursor-default"
+                                : "text-gray-300 hover:bg-[#1A2332] hover:text-gray-400"
+                            }`}
+                          >
+                            Inactive
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => openEditModal(plan)}
+                      className="text-gray-400 hover:text-cyan-400 transition-colors p-1 rounded-lg hover:bg-[#1A2332]"
+                      title="Edit plan"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setDeletingId(deletingId === plan.id ? null : plan.id)}
+                      className="text-gray-400 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-400/10"
+                      title="Delete plan"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {/* Delete Confirmation */}
+                {deletingId === plan.id && (
+                  <div className="bg-red-500/5 border border-red-500/20 rounded-xl mt-1 px-4 py-3 flex items-center justify-between gap-3">
+                    <p className="text-red-400 text-sm">
+                      Delete <span className="font-semibold">&quot;{plan.name}&quot;</span>? This action cannot be undone.
                     </p>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => setDeletingId(null)}
+                        className="px-3 py-1.5 rounded-lg bg-[#0A0F18] border border-[#1A3155] text-xs text-gray-300 hover:border-gray-500 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleDeletePlan(plan.id)}
+                        className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-xs text-white font-medium transition-colors"
+                      >
+                        Yes, Delete
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleToggleStatus(plan.id)}
-                    className={`text-xs font-medium px-3 py-1 rounded-full cursor-pointer transition-colors ${
-                      plan.plan_status === "active"
-                        ? "text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20"
-                        : "text-gray-400 bg-gray-400/10 hover:bg-gray-400/20"
-                    }`}
-                    title="Toggle status"
-                  >
-                    {plan.plan_status.charAt(0).toUpperCase() + plan.plan_status.slice(1)}
-                  </button>
-                  <button
-                    onClick={() => openEditModal(plan)}
-                    className="text-gray-400 hover:text-cyan-400 transition-colors p-1 rounded-lg hover:bg-[#1A2332]"
-                    title="Edit plan"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDeletePlan(plan.id)}
-                    className="text-gray-400 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-400/10"
-                    title="Delete plan"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+                )}
               </div>
             ))
           )}

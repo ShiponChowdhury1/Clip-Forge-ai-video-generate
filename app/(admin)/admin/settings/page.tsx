@@ -28,9 +28,6 @@ export default function AdminSettingsPage() {
       <AdminHeader />
 
       <h3 className="text-white text-xl font-semibold mb-2">Settings</h3>
-      <p className="text-gray-400 text-sm mb-6">
-        Configure platform-wide rules, pricing, and system parameters
-      </p>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Sidebar Navigation */}
