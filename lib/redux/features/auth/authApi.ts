@@ -103,7 +103,7 @@ export const authApi = createApi({
         method: "POST",
       }),
     }),
-
+  
     // 10. Verify OTP for Change Password
     verifyChangePasswordOtp: builder.mutation<MessageResponse, ChangePasswordVerifyOtpRequest>({
       query: (body) => ({
@@ -137,6 +137,15 @@ export const authApi = createApi({
         url: "/resend-otp",
         method: "POST",
         body,
+      }),
+    }),
+
+    // 14. Update Profile (name + profile image)
+    updateProfile: builder.mutation<UpdateProfileResponse, FormData>({
+      query: (formData) => ({
+        url: `${API_BASE_URL}/v1/users/update-profile`,
+        method: "PUT",
+        body: formData,
       }),
     }),
   }),
@@ -217,6 +226,19 @@ export interface UserProfile {
   created_at: string;
 }
 
+export interface UpdateProfileResponse {
+  name: string;
+  email: string;
+  id: number;
+  profile_image_url: string | null;
+  is_verified: boolean;
+  subscription_plan: string;
+  credits: number;
+  status: string;
+  role: string;
+  created_at: string;
+}
+
 export const {
   useRegisterMutation,
   useLoginMutation,
@@ -231,4 +253,5 @@ export const {
   useChangePasswordMutation,
   useVerifyRegisterOtpMutation,
   useResendOtpMutation,
+  useUpdateProfileMutation,
 } = authApi;

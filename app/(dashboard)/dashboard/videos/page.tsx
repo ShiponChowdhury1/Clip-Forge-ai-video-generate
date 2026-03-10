@@ -106,7 +106,7 @@ export default function AllVideosPage() {
 
   const totalVideos = videos.length;
   const completedCount = videos.filter((v) => v.status.toLowerCase() === "completed").length;
-  const processingCount = videos.filter((v) => v.status.toLowerCase() === "processing").length + processingItems.length;
+  const processingCount = videos.filter((v) => v.status.toLowerCase() === "processing").length + processingItems.length + queuedItems.length;
   const failedCount = videos.filter((v) => v.status.toLowerCase() === "failed").length;
 
   return (
