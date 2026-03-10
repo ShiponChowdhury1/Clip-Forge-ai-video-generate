@@ -32,9 +32,48 @@ export const adminApi = createApi({
     // 2. Suspend / Activate User
     updateUserStatus: builder.mutation<void, { userId: number; status: "active" | "suspended" }>({
       query: ({ userId, status }) => ({
-        url: `/users/${userId}/status`,
-        method: "PATCH",
+        url: `${API_BASE_URL}/v1/users/${userId}/status`,
+        method: "PUT",
         body: { status },
+      }),
+    }),
+
+    // 3. Get Subscription Plans
+    getSubscriptions: builder.query<SubscriptionPlan[], void>({
+      query: () => `${API_BASE_URL}/v1/subscriptions/?skip=0&limit=100`,
+    }),
+
+    // 4. Create Subscription Plan
+    createSubscription: builder.mutation<SubscriptionPlan, Omit<SubscriptionPlan, "id" | "created_at">>({
+      query: (body) => ({
+        url: `${API_BASE_URL}/v1/subscriptions/`,
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // 5. Update Subscription Plan
+    updateSubscription: builder.mutation<SubscriptionPlan, { id: number } & Omit<SubscriptionPlan, "id" | "created_at">>({
+      query: ({ id, ...body }) => ({
+        url: `${API_BASE_URL}/v1/subscriptions/${id}`,
+        method: "PUT",
+        body,
+      }),
+    }),
+
+    // 6. Delete Subscription Plan
+    deleteSubscription: builder.mutation<SubscriptionPlan, number>({
+      query: (id) => ({
+        url: `${API_BASE_URL}/v1/subscriptions/${id}`,
+        method: "DELETE",
+      }),
+    }),
+
+    // 7. Toggle Subscription Plan Status
+    toggleSubscriptionStatus: builder.mutation<SubscriptionPlan, number>({
+      query: (id) => ({
+        url: `${API_BASE_URL}/v1/subscriptions/${id}/toggle-status`,
+        method: "PUT",
       }),
     }),
   }),
@@ -43,6 +82,11 @@ export const adminApi = createApi({
 export const {
   useGetAdminUsersQuery,
   useUpdateUserStatusMutation,
+  useGetSubscriptionsQuery,
+  useCreateSubscriptionMutation,
+  useUpdateSubscriptionMutation,
+  useDeleteSubscriptionMutation,
+  useToggleSubscriptionStatusMutation,
 } = adminApi;
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -52,6 +96,22 @@ export interface AdminUsersParams {
   limit?: number;
   time_filter?: "all" | "7days" | "30days" | "90days";
   search?: string;
+}
+
+export interface SubscriptionPlan {
+  id: number;
+  name: string;
+  monthly_price: number;
+  monthly_credits: number;
+  video_limit_per_month: number;
+  priority_level: number;
+  commercial_usage_allowed: boolean;
+  max_video_duration: number;
+  max_concurrent_jobs: number;
+  max_queued_jobs: number;
+  max_retry_attempts: number;
+  plan_status: string;
+  created_at: string;
 }
 
 export interface AdminUser {

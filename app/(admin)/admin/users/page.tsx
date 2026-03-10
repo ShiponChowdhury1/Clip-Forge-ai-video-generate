@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Filter, UserX, UserCheck } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Search, Filter, MoreVertical, UserX, UserCheck } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
 import {
   useGetAdminUsersQuery,
@@ -45,7 +45,18 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [optimisticStatuses, setOptimisticStatuses] = useState<Record<number, "active" | "suspended">>({});
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenMenuId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const skip = (currentPage - 1) * perPage;
   const { data: users, isLoading, isFetching } = useGetAdminUsersQuery({
     skip,
@@ -223,21 +234,36 @@ export default function AdminUsersPage() {
 
                       {/* Actions */}
                       <td className="py-4 px-5">
-                        <button
-                          onClick={() => handleToggleStatus(user)}
-                          title={effectiveStatus === "active" ? "Suspend user" : "Activate user"}
-                          className={`transition-colors ${
-                            effectiveStatus === "active"
-                              ? "text-[#FF3C3C] hover:text-[#FF3C3C]/70"
-                              : "text-[#00D492] hover:text-[#00D492]/70"
-                          }`}
-                        >
-                          {effectiveStatus === "active" ? (
-                            <UserX className="w-5 h-5" />
-                          ) : (
-                            <UserCheck className="w-5 h-5" />
+                        <div className="relative" ref={openMenuId === user.id ? menuRef : null}>
+                          <button
+                            onClick={() => setOpenMenuId(openMenuId === user.id ? null : user.id)}
+                            className="text-gray-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-[#1A2332]"
+                          >
+                            <MoreVertical className="w-5 h-5" />
+                          </button>
+
+                          {openMenuId === user.id && (
+                            <div className="absolute right-0 top-8 z-50 w-44 bg-[#0D1117] border border-[#1A3155] rounded-xl shadow-xl overflow-hidden">
+                              {effectiveStatus === "active" ? (
+                                <button
+                                  onClick={() => { handleToggleStatus(user); setOpenMenuId(null); }}
+                                  className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-[#FF3C3C] hover:bg-[#1A2332] transition-colors"
+                                >
+                                  <UserX className="w-4 h-4" />
+                                  Suspend User
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => { handleToggleStatus(user); setOpenMenuId(null); }}
+                                  className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-[#00D492] hover:bg-[#1A2332] transition-colors"
+                                >
+                                  <UserCheck className="w-4 h-4" />
+                                  Activate User
+                                </button>
+                              )}
+                            </div>
                           )}
-                        </button>
+                        </div>
                       </td>
                     </tr>
                   );
