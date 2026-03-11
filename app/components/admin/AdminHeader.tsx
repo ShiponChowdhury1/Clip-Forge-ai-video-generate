@@ -597,7 +597,7 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
 
   return (
     <>
-      <header className="flex items-center justify-end gap-3 mb-6">
+      <header className="flex items-center justify-end gap-3 mb-6 bg-[#0A0A0A] border border-[#1F1F1F] rounded-xl px-4 py-3">
         {/* Export button */}
         <button
           onClick={onExport}

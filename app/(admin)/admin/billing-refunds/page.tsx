@@ -57,10 +57,7 @@ export default function AdminBillingRefundsPage() {
             Manage billing information and process refunds
           </p>
         </div>
-        <button className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:border-[#2563EB] transition-colors">
-          <Download className="w-4 h-4" />
-          Export CSV
-        </button>
+      
       </div>
 
       {/* Summary Cards */}

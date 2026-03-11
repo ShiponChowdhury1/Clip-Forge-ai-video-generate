@@ -291,7 +291,7 @@ export default function CreateVideoPage() {
   // Show generating progress screen
   if (isGenerating) {
     return (
-      <div className="w-full max-w-[1108px] mx-auto" style={{ minHeight: "844px" }}>
+      <div className="w-full mx-auto" style={{ minHeight: "844px" }}>
         <GeneratingProgress
           progress={generationProgress}
           steps={generationSteps}
@@ -394,25 +394,28 @@ export default function CreateVideoPage() {
   };
 
   return (
-    <div className="w-full max-w-[1108px] mx-auto" style={{ minHeight: "844px" }}>
-      {/* Header */}
+    <div className="w-full" style={{ minHeight: "844px" }}>
+      {/* Header - full width */}
       <CreateVideoHeader credits={450} />
 
-      {/* Step Progress */}
-      <StepProgress currentStep={currentStep} totalSteps={TOTAL_STEPS} />
+      {/* Rest of content - constrained width */}
+      <div className="w-full max-w-[1108px] mx-auto">
+        {/* Step Progress */}
+        <StepProgress currentStep={currentStep} totalSteps={TOTAL_STEPS} />
 
-      {/* Current Step Content */}
-      {renderStep()}
+        {/* Current Step Content */}
+        {renderStep()}
 
-      {/* Navigation - hidden on Step 6 since it has its own Generate button */}
-      {currentStep < TOTAL_STEPS && (
-        <StepNavigation
-          currentStep={currentStep}
-          totalSteps={TOTAL_STEPS}
-          onBack={handleBack}
-          onContinue={handleContinue}
-        />
-      )}
+        {/* Navigation - hidden on Step 6 since it has its own Generate button */}
+        {currentStep < TOTAL_STEPS && (
+          <StepNavigation
+            currentStep={currentStep}
+            totalSteps={TOTAL_STEPS}
+            onBack={handleBack}
+            onContinue={handleContinue}
+          />
+        )}
+      </div>
     </div>
   );
 }
