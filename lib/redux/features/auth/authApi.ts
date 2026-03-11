@@ -223,6 +223,7 @@ export interface UserProfile {
   email: string;
   credits: number;
   subscription_plan: string;
+  role: string;
   created_at: string;
 }
 

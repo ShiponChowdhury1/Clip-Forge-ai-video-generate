@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/lib/redux/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
+import { useGetMeQuery } from "@/lib/redux/features/auth/authApi";
+import { setUser } from "@/lib/redux/features/auth/authSlice";
 import Sidebar from "@/app/components/dashboard/Sidebar";
 
 export default function AdminLayout({
@@ -11,13 +13,38 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
   const user = useAppSelector((state) => state.auth.user);
   const [mounted, setMounted] = useState(false);
 
+  const { data: profile } = useGetMeQuery(undefined, { skip: !token });
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Sync fresh profile data into Redux + localStorage
+  useEffect(() => {
+    if (profile && user) {
+      if (profile.name !== user.name || profile.email !== user.email) {
+        const freshUser = {
+          ...user,
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          credits: profile.credits,
+          subscription_plan: profile.subscription_plan,
+          role: profile.role || user.role,
+        };
+        dispatch(setUser(freshUser));
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(freshUser));
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile]);
 
   useEffect(() => {
     if (mounted) {

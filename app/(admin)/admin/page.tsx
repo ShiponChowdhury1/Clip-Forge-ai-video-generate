@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Zap, Video, DollarSign, RotateCcw, ChevronDown, Activity } from "lucide-react";
+import { Users, Zap, Video, DollarSign, RotateCcw, ChevronDown, Activity, CalendarDays } from "lucide-react";
 import {
   AdminHeader,
   StatCard,
@@ -12,9 +12,9 @@ import {
 import { useGetAdminOverviewQuery } from "@/lib/redux/features/admin/adminApi";
 
 const timeRanges = [
-  { label: "Last 7 Days", value: "7days" },
-  { label: "Last 30 Days", value: "30days" },
-  { label: "Last 90 Days", value: "90days" },
+  { label: "Last 7 Days", value: "7d" },
+  { label: "Last 30 Days", value: "30d" },
+  { label: "Last 90 Days", value: "90d" },
   { label: "All Time", value: "all" },
 ];
 
@@ -58,6 +58,7 @@ export default function AdminOverview() {
             onClick={() => setShowRangeDropdown(!showRangeDropdown)}
             className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2 text-sm text-gray-300 hover:border-[#2563EB] transition-colors"
           >
+            <CalendarDays className="w-4 h-4 text-gray-400" />
             {selectedRange.label}
             <ChevronDown className="w-4 h-4" />
           </button>

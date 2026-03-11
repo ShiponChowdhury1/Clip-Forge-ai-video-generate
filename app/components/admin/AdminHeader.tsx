@@ -35,8 +35,6 @@ interface AdminHeaderProps {
   onExport?: () => void;
 }
 
-const timeRanges = ["Last 7 Days", "Last 30 Days", "Last 90 Days", "All Time"];
-
 // ─── My Profile Modal ────────────────────────────────────────────
 function ProfileModal({ onClose }: { onClose: () => void }) {
   const user = useAppSelector((state) => state.auth.user);
@@ -546,8 +544,6 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 
 // ─── Admin Header ────────────────────────────────────────────────
 export default function AdminHeader({ onExport }: AdminHeaderProps) {
-  const [selectedRange, setSelectedRange] = useState("Last 30 Days");
-  const [showDropdown, setShowDropdown] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -601,51 +597,18 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
 
   return (
     <>
-      <header className="flex items-center justify-end gap-2 sm:gap-3 mb-6">
-        {/* Time range selector */}
-        <div className="relative">
-          <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-3 sm:px-4 py-2.5 text-sm text-gray-300 hover:border-[#2563EB] transition-colors whitespace-nowrap"
-          >
-            <span className="hidden sm:inline">📅</span>
-            <span className="hidden md:inline">{selectedRange}</span>
-            <span className="md:hidden">📅</span>
-            <ChevronDown className="w-4 h-4" />
-          </button>
-          {showDropdown && (
-            <div className="absolute right-0 top-full mt-1 bg-[#0D1117] border border-[#1A3155] rounded-lg py-1 z-50 min-w-40">
-              {timeRanges.map((range) => (
-                <button
-                  key={range}
-                  onClick={() => {
-                    setSelectedRange(range);
-                    setShowDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-[#1A2332] transition-colors ${
-                    selectedRange === range
-                      ? "text-cyan-400"
-                      : "text-gray-300"
-                  }`}
-                >
-                  {range}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
+      <header className="flex items-center justify-end gap-3 mb-6">
         {/* Export button */}
         <button
           onClick={onExport}
-          className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-3 sm:px-4 py-2.5 rounded-lg text-sm transition-colors whitespace-nowrap"
+          className="h-10 flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-4 rounded-lg text-sm transition-colors whitespace-nowrap"
         >
           <Download className="w-4 h-4" />
           <span className="hidden sm:inline">Export Data</span>
         </button>
 
         {/* Notification bell */}
-        <button className="w-10 h-10 rounded-lg bg-[#0D1117] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white hover:border-[#2563EB] transition-colors relative">
+        <button className="w-10 h-10 rounded-lg bg-[#0D1117] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white hover:border-[#2563EB] transition-colors relative shrink-0">
           <Bell className="w-5 h-5" />
         </button>
 
@@ -653,17 +616,17 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center gap-2.5 bg-[#0D1117] border border-[#1A3155] hover:border-[#2563EB] rounded-xl px-3 py-2 transition-all cursor-pointer"
+            className="h-10 flex items-center gap-2.5 bg-[#0D1117] border border-[#1A3155] hover:border-[#2563EB] rounded-lg px-2.5 transition-all cursor-pointer"
           >
             {displayPicture ? (
               <img
                 src={displayPicture}
                 alt={displayName}
                 referrerPolicy="no-referrer"
-                className="w-8 h-8 rounded-full object-cover"
+                className="w-7 h-7 rounded-full object-cover"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-xs">
+              <div className="w-7 h-7 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-[11px]">
                 {initials}
               </div>
             )}

@@ -82,7 +82,26 @@ export const adminApi = createApi({
       query: (time_filter = "all") => `/overview?time_filter=${time_filter}`,
     }),
 
-    // 9. Get Privacy Policy
+    // 9. Get Admin Billing
+    getAdminBilling: builder.query<AdminBillingResponse, AdminBillingParams>({
+      query: ({ skip = 0, limit = 50, time_filter = "all" } = {}) =>
+        `/billing?skip=${skip}&limit=${limit}&time_filter=${time_filter}`,
+    }),
+
+    // 10. Get Admin Logs
+    getAdminLogs: builder.query<AdminLogEntry[], { skip?: number; limit?: number }>({
+      query: ({ skip = 0, limit = 50 } = {}) => `/logs?skip=${skip}&limit=${limit}`,
+    }),
+
+    // 11. Delete Admin Log
+    deleteAdminLog: builder.mutation<{ message: string }, number>({
+      query: (id) => ({
+        url: `/logs/${id}`,
+        method: "DELETE",
+      }),
+    }),
+
+    // 11. Get Privacy Policy
     getPrivacyPolicy: builder.query<PrivacyPolicy, void>({
       query: () => `${API_BASE_URL}/v1/privacy-policy/`,
     }),
@@ -107,6 +126,9 @@ export const {
   useDeleteSubscriptionMutation,
   useToggleSubscriptionStatusMutation,
   useGetAdminOverviewQuery,
+  useGetAdminBillingQuery,
+  useGetAdminLogsQuery,
+  useDeleteAdminLogMutation,
   useGetPrivacyPolicyQuery,
   useUpdatePrivacyPolicyMutation,
 } = adminApi;
@@ -116,7 +138,7 @@ export const {
 export interface AdminUsersParams {
   skip?: number;
   limit?: number;
-  time_filter?: "all" | "7days" | "30days" | "90days";
+  time_filter?: "all" | "7d" | "30d" | "90d";
   search?: string;
 }
 
@@ -167,4 +189,38 @@ export interface PrivacyPolicy {
   id: number;
   content: string;
   updated_at: string;
+}
+
+export interface AdminBillingParams {
+  skip?: number;
+  limit?: number;
+  time_filter?: "all" | "7d" | "30d" | "90d";
+}
+
+export interface AdminLogEntry {
+  id: number;
+  name: string;
+  email: string;
+  action_type: string;
+  reference_id: string;
+  status: "success" | "failed";
+  date_time: string;
+}
+
+export interface AdminBillingRecord {
+  id: number;
+  user: string;
+  payment_type: "purchase" | "refund";
+  amount: number;
+  credits: number;
+  transaction_id: string;
+  status: "pending" | "completed" | "failed";
+  created_at: string;
+}
+
+export interface AdminBillingResponse {
+  total_revenue: number;
+  refund_amount: number;
+  net_revenue: number;
+  records: AdminBillingRecord[];
 }
