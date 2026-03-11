@@ -77,7 +77,12 @@ export const adminApi = createApi({
       }),
     }),
 
-    // 8. Get Privacy Policy
+    // 8. Get Admin Overview
+    getAdminOverview: builder.query<AdminOverview, string>({
+      query: (time_filter = "all") => `/overview?time_filter=${time_filter}`,
+    }),
+
+    // 9. Get Privacy Policy
     getPrivacyPolicy: builder.query<PrivacyPolicy, void>({
       query: () => `${API_BASE_URL}/v1/privacy-policy/`,
     }),
@@ -101,6 +106,7 @@ export const {
   useUpdateSubscriptionMutation,
   useDeleteSubscriptionMutation,
   useToggleSubscriptionStatusMutation,
+  useGetAdminOverviewQuery,
   useGetPrivacyPolicyQuery,
   useUpdatePrivacyPolicyMutation,
 } = adminApi;
@@ -143,6 +149,18 @@ export interface AdminUser {
   status: "active" | "suspended";
   role: string;
   created_at: string;
+}
+
+export interface AdminOverview {
+  total_users: number;
+  active_users: number;
+  total_videos_generated: number;
+  credits_consumed: number;
+  total_revenue: number;
+  refunds_issued: number;
+  credits_used_over_time: { date: string; count: number }[];
+  videos_generated_over_time: { date: string; count: number }[];
+  plan_distribution: { plan_name: string; user_count: number }[];
 }
 
 export interface PrivacyPolicy {

@@ -2,21 +2,20 @@
 
 import { useEffect, useRef } from "react";
 
-const plans = [
-  { name: "Free", users: 400, color: "#2563EB" },
-  { name: "Starter", users: 300, color: "#00d4ff" },
-  { name: "Pro", users: 200, color: "#0ea5e9" },
-  { name: "Enterprise", users: 100, color: "#6366f1" },
-];
+const COLORS = ["#2563EB", "#00d4ff", "#0ea5e9", "#6366f1", "#8b5cf6", "#ec4899", "#f97316", "#22c55e"];
 
-const total = plans.reduce((sum, p) => sum + p.users, 0);
+interface PlanDistributionProps {
+  plans: { plan_name: string; user_count: number }[];
+}
 
-export default function PlanDistribution() {
+export default function PlanDistribution({ plans }: PlanDistributionProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const total = plans.reduce((sum, p) => sum + p.user_count, 0);
+  const coloredPlans = plans.map((p, i) => ({ ...p, color: COLORS[i % COLORS.length] }));
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || coloredPlans.length === 0) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -33,8 +32,8 @@ export default function PlanDistribution() {
 
     let startAngle = -Math.PI / 2;
 
-    plans.forEach((plan) => {
-      const sliceAngle = (plan.users / total) * 2 * Math.PI;
+    coloredPlans.forEach((plan) => {
+      const sliceAngle = (plan.user_count / total) * 2 * Math.PI;
       ctx.beginPath();
       ctx.arc(cx, cy, outerR, startAngle, startAngle + sliceAngle);
       ctx.arc(cx, cy, innerR, startAngle + sliceAngle, startAngle, true);
@@ -43,7 +42,7 @@ export default function PlanDistribution() {
       ctx.fill();
       startAngle += sliceAngle;
     });
-  }, []);
+  }, [coloredPlans, total]);
 
   return (
     <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-6">
@@ -52,22 +51,22 @@ export default function PlanDistribution() {
       <div className="flex justify-center mb-4 sm:mb-6">
         <canvas
           ref={canvasRef}
-          className="w-[160px] h-[160px] sm:w-[200px] sm:h-[200px]"
+          className="w-40 h-40 sm:w-50 sm:h-50"
           style={{ width: 200, height: 200 }}
         />
       </div>
 
       <div className="space-y-2">
-        {plans.map((plan) => (
-          <div key={plan.name} className="flex items-center justify-between text-sm">
+        {coloredPlans.map((plan) => (
+          <div key={plan.plan_name} className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
               <span
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: plan.color }}
               />
-              <span className="text-gray-300">{plan.name}</span>
+              <span className="text-gray-300">{plan.plan_name}</span>
             </div>
-            <span className="text-gray-400">{plan.users} users</span>
+            <span className="text-gray-400">{plan.user_count} users</span>
           </div>
         ))}
       </div>
