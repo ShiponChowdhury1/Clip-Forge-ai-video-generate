@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/redux/hooks";
 import Sidebar from "@/app/components/dashboard/Sidebar";
+import { MuteProvider } from "@/app/components/dashboard/MuteContext";
 
 export default function DashboardLayout({
   children,
@@ -44,9 +45,11 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
-      <Sidebar onCollapsedChange={setSidebarCollapsed} />
-      <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[104px]" : "lg:ml-[308px]"}`}>{children}</main>
-    </div>
+    <MuteProvider>
+      <div className="min-h-screen bg-white dark:bg-black">
+        <Sidebar onCollapsedChange={setSidebarCollapsed} />
+        <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[104px]" : "lg:ml-[308px]"}`}>{children}</main>
+      </div>
+    </MuteProvider>
   );
 }
