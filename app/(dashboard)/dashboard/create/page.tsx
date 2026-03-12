@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import {
   CreateVideoHeader,
@@ -9,11 +9,11 @@ import {
   GeneratingProgress,
 } from "@/app/components/dashboard/create";
 import Step1TitleKeywordsScript from "@/app/components/dashboard/create/steps/Step1TitleKeywordsScript";
-import Step2FormatStyleMedia from "@/app/components/dashboard/create/steps/Step2FormatStyleMedia";
-import Step3BackgroundMusic from "@/app/components/dashboard/create/steps/Step3BackgroundMusic";
-import Step4VoiceNarration from "@/app/components/dashboard/create/steps/Step4VoiceNarration";
-import Step5SubtitleSettings from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
-import Step6ReviewGenerate from "@/app/components/dashboard/create/steps/Step6ReviewGenerate";
+const Step2FormatStyleMedia = lazy(() => import("@/app/components/dashboard/create/steps/Step2FormatStyleMedia"));
+const Step3BackgroundMusic = lazy(() => import("@/app/components/dashboard/create/steps/Step3BackgroundMusic"));
+const Step4VoiceNarration = lazy(() => import("@/app/components/dashboard/create/steps/Step4VoiceNarration"));
+const Step5SubtitleSettings = lazy(() => import("@/app/components/dashboard/create/steps/Step5SubtitleSettings"));
+const Step6ReviewGenerate = lazy(() => import("@/app/components/dashboard/create/steps/Step6ReviewGenerate"));
 import { useCreateVideoMutation } from "@/lib/redux/features/videos/videosApi";
 import { useSelector } from "react-redux";
 
@@ -404,7 +404,13 @@ export default function CreateVideoPage() {
         <StepProgress currentStep={currentStep} totalSteps={TOTAL_STEPS} />
 
         {/* Current Step Content */}
-        {renderStep()}
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 border-4 border-gray-300 dark:border-[#1A3155] border-t-[#3B82F6] rounded-full animate-spin" />
+          </div>
+        }>
+          {renderStep()}
+        </Suspense>
 
         {/* Navigation - hidden on Step 6 since it has its own Generate button */}
         {currentStep < TOTAL_STEPS && (

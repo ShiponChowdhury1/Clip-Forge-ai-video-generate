@@ -62,6 +62,7 @@ export default function VideoCard({
   const { isMuted, toggleMute } = useMute();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const [duration, setDuration] = useState<number | null>(null);
   const previewVideoRef = useRef<HTMLVideoElement>(null);
   const [deleteVideo, { isLoading: isDeleting }] = useDeleteVideoMutation();
@@ -109,9 +110,10 @@ export default function VideoCard({
     if (previewVideoRef.current) previewVideoRef.current.muted = !isMuted;
   };
 
-  // Play preview on hover
+  // Play preview on hover — lazy load video src
   const handleMouseEnter = () => {
     setIsHovered(true);
+    if (!videoLoaded) setVideoLoaded(true);
     if (previewVideoRef.current) {
       previewVideoRef.current.currentTime = 0;
       previewVideoRef.current.muted = isMuted;
@@ -130,8 +132,9 @@ export default function VideoCard({
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
         onClick={handleCardClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -141,9 +144,9 @@ export default function VideoCard({
         <div className="relative aspect-video bg-gray-100 dark:bg-[#0A0A0A] overflow-hidden">
           <video
             ref={previewVideoRef}
-            src={videoUrl}
+            src={videoLoaded ? videoUrl : undefined}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            preload="metadata"
+            preload="none"
             muted
             loop
             playsInline

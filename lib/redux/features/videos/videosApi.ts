@@ -26,6 +26,7 @@ export const videosApi = createApi({
     },
   }),
   tagTypes: ["Videos"],
+  keepUnusedDataFor: 300,
   endpoints: (builder) => ({
     // GET /api/v1/music/get?skip=0&limit=100
     getMusic: builder.query<MusicItem[], { skip?: number; limit?: number }>({
@@ -33,6 +34,7 @@ export const videosApi = createApi({
         url: "/music/get",
         params: { skip, limit },
       }),
+      keepUnusedDataFor: 600,
     }),
 
     // POST /api/v1/videos/create-video
@@ -42,7 +44,7 @@ export const videosApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Videos"],
+      invalidatesTags: [{ type: "Videos", id: "LIST" }],
     }),
 
     // DELETE /api/v1/videos/delete/{id}
@@ -60,7 +62,7 @@ export const videosApi = createApi({
           })
         );
         const patchResult2 = dispatch(
-          videosApi.util.updateQueryData("getAllVideos", { skip: 0, limit: 8 }, (draft) => {
+          videosApi.util.updateQueryData("getAllVideos", { skip: 0, limit: 9 }, (draft) => {
             const index = draft.findIndex((v) => v.id === id);
             if (index !== -1) draft.splice(index, 1);
           })
@@ -80,13 +82,16 @@ export const videosApi = createApi({
         url: "/videos/get-all",
         params: { skip, limit },
       }),
-      providesTags: ["Videos"],
+      providesTags: (result) =>
+        result
+          ? [...result.map(({ id }) => ({ type: "Videos" as const, id })), { type: "Videos", id: "LIST" }]
+          : [{ type: "Videos", id: "LIST" }],
     }),
 
     // GET /api/v1/videos/get/{video_id}
     getVideo: builder.query<Video, number>({
       query: (videoId) => `/videos/get/${videoId}`,
-      providesTags: ["Videos"],
+      providesTags: (_result, _error, id) => [{ type: "Videos", id }],
     }),
 
     // GET /api/v1/videos/job-status/{job_id}

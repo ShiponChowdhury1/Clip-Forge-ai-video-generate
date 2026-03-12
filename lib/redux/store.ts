@@ -12,8 +12,12 @@ export const makeStore = () =>
       [videosApi.reducerPath]: videosApi.reducer,
       [adminApi.reducerPath]: adminApi.reducer,
     },
+    devTools: process.env.NODE_ENV !== "production",
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(authApi.middleware, videosApi.middleware, adminApi.middleware),
+      getDefaultMiddleware({
+        serializableCheck: false,
+        immutableCheck: process.env.NODE_ENV !== "production",
+      }).concat(authApi.middleware, videosApi.middleware, adminApi.middleware),
   });
 
 export type AppStore = ReturnType<typeof makeStore>;
