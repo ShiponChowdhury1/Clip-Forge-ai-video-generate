@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, Filter, MoreVertical, UserX, UserCheck } from "lucide-react";
+import { Search, MoreVertical, UserX, UserCheck } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
 import {
   useGetAdminUsersQuery,

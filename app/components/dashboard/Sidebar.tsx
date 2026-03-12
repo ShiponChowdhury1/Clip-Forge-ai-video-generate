@@ -22,6 +22,8 @@ import {
   Receipt,
   Menu,
   X,
+  ChevronsLeft,
+  ChevronsRight,
   type LucideIcon,
 } from "lucide-react";
 
@@ -83,9 +85,10 @@ function getInitials(name: string): string {
 // ── Component ────────────────────────────────────────────────────────────────
 interface SidebarProps {
   role?: SidebarRole;
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
-export default function Sidebar({ role = "user" }: SidebarProps) {
+export default function Sidebar({ role = "user", onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -96,11 +99,25 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const sections = menusByRole[role];
 
   useEffect(() => {
     setMounted(true);
+    const saved = localStorage.getItem("sidebar-collapsed");
+    if (saved === "true") {
+      setCollapsed(true);
+      onCollapsedChange?.(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem("sidebar-collapsed", String(next));
+    onCollapsedChange?.(next);
+  };
 
   const profile = {
     name: mounted ? (user?.name || "User") : "User",
@@ -134,25 +151,47 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
   const sidebarContent = (
     <aside
       className={`
-        bg-[#0A0A0A] border border-[#1F1F1F] rounded-xl flex flex-col p-6 z-40
+        relative bg-[#0A0A0A] border border-[#1F1F1F] rounded-xl flex flex-col p-6 z-40 overflow-visible
+        transition-all duration-300 ease-in-out
         /* Desktop: fixed sidebar */
-        lg:w-74 lg:fixed lg:left-6 lg:top-6
-        /* Mobile/Tablet: full height in overlay */
+        lg:fixed lg:left-6 lg:top-6
+        ${collapsed ? "lg:w-20 lg:px-3 lg:py-6" : "lg:w-74"}
+        /* Mobile/Tablet: full height in overlay (always expanded) */
         w-[280px] h-full
       `}
       style={{ justifyContent: "space-between", minHeight: "calc(100vh - 48px)" }}
     >
-      {/* Logo + Close button on mobile */}
-      <div className="pb-6 flex items-center justify-between lg:justify-center">
+      {/* Logo + Close/Collapse */}
+      <div className={`pb-6 flex items-center ${collapsed ? "justify-center" : "justify-between"}`}>
         <Link href={role === "admin" ? "/admin" : "/dashboard"}>
-          <Image
-            src="/logo/sidebarLogo.png"
-            alt="Clipforge Logo"
-            width={100}
-            height={100}
-            className="w-[100px] h-25 rounded-lg"
-          />
+          {collapsed ? (
+            <Image
+              src="/logo/sidebarLogo.png"
+              alt="Clipforge"
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-lg"
+            />
+          ) : (
+            <Image
+              src="/logo/sidebarLogo.png"
+              alt="Clipforge Logo"
+              width={100}
+              height={100}
+              className="w-[100px] h-25 rounded-lg"
+            />
+          )}
         </Link>
+        {/* Collapse toggle - desktop only */}
+        {!collapsed && (
+          <button
+            onClick={toggleCollapsed}
+            className="hidden lg:flex w-8 h-8 rounded-lg bg-[#1A2332] border border-[#1A3155] items-center justify-center text-gray-400 hover:text-white hover:border-[#2563EB] transition-colors"
+            title="Collapse sidebar"
+          >
+            <ChevronsLeft className="w-4 h-4" />
+          </button>
+        )}
         <button
           onClick={() => setMobileOpen(false)}
           className="lg:hidden w-9 h-9 rounded-lg bg-[#1A2332] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white transition-colors"
@@ -161,14 +200,28 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
         </button>
       </div>
 
+      {/* Expand button - floating on sidebar edge when collapsed */}
+      {collapsed && (
+        <button
+          onClick={toggleCollapsed}
+          className="hidden lg:flex absolute -right-3 top-8 w-6 h-6 rounded-full bg-[#1A2332] border border-[#1A3155] items-center justify-center text-gray-400 hover:text-white hover:border-[#2563EB] hover:bg-[#2563EB] transition-colors z-50 shadow-lg"
+          title="Expand sidebar"
+        >
+          <ChevronsRight className="w-3.5 h-3.5" />
+        </button>
+      )}
+
       {/* Navigation */}
       <nav className="flex-1 py-4 space-y-2 overflow-y-auto">
         {sections.map((section, sIdx) => (
           <div key={sIdx} className={section.label ? "pt-6 space-y-2" : "space-y-2"}>
-            {section.label && (
+            {section.label && !collapsed && (
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-3">
                 {section.label}
               </p>
+            )}
+            {section.label && collapsed && (
+              <div className="border-t border-[#1F1F1F] my-2" />
             )}
             {section.items.map((item) => {
               const Icon = item.icon;
@@ -182,14 +235,15 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                  title={collapsed ? item.name : undefined}
+                  className={`flex items-center ${collapsed ? "justify-center" : "gap-3"} ${collapsed ? "px-0 py-3" : "px-4 py-3"} rounded-lg text-sm font-medium transition-all duration-200 border ${
                     isActive
                       ? "bg-[#2563EB] border-[#2563EB] text-white"
                       : "bg-[#0B0E10] border-[#1A3155] text-gray-300 hover:text-white hover:border-[#2563EB]"
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
-                  {item.name}
+                  <Icon className="w-5 h-5 shrink-0" />
+                  {!collapsed && item.name}
                 </Link>
               );
             })}
@@ -199,30 +253,50 @@ export default function Sidebar({ role = "user" }: SidebarProps) {
 
       {/* User Profile & Logout */}
       <div className="pt-4 border-t border-[#1F1F1F] space-y-2">
-        <div className="flex items-center gap-3 px-2">
-          {mounted && user?.picture ? (
-            <img
-              src={user.picture}
-              alt={profile.name}
-              referrerPolicy="no-referrer"
-              className="w-10 h-10 rounded-full shrink-0 object-cover"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-sm shrink-0">
-              {profile.initials}
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">{profile.name}</p>
-            <p className="text-xs text-gray-500 truncate">{profile.subtitle}</p>
+        {collapsed ? (
+          /* Collapsed: avatar only */
+          <div className="flex justify-center px-2">
+            {mounted && user?.picture ? (
+              <img
+                src={user.picture}
+                alt={profile.name}
+                referrerPolicy="no-referrer"
+                className="w-10 h-10 rounded-full shrink-0 object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-sm shrink-0">
+                {profile.initials}
+              </div>
+            )}
           </div>
-        </div>
+        ) : (
+          /* Expanded: full profile */
+          <div className="flex items-center gap-3 px-2">
+            {mounted && user?.picture ? (
+              <img
+                src={user.picture}
+                alt={profile.name}
+                referrerPolicy="no-referrer"
+                className="w-10 h-10 rounded-full shrink-0 object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-sm shrink-0">
+                {profile.initials}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">{profile.name}</p>
+              <p className="text-xs text-gray-500 truncate">{profile.subtitle}</p>
+            </div>
+          </div>
+        )}
         <button
           onClick={() => setShowLogoutModal(true)}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 w-full transition-all duration-200 border border-[#1F1F1F] hover:border-red-500/30"
+          title={collapsed ? "Logout" : undefined}
+          className={`flex items-center ${collapsed ? "justify-center" : "gap-3"} ${collapsed ? "px-0" : "px-4"} py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 w-full transition-all duration-200 border border-[#1F1F1F] hover:border-red-500/30`}
         >
-          <LogOut className="w-5 h-5" />
-          Logout
+          <LogOut className="w-5 h-5 shrink-0" />
+          {!collapsed && "Logout"}
         </button>
       </div>
     </aside>

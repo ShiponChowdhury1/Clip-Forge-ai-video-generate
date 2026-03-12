@@ -27,8 +27,7 @@ export default function AdminSettingsPage() {
     <div>
       <AdminHeader />
 
-      <h3 className="text-white text-xl font-semibold mb-2">Settings</h3>
-
+    
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Sidebar Navigation */}
         <div className="w-full lg:w-64 shrink-0">

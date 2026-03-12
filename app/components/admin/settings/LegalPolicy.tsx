@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Save, Pencil, Download, X } from "lucide-react";
+import { Save, Pencil, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { RichTextEditor } from "./RichTextEditor";
 import {
@@ -48,9 +48,9 @@ export function LegalPolicy() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
         <div>
-          <h2 className="text-white text-xl sm:text-2xl font-bold">Privacy Policy</h2>
+          <h2 className="text-white text-xl sm:text-2xl font-bold px-5 ">Privacy Policy</h2>
           {policy?.updated_at && (
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-gray-400 text-sm mt-1 px-5 ">
               Last updated: {formatDate(policy.updated_at)}
             </p>
           )}
@@ -87,10 +87,7 @@ export function LegalPolicy() {
                 <Pencil className="w-4 h-4" />
                 Edit
               </button>
-              <button className="flex items-center gap-2 bg-[#0A0F18] border border-[#1A3155] hover:border-[#2563EB] text-gray-300 font-medium px-5 py-2.5 rounded-lg text-sm transition-colors">
-                <Download className="w-4 h-4" />
-                Export PDF
-              </button>
+             
             </>
           )}
         </div>
@@ -114,7 +111,7 @@ export function LegalPolicy() {
           <RichTextEditor value={content} onChange={setEditContent} />
         ) : (
           <div
-            className="bg-[#0A0F18] border border-[#1A3155] rounded-xl p-6 sm:p-8 text-gray-300 text-sm leading-relaxed
+            className="bg-[#0A0F18]  rounded-xl p-6 sm:p-8 text-gray-300 text-sm leading-relaxed
               [&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
               [&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
               [&_a]:text-cyan-400 [&_a]:underline [&_a]:hover:text-cyan-300

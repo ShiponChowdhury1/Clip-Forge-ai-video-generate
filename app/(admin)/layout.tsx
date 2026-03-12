@@ -17,11 +17,14 @@ export default function AdminLayout({
   const token = useAppSelector((state) => state.auth.token);
   const user = useAppSelector((state) => state.auth.user);
   const [mounted, setMounted] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const { data: profile } = useGetMeQuery(undefined, { skip: !token });
 
   useEffect(() => {
     setMounted(true);
+    const saved = localStorage.getItem("sidebar-collapsed");
+    if (saved === "true") setSidebarCollapsed(true);
   }, []);
 
   // Sync fresh profile data into Redux + localStorage
@@ -66,8 +69,8 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-black">
-      <Sidebar role="admin" />
-      <main className="min-h-screen p-4 pt-18 lg:pt-6 lg:ml-[308px] lg:p-6">{children}</main>
+      <Sidebar role="admin" onCollapsedChange={setSidebarCollapsed} />
+      <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[104px]" : "lg:ml-[308px]"}`}>{children}</main>
     </div>
   );
 }

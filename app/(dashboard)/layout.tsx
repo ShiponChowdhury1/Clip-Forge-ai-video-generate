@@ -13,9 +13,12 @@ export default function DashboardLayout({
   const router = useRouter();
   const token = useAppSelector((state) => state.auth.token);
   const [mounted, setMounted] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const saved = localStorage.getItem("sidebar-collapsed");
+    if (saved === "true") setSidebarCollapsed(true);
   }, []);
 
   useEffect(() => {
@@ -42,8 +45,8 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-black">
-      <Sidebar />
-      <main className="min-h-screen p-4 pt-18 lg:pt-6 lg:ml-[308px] lg:p-6">{children}</main>
+      <Sidebar onCollapsedChange={setSidebarCollapsed} />
+      <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[104px]" : "lg:ml-[308px]"}`}>{children}</main>
     </div>
   );
 }

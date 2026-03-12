@@ -1,20 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface AuthState {
-  token: string | null;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    credits: number;
-    subscription_plan: string;
-    role: string;
-    picture?: string;
-  } | null;
-  // For forgot-password / reset-password flow
-  resetEmail: string | null;
-  otpVerified: boolean;
-}
+import type { AuthState } from "@/types/auth";
 
 const initialState: AuthState = {
   token: null,

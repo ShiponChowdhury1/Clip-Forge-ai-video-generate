@@ -1,4 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type {
+  RegisterRequest,
+  RegisterResponse,
+  LoginRequest,
+  LoginResponse,
+  ForgotPasswordRequest,
+  VerifyOtpRequest,
+  ResetPasswordRequest,
+  GoogleAuthRequest,
+  ChangePasswordVerifyOtpRequest,
+  ChangePasswordRequest,
+  MessageResponse,
+  UserProfile,
+  UpdateProfileResponse,
+} from "@/types/auth";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 
 export const authApi = createApi({
@@ -151,94 +167,21 @@ export const authApi = createApi({
   }),
 });
 
-
-// Types
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export interface RegisterResponse {
-  name: string;
-  email: string;
-  id: number;
-  credits: number;
-  subscription_plan: string;
-  created_at: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  access_token: string;
-  token_type: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    credits: number;
-    subscription_plan: string;
-    role: string;
-    created_at: string;
-  };
-}
-
-export interface ForgotPasswordRequest {
-  email: string;
-}
-
-export interface VerifyOtpRequest {
-  email: string;
-  otp: string;
-}
-
-export interface ResetPasswordRequest {
-  email: string;
-  new_password: string;
-}
-
-export interface GoogleAuthRequest {
-  token: string;
-}
-
-export interface ChangePasswordVerifyOtpRequest {
-  otp: string;
-}
-
-export interface ChangePasswordRequest {
-  new_password: string;
-}
-
-export interface MessageResponse {
-  message: string;
-}
-
-export interface UserProfile {
-  id: number;
-  name: string;
-  email: string;
-  credits: number;
-  subscription_plan: string;
-  role: string;
-  created_at: string;
-}
-
-export interface UpdateProfileResponse {
-  name: string;
-  email: string;
-  id: number;
-  profile_image_url: string | null;
-  is_verified: boolean;
-  subscription_plan: string;
-  credits: number;
-  status: string;
-  role: string;
-  created_at: string;
-}
+export type {
+  RegisterRequest,
+  RegisterResponse,
+  LoginRequest,
+  LoginResponse,
+  ForgotPasswordRequest,
+  VerifyOtpRequest,
+  ResetPasswordRequest,
+  GoogleAuthRequest,
+  ChangePasswordVerifyOtpRequest,
+  ChangePasswordRequest,
+  MessageResponse,
+  UserProfile,
+  UpdateProfileResponse,
+} from "@/types/auth";
 
 export const {
   useRegisterMutation,
