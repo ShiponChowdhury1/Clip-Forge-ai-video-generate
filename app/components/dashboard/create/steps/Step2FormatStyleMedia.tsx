@@ -155,8 +155,8 @@ export default function Step2FormatStyleMedia({
               onClick={() => setVideoFormat(option.value)}
               className={`flex flex-col items-center gap-3 w-[150px] ${option.cardHeight} p-5 rounded-xl border transition-all ${
                 videoFormat === option.value
-                  ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-[#1A3155] bg-[#0B0E12] hover:border-[#2A4A7A]"
+                  ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               {/* Device mockup */}
@@ -199,7 +199,7 @@ export default function Step2FormatStyleMedia({
                 className={`w-full aspect-4/3 rounded-xl overflow-hidden border-2 transition-all ${
                   videoStyle === style.value
                     ? "border-[#3B82F6] shadow-[0_0_12px_rgba(59,130,246,0.3)]"
-                    : "border-transparent hover:border-[#2A4A7A]"
+                    : "border-transparent hover:border-blue-300 dark:hover:border-[#2A4A7A]"
                 }`}
               >
                 <Image
@@ -237,7 +237,7 @@ export default function Step2FormatStyleMedia({
               className={`relative flex flex-col items-start p-4 rounded-xl border transition-all text-left ${
                 sceneMedia === option.value
                   ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-[#2A4A7A]"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               <span className="text-gray-900 dark:text-white text-sm font-medium">

@@ -161,8 +161,8 @@ export default function Step4VoiceNarration({
               onClick={() => setSelectedVoice(voice.id)}
               className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
                 selectedVoice === voice.id
-                  ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-[#2A4A7A]"
+                  ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               {/* Avatar */}

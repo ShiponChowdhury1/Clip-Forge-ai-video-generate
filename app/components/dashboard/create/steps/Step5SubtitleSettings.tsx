@@ -130,7 +130,7 @@ export default function Step5SubtitleSettings({
             className={`flex flex-col rounded-xl border transition-all overflow-hidden ${
               subtitleStyle === style.value
                 ? "border-[#3B82F6]"
-                : "border-gray-300 dark:border-[#1A3155] hover:border-[#2A4A7A]"
+                  : "border-gray-300 dark:border-[#1A3155] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
             }`}
           >
             {/* Preview area */}
