@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, ChevronDown, LayoutDashboard, Settings, LogOut, Shield, User } from "lucide-react";
+import { Menu, X, ChevronDown, LayoutDashboard, Settings, LogOut, Shield, User, Sun, Moon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
+import { useTheme } from "./ThemeProvider";
 
 const navLinks = [
   { name: "Features", href: "#features" },
@@ -35,6 +36,7 @@ export default function Navbar() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isHomePage = pathname === "/";
+  const { theme, toggleTheme } = useTheme();
 
   const token = useAppSelector((state) => state.auth.token);
   const user = useAppSelector((state) => state.auth.user);
@@ -143,7 +145,7 @@ export default function Navbar() {
   return (
     <>
       <div className="h-16 md:h-20" />
-      <header className="w-full h-16 md:h-20 border-b border-zinc-800/50 fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md">
+      <header className="w-full h-16 md:h-20 border-b border-gray-200 dark:border-zinc-800/50 fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-md">
         <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 h-full flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Image
@@ -153,7 +155,7 @@ export default function Navbar() {
             height={48}
             className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg"
           />
-          <span className="text-base sm:text-lg font-semibold text-white">Clipforge</span>
+          <span className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Clipforge</span>
         </Link>
         
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
@@ -165,7 +167,7 @@ export default function Navbar() {
               className={`relative text-sm transition-colors duration-300 ${
                 activeSection === link.href
                   ? "text-cyan-400"
-                  : "text-gray-400 hover:text-white"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
               {link.name}
@@ -182,11 +184,19 @@ export default function Navbar() {
         
         {/* Desktop: Auth buttons or User dropdown */}
         <div className="hidden md:flex items-center gap-3 lg:gap-4">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="w-9 h-9 rounded-lg border border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#0D1117] flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-[#3B82F6] transition-all"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
           {isLoggedIn ? (
             <div ref={dropdownRef} className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2.5 bg-[#0D1117] border border-[#1A3155] hover:border-[#3B82F6] rounded-xl px-3 py-2 transition-all"
+                className="flex items-center gap-2.5 bg-gray-100 dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] hover:border-[#3B82F6] rounded-xl px-3 py-2 transition-all"
               >
                 {user?.picture ? (
                   <img
@@ -200,18 +210,18 @@ export default function Navbar() {
                     {user?.name ? getInitials(user.name) : "U"}
                   </div>
                 )}
-                <span className="text-white text-sm font-medium max-w-[120px] truncate">
+                <span className="text-gray-900 dark:text-white text-sm font-medium max-w-[120px] truncate">
                   {user?.name || "User"}
                 </span>
-                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
               </button>
 
               {/* Dropdown menu */}
               {dropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-full min-w-[220px] bg-[#0D1117] border border-[#1A3155] rounded-xl shadow-2xl shadow-black/50 overflow-hidden z-50">
+                <div className="absolute right-0 top-full mt-2 w-full min-w-[220px] bg-white dark:bg-[#0D1117] border border-gray-200 dark:border-[#1A3155] rounded-xl shadow-2xl shadow-black/10 dark:shadow-black/50 overflow-hidden z-50">
                   {/* User info */}
-                  <div className="px-4 py-3 border-b border-[#1A3155]">
-                    <p className="text-white text-sm font-medium truncate">{user?.name || "User"}</p>
+                  <div className="px-4 py-3 border-b border-gray-200 dark:border-[#1A3155]">
+                    <p className="text-gray-900 dark:text-white text-sm font-medium truncate">{user?.name || "User"}</p>
                     <p className="text-gray-500 text-xs truncate">{user?.email || ""}</p>
                   </div>
 
@@ -219,7 +229,7 @@ export default function Navbar() {
                     <Link
                       href={dashboardHref}
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#1A2332] transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#1A2332] transition-colors"
                     >
                       {user?.role === "admin" ? (
                         <><Shield className="w-4 h-4" /> Admin Panel</>
@@ -230,14 +240,14 @@ export default function Navbar() {
                     <Link
                       href={settingsHref}
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#1A2332] transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#1A2332] transition-colors"
                     >
                       <Settings className="w-4 h-4" />
                       Settings
                     </Link>
                   </div>
 
-                  <div className="border-t border-[#1A3155] py-1.5">
+                  <div className="border-t border-gray-200 dark:border-[#1A3155] py-1.5">
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors w-full"
@@ -251,7 +261,7 @@ export default function Navbar() {
             </div>
           ) : (
             <>
-              <Link href="/login" className="text-gray-400 hover:text-white transition text-sm">
+              <Link href="/login" className="relative inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-4 py-2 rounded-lg border border-gray-300 dark:border-[#1A3155] hover:border-cyan-500/60 bg-gray-50 dark:bg-white/5 hover:bg-cyan-500/10 transition-all duration-200">
                 Login
               </Link>
               <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-white font-medium px-4 lg:px-5 py-2 rounded-lg transition text-sm">
@@ -264,7 +274,7 @@ export default function Navbar() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-white p-2 -mr-2"
+          className="md:hidden text-gray-900 dark:text-white p-2 -mr-2"
           aria-label="Toggle menu"
         >
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -273,8 +283,16 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-zinc-800/50 bg-black/98 backdrop-blur-md absolute top-16 left-0 right-0 z-50">
+        <div className="md:hidden border-t border-gray-200 dark:border-zinc-800/50 bg-white/98 dark:bg-black/98 backdrop-blur-md absolute top-16 left-0 right-0 z-50">
           <nav className="flex flex-col px-4 py-4 space-y-1">
+            {/* Mobile theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            </button>
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -283,13 +301,13 @@ export default function Navbar() {
                 className={`transition text-sm py-3 px-3 rounded-lg ${
                   activeSection === link.href
                     ? "text-cyan-400 bg-cyan-400/10"
-                    : "text-gray-400 hover:text-white hover:bg-gray-900/50"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900/50"
                 }`}
               >
                 {link.name}
               </a>
             ))}
-            <div className="flex flex-col gap-1 pt-4 mt-2 border-t border-zinc-800/50">
+            <div className="flex flex-col gap-1 pt-4 mt-2 border-t border-gray-200 dark:border-zinc-800/50">
               {isLoggedIn ? (
                 <>
                   {/* Mobile user info */}
@@ -307,14 +325,14 @@ export default function Navbar() {
                       </div>
                     )}
                     <div className="min-w-0">
-                      <p className="text-white text-sm font-medium truncate">{user?.name || "User"}</p>
+                      <p className="text-gray-900 dark:text-white text-sm font-medium truncate">{user?.name || "User"}</p>
                       <p className="text-gray-500 text-xs truncate">{user?.email || ""}</p>
                     </div>
                   </div>
                   <Link
                     href={dashboardHref}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
+                    className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
                   >
                     {user?.role === "admin" ? (
                       <><Shield className="w-4 h-4" /> Admin Panel</>
@@ -325,7 +343,7 @@ export default function Navbar() {
                   <Link
                     href={settingsHref}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 text-gray-300 hover:text-white hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
+                    className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
                   >
                     <Settings className="w-4 h-4" />
                     Settings
@@ -340,7 +358,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="text-gray-400 hover:text-white transition text-sm text-left py-2 px-3" onClick={() => setIsOpen(false)}>
+                  <Link href="/login" className="inline-flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2.5 px-4 rounded-lg border border-gray-300 dark:border-[#1A3155] hover:border-cyan-500/60 bg-gray-50 dark:bg-white/5 hover:bg-cyan-500/10 transition-all duration-200 w-full" onClick={() => setIsOpen(false)}>
                     Login
                   </Link>
                   <Link href="/register" className="bg-cyan-500 hover:bg-cyan-400 text-white font-medium px-4 py-3 rounded-lg transition text-sm w-full text-center" onClick={() => setIsOpen(false)}>

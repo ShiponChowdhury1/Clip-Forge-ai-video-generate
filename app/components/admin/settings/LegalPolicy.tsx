@@ -44,13 +44,13 @@ export function LegalPolicy() {
   };
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 sm:p-8">
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 sm:p-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
         <div>
-          <h2 className="text-white text-xl sm:text-2xl font-bold px-5 ">Privacy Policy</h2>
+          <h2 className="text-gray-900 dark:text-white text-xl sm:text-2xl font-bold px-5 ">Privacy Policy</h2>
           {policy?.updated_at && (
-            <p className="text-gray-400 text-sm mt-1 px-5 ">
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 px-5 ">
               Last updated: {formatDate(policy.updated_at)}
             </p>
           )}
@@ -60,7 +60,7 @@ export function LegalPolicy() {
             <>
               <button
                 onClick={handleCancel}
-                className="flex items-center gap-2 bg-[#0A0F18] border border-[#1A3155] hover:border-red-500 text-gray-300 font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
+                className="flex items-center gap-2 bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] hover:border-red-500 text-gray-700 dark:text-gray-300 font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
               >
                 <X className="w-4 h-4" />
                 Cancel
@@ -104,23 +104,23 @@ export function LegalPolicy() {
       {/* Content */}
       <div className="mt-6">
         {isLoading ? (
-          <div className="bg-[#0A0F18] border border-[#1A3155] rounded-xl p-8 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-[#1A3155] border-t-cyan-500 rounded-full animate-spin" />
+          <div className="bg-gray-50 dark:bg-[#0A0F18] border border-gray-200 dark:border-[#1A3155] rounded-xl p-8 flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-gray-300 dark:border-[#1A3155] border-t-cyan-500 rounded-full animate-spin" />
           </div>
         ) : isEditing ? (
           <RichTextEditor value={content} onChange={setEditContent} />
         ) : (
           <div
-            className="bg-[#0A0F18]  rounded-xl p-6 sm:p-8 text-gray-300 text-sm leading-relaxed
-              [&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
-              [&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
+            className="bg-gray-50 dark:bg-[#0A0F18]  rounded-xl p-6 sm:p-8 text-gray-700 dark:text-gray-300 text-sm leading-relaxed
+              [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
+              [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
               [&_a]:text-cyan-400 [&_a]:underline [&_a]:hover:text-cyan-300
-              [&_blockquote]:border-l-4 [&_blockquote]:border-cyan-500/50 [&_blockquote]:pl-4 [&_blockquote]:py-1 [&_blockquote]:my-3 [&_blockquote]:text-gray-400 [&_blockquote]:italic
-              [&_pre]:bg-[#0D1117] [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:my-3 [&_pre]:text-emerald-400 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:overflow-x-auto
+              [&_blockquote]:border-l-4 [&_blockquote]:border-cyan-500/50 [&_blockquote]:pl-4 [&_blockquote]:py-1 [&_blockquote]:my-3 [&_blockquote]:text-gray-500 dark:[&_blockquote]:text-gray-400 [&_blockquote]:italic
+              [&_pre]:bg-gray-100 dark:[&_pre]:bg-[#0D1117] [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:my-3 [&_pre]:text-emerald-400 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:overflow-x-auto
               [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-3
               [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:space-y-1 [&_ul]:my-2
               [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:space-y-1 [&_ol]:my-2
-              [&_li]:text-gray-300
+              [&_li]:text-gray-700 dark:[&_li]:text-gray-300
               [&_p]:my-1.5"
             dangerouslySetInnerHTML={{ __html: content || "<p>No privacy policy content yet. Click Edit to add content.</p>" }}
           />

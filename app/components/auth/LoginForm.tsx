@@ -29,8 +29,15 @@ export default function LoginForm() {
       dispatch(setUser(result.user));
       router.push(result.user.role === "admin" ? "/admin" : "/dashboard");
     } catch (err: unknown) {
-      const apiError = err as { data?: { detail?: string } };
-      setError(apiError.data?.detail || "Invalid email or password.");
+      const apiError = err as { data?: { detail?: string | Array<{ msg: string }> } };
+      const detail = apiError.data?.detail;
+      if (typeof detail === "string") {
+        setError(detail);
+      } else if (Array.isArray(detail)) {
+        setError(detail.map((d) => d.msg).join(", "));
+      } else {
+        setError("Invalid email or password.");
+      }
     }
   };
 
@@ -58,7 +65,7 @@ export default function LoginForm() {
 
         <SocialButtons />
 
-        <p className="text-gray-400 text-sm text-center">
+        <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
           Don&apos;t have an account?{" "}
           <Link href="/register" className="text-[#00A6F4] font-bold hover:underline">
             Sign up

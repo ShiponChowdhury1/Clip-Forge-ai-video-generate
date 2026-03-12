@@ -18,13 +18,13 @@ export default function DashboardHeader({
   showCreateButton = true,
 }: DashboardHeaderProps) {
   return (
-    <div className="bg-[#0A0A0A] border border-[#1F1F1F] rounded-2xl p-4 sm:p-6 mb-6">
+    <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-4 sm:p-6 mb-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3 sm:gap-4">
           {icon}
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-white">{title}</h1>
-            <p className="text-xs sm:text-sm text-gray-400">{description}</p>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">{title}</h1>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{description}</p>
           </div>
         </div>
         {showCreateButton && (

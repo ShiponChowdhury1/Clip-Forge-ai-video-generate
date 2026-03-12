@@ -72,8 +72,7 @@ export default function ForgotPasswordForm() {
             autoComplete="off"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[#0d1117] border border-gray-700/50 rounded-xl px-4 py-4 text-sm outline-none focus:border-[#00A6F4]/50 transition [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_9999px_#0d1117_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:rgba(255,255,255,0.5)]"
-            style={{ color: "#FFFFFF80", backgroundColor: "#0d1117" }}
+            className="w-full bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl px-4 py-4 text-sm outline-none focus:border-[#00A6F4]/50 transition text-gray-900 dark:text-white/50 placeholder-gray-400 dark:placeholder-gray-500"
           />
         </div>
 
@@ -81,7 +80,7 @@ export default function ForgotPasswordForm() {
 
         <Link
           href="/login"
-          className="flex items-center justify-center gap-2 text-gray-400 text-sm hover:text-white transition"
+          className="flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 text-sm hover:text-gray-900 dark:hover:text-white transition"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Login

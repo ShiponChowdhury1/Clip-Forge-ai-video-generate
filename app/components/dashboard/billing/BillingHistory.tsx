@@ -39,24 +39,24 @@ export default function BillingHistory({ invoices }: BillingHistoryProps) {
   };
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6">
-      <h3 className="text-lg font-bold text-white mb-4">Billing History</h3>
-      <div className="space-y-0 divide-y divide-[#1A2332]">
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6">
+      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Billing History</h3>
+      <div className="space-y-0 divide-y divide-gray-200 dark:divide-[#1A2332]">
         {invoices.map((invoice, idx) => (
           <div
             key={idx}
             className="flex items-center justify-between py-4 first:pt-0 last:pb-0"
           >
             <div>
-              <p className="text-white text-sm font-semibold">{invoice.id}</p>
+              <p className="text-gray-900 dark:text-white text-sm font-semibold">{invoice.id}</p>
               <p className="text-gray-500 text-xs">{invoice.date}</p>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-white text-sm font-medium">
+              <span className="text-gray-900 dark:text-white text-sm font-medium">
                 +{invoice.amount}
               </span>
               {getStatusBadge(invoice.status)}
-              <button className="text-gray-400 hover:text-white transition-colors">
+              <button className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <Download className="w-4 h-4" />
               </button>
             </div>

@@ -45,7 +45,7 @@ function ToolButton({ onClick, active, title, children }: { onClick: () => void;
       onClick={onClick}
       title={title}
       className={`p-1.5 rounded-md transition-colors ${
-        active ? "bg-cyan-500/20 text-cyan-400" : "text-gray-400 hover:text-white hover:bg-[#1A2332]"
+        active ? "bg-cyan-500/20 text-cyan-400" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#1A2332]"
       }`}
     >
       {children}
@@ -54,7 +54,7 @@ function ToolButton({ onClick, active, title, children }: { onClick: () => void;
 }
 
 function Separator() {
-  return <div className="w-px h-6 bg-[#1A3155] mx-1" />;
+  return <div className="w-px h-6 bg-gray-300 dark:bg-[#1A3155] mx-1" />;
 }
 
 interface RichTextEditorProps {
@@ -96,9 +96,9 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   }, [exec]);
 
   return (
-    <div className="border border-[#1A3155] rounded-xl overflow-hidden bg-[#0A0F18]">
+    <div className="border border-gray-300 dark:border-[#1A3155] rounded-xl overflow-hidden bg-gray-50 dark:bg-[#0A0F18]">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 bg-[#0D1117] border-b border-[#1A3155]">
+      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 bg-gray-100 dark:bg-[#0D1117] border-b border-gray-300 dark:border-[#1A3155]">
         {/* Headings */}
         <ToolButton onClick={() => exec("formatBlock", "<h1>")} title="Heading 1">
           <Heading1 className="w-4 h-4" />
@@ -169,7 +169,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
           <ToolButton onClick={() => colorPickerRef.current?.click()} title="Text Color">
             <Palette className="w-4 h-4" />
           </ToolButton>
-          <div className="absolute left-0 top-full mt-1 z-30 hidden group-hover:block bg-[#0D1117] border border-[#1A3155] rounded-lg p-2 shadow-xl">
+          <div className="absolute left-0 top-full mt-1 z-30 hidden group-hover:block bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg p-2 shadow-xl">
             <div className="grid grid-cols-5 gap-1 w-32.5">
               {TEXT_COLORS.map((color) => (
                 <button
@@ -177,7 +177,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => exec("foreColor", color)}
-                  className="w-5 h-5 rounded border border-[#1A3155] hover:scale-125 transition-transform"
+                  className="w-5 h-5 rounded border border-gray-300 dark:border-[#1A3155] hover:scale-125 transition-transform"
                   style={{ backgroundColor: color }}
                   title={color}
                 />
@@ -191,7 +191,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
           <ToolButton onClick={() => highlightPickerRef.current?.click()} title="Highlight Color">
             <Highlighter className="w-4 h-4" />
           </ToolButton>
-          <div className="absolute left-0 top-full mt-1 z-30 hidden group-hover:block bg-[#0D1117] border border-[#1A3155] rounded-lg p-2 shadow-xl">
+          <div className="absolute left-0 top-full mt-1 z-30 hidden group-hover:block bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg p-2 shadow-xl">
             <div className="grid grid-cols-5 gap-1 w-32.5">
               {HIGHLIGHT_COLORS.map((color, i) => (
                 <button
@@ -199,7 +199,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => exec("hiliteColor", color)}
-                  className="w-5 h-5 rounded border border-[#1A3155] hover:scale-125 transition-transform"
+                  className="w-5 h-5 rounded border border-gray-300 dark:border-[#1A3155] hover:scale-125 transition-transform"
                   style={{ backgroundColor: color === "transparent" ? "#1A2332" : color }}
                   title={color === "transparent" ? "None" : color}
                 />
@@ -226,16 +226,16 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         suppressContentEditableWarning
         onInput={handleInput}
         dangerouslySetInnerHTML={{ __html: value }}
-        className="min-h-75 max-h-150 overflow-y-auto px-6 py-5 text-gray-300 text-sm leading-relaxed focus:outline-none
-          [&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
-          [&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
+        className="min-h-75 max-h-150 overflow-y-auto px-6 py-5 text-gray-700 dark:text-gray-300 text-sm leading-relaxed focus:outline-none
+          [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
+          [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
           [&_a]:text-cyan-400 [&_a]:underline [&_a]:hover:text-cyan-300
-          [&_blockquote]:border-l-4 [&_blockquote]:border-cyan-500/50 [&_blockquote]:pl-4 [&_blockquote]:py-1 [&_blockquote]:my-3 [&_blockquote]:text-gray-400 [&_blockquote]:italic
-          [&_pre]:bg-[#0D1117] [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:my-3 [&_pre]:text-emerald-400 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:overflow-x-auto
+          [&_blockquote]:border-l-4 [&_blockquote]:border-cyan-500/50 [&_blockquote]:pl-4 [&_blockquote]:py-1 [&_blockquote]:my-3 [&_blockquote]:text-gray-500 dark:[&_blockquote]:text-gray-400 [&_blockquote]:italic
+          [&_pre]:bg-gray-100 dark:[&_pre]:bg-[#0D1117] [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:my-3 [&_pre]:text-emerald-400 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:overflow-x-auto
           [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-3
           [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:space-y-1 [&_ul]:my-2
           [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:space-y-1 [&_ol]:my-2
-          [&_li]:text-gray-300
+          [&_li]:text-gray-700 dark:[&_li]:text-gray-300
           [&_p]:my-1.5"
       />
     </div>

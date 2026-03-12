@@ -88,7 +88,7 @@ export default function VideoDetailsPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <p className="text-white text-xl font-semibold mb-2">
+          <p className="text-gray-900 dark:text-white text-xl font-semibold mb-2">
             Video not found
           </p>
           <p className="text-gray-500 text-sm mb-6">
@@ -156,12 +156,12 @@ export default function VideoDetailsPage() {
         <div className="flex items-start gap-3 min-w-0">
           <button
             onClick={() => router.back()}
-            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg hover:bg-[#1A1A1A] transition-colors mt-0.5"
+            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-[#1A1A1A] transition-colors mt-0.5"
           >
-            <ArrowLeft className="w-5 h-5 text-white" />
+            <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-white" />
           </button>
           <div className="min-w-0">
-            <h1 className="text-white text-lg font-bold leading-snug">{video.title}</h1>
+            <h1 className="text-gray-900 dark:text-white text-lg font-bold leading-snug">{video.title}</h1>
             <div className="flex items-center gap-2 mt-1">
               <Clock className="w-3 h-3 text-gray-500 shrink-0" />
               <span className="text-gray-500 text-xs">{createdDate}</span>
@@ -187,9 +187,9 @@ export default function VideoDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[60%_1fr] gap-5">
         {/* Left: Video Player */}
         <div>
-          <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl overflow-hidden h-full flex flex-col">
+          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full flex flex-col">
             <div className="p-4 pb-2">
-              <h2 className="text-white text-sm font-semibold">Preview</h2>
+              <h2 className="text-gray-900 dark:text-white text-sm font-semibold">Preview</h2>
             </div>
 
             <div className="px-4 pb-4 flex-1 flex items-center justify-center">
@@ -239,12 +239,12 @@ export default function VideoDetailsPage() {
             <div className="px-4 pb-4 grid grid-cols-3 gap-2">
               <button
                 onClick={() => router.push("/dashboard/create")}
-                className="flex flex-col items-center justify-center gap-1.5 bg-[#1A2332] hover:bg-[#243044] border border-[#1A3155] text-white rounded-xl py-3 text-xs font-medium transition-colors"
+                className="flex flex-col items-center justify-center gap-1.5 bg-gray-100 dark:bg-[#1A2332] hover:bg-gray-200 dark:hover:bg-[#243044] border border-gray-300 dark:border-[#1A3155] text-gray-900 dark:text-white rounded-xl py-3 text-xs font-medium transition-colors"
               >
                 <PlusCircle className="w-4 h-4" />
                 Create New
               </button>
-              <button className="flex flex-col items-center justify-center gap-1.5 bg-[#1A2332] hover:bg-[#243044] border border-[#1A3155] text-white rounded-xl py-3 text-xs font-medium transition-colors"
+              <button className="flex flex-col items-center justify-center gap-1.5 bg-gray-100 dark:bg-[#1A2332] hover:bg-gray-200 dark:hover:bg-[#243044] border border-gray-300 dark:border-[#1A3155] text-gray-900 dark:text-white rounded-xl py-3 text-xs font-medium transition-colors"
                 onClick={handleEditRegenerate}
               >
                 <RefreshCw className="w-4 h-4" />
@@ -256,7 +256,7 @@ export default function VideoDetailsPage() {
                 className={`flex flex-col items-center justify-center gap-1.5 rounded-xl py-3 text-xs font-medium transition-colors ${
                   hasVideo
                     ? "bg-[#009927] hover:bg-[#007a1f] text-white"
-                    : "bg-[#1A2332] text-gray-500 cursor-not-allowed border border-[#1A3155]"
+                    : "bg-gray-100 dark:bg-[#1A2332] text-gray-500 cursor-not-allowed border border-gray-300 dark:border-[#1A3155]"
                 }`}
               >
                 <Download className="w-4 h-4" />
@@ -268,9 +268,9 @@ export default function VideoDetailsPage() {
 
         {/* Right: Details */}
         <div>
-          <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl overflow-hidden h-full">
+          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full">
             <div className="p-4 pb-2">
-              <h2 className="text-white text-sm font-semibold">Details</h2>
+              <h2 className="text-gray-900 dark:text-white text-sm font-semibold">Details</h2>
             </div>
 
             <div className="px-4 pb-4">
@@ -278,13 +278,13 @@ export default function VideoDetailsPage() {
                 {detailRows.map((row) => (
                   <div
                     key={row.label}
-                    className="bg-[#0B0E12] border border-[#1A3155]/50 rounded-xl p-3"
+                    className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-3"
                   >
                     <div className="flex items-center gap-1.5 mb-1.5">
                       <row.icon className="w-3.5 h-3.5 text-gray-500" />
                       <span className="text-gray-500 text-xs">{row.label}</span>
                     </div>
-                    <p className="text-white text-sm font-medium truncate capitalize">
+                    <p className="text-gray-900 dark:text-white text-sm font-medium truncate capitalize">
                       {row.value}
                     </p>
                   </div>
@@ -301,7 +301,7 @@ export default function VideoDetailsPage() {
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {video.keywords.split(",").map((kw) => kw.trim()).filter(Boolean).map((kw) => (
-                    <span key={kw} className="bg-[#0B0E12] border border-[#1A3155]/50 text-gray-300 text-xs px-2.5 py-1 rounded-full">
+                    <span key={kw} className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 text-gray-700 dark:text-gray-300 text-xs px-2.5 py-1 rounded-full">
                       {kw}
                     </span>
                   ))}
@@ -330,11 +330,11 @@ export default function VideoDetailsPage() {
       </div>
 
       {/* Script Section - Full Width */}
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl overflow-hidden">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden">
         <div className="p-4 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-[#3B82F6]" />
-            <h2 className="text-white text-sm font-semibold">Script</h2>
+            <h2 className="text-gray-900 dark:text-white text-sm font-semibold">Script</h2>
           </div>
           <div className="flex items-center gap-3">
             {video.script && (
@@ -359,13 +359,13 @@ export default function VideoDetailsPage() {
 
         <div className="px-4 pb-4">
           {video.script ? (
-            <div className="bg-[#0B0E12] border border-[#1A3155]/50 rounded-xl p-4 overflow-y-auto custom-scrollbar">
-              <p className="text-gray-300 text-sm leading-relaxed break-words w-full">
+            <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-4 overflow-y-auto custom-scrollbar">
+              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed break-words w-full">
                 {video.script}
               </p>
             </div>
           ) : (
-            <div className="bg-[#0B0E12] border border-[#1A3155]/50 rounded-xl p-6 text-center">
+            <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-6 text-center">
               <FileText className="w-8 h-8 text-gray-600 mx-auto mb-2" />
               <p className="text-gray-500 text-sm">No script available</p>
             </div>

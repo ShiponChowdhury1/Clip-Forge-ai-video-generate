@@ -150,10 +150,10 @@ export default function Step4VoiceNarration({
   setScript,
 }: Step4VoiceNarrationProps) {
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-8">
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-8">
       {/* Voice Type */}
       <div>
-        <h3 className="text-white text-lg font-semibold mb-5">Voice Type</h3>
+        <h3 className="text-gray-900 dark:text-white text-lg font-semibold mb-5">Voice Type</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {voices.map((voice) => (
             <button
@@ -162,7 +162,7 @@ export default function Step4VoiceNarration({
               className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
                 selectedVoice === voice.id
                   ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-[#1A3155] bg-[#0B0E12] hover:border-[#2A4A7A]"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-[#2A4A7A]"
               }`}
             >
               {/* Avatar */}
@@ -178,7 +178,7 @@ export default function Step4VoiceNarration({
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <p className="text-white text-xs font-semibold leading-tight">
+                <p className="text-gray-900 dark:text-white text-xs font-semibold leading-tight">
                   {voice.name} - {voice.description}
                 </p>
                 <div className="flex items-center gap-1.5 mt-1.5">

@@ -47,8 +47,8 @@ export default function AdminOverview() {
       {/* Page Title + Dropdown */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">Platform Overview</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Platform Overview</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Real-time performance metrics for VidFlow
           </p>
         </div>
@@ -56,14 +56,14 @@ export default function AdminOverview() {
         <div className="relative">
           <button
             onClick={() => setShowRangeDropdown(!showRangeDropdown)}
-            className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2 text-sm text-gray-300 hover:border-[#2563EB] transition-colors"
+            className="flex items-center gap-2 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:border-[#2563EB] transition-colors"
           >
             <CalendarDays className="w-4 h-4 text-gray-400" />
             {selectedRange.label}
             <ChevronDown className="w-4 h-4" />
           </button>
           {showRangeDropdown && (
-            <div className="absolute right-0 top-full mt-1 bg-[#0D1117] border border-[#1A3155] rounded-lg py-1 z-50 min-w-40">
+            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg py-1 z-50 min-w-40">
               {timeRanges.map((range) => (
                 <button
                   key={range.value}
@@ -71,8 +71,8 @@ export default function AdminOverview() {
                     setSelectedRange(range);
                     setShowRangeDropdown(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-[#1A2332] transition-colors ${
-                    selectedRange.value === range.value ? "text-cyan-400" : "text-gray-300"
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#1A2332] transition-colors ${
+                    selectedRange.value === range.value ? "text-cyan-400" : "text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   {range.label}

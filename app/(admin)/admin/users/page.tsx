@@ -88,8 +88,8 @@ export default function AdminUsersPage() {
       {/* Description and Search */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
          <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">User Management</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">User Management</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
           Manage user accounts, credits, and platform access
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function AdminUsersPage() {
               value={search}
               onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
               placeholder="Search users..."
-              className="w-full bg-[#0D1117] border border-[#1A3155] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#2563EB] transition-colors sm:w-80"
+              className="w-full bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2563EB] transition-colors sm:w-80"
             />
           </div>
         
@@ -110,11 +110,11 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-225">
             <thead>
-              <tr className="border-b border-[#1A3155]">
+              <tr className="border-b border-gray-200 dark:border-[#1A3155]">
                 <th className="text-left py-4 px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                   User
                 </th>
@@ -139,10 +139,10 @@ export default function AdminUsersPage() {
             <tbody>
               {isLoading || isFetching ? (
                 Array.from({ length: perPage }).map((_, i) => (
-                  <tr key={i} className="border-b border-[#1A3155]/50">
+                  <tr key={i} className="border-b border-gray-100 dark:border-[#1A3155]/50">
                     {Array.from({ length: 7 }).map((__, j) => (
                       <td key={j} className="py-4 px-5">
-                        <div className="h-4 bg-[#1A2332] rounded animate-pulse" />
+                        <div className="h-4 bg-gray-200 dark:bg-[#1A2332] rounded animate-pulse" />
                       </td>
                     ))}
                   </tr>
@@ -168,7 +168,7 @@ export default function AdminUsersPage() {
                   return (
                     <tr
                       key={user.id}
-                      className="border-b border-[#1A3155]/50 hover:bg-[#1A2332]/40 transition-colors"
+                      className="border-b border-gray-100 dark:border-[#1A3155]/50 hover:bg-gray-50 dark:hover:bg-[#1A2332]/40 transition-colors"
                     >
                       {/* User */}
                       <td className="py-4 px-5">
@@ -179,7 +179,7 @@ export default function AdminUsersPage() {
                             {getInitials(user.name)}
                           </div>
                           <div>
-                            <p className="text-white font-medium">{user.name}</p>
+                            <p className="text-gray-900 dark:text-white font-medium">{user.name}</p>
                             <p className="text-gray-500 text-xs">{user.email}</p>
                           </div>
                         </div>
@@ -196,7 +196,7 @@ export default function AdminUsersPage() {
 
                       {/* Payment */}
                       <td className="py-4 px-5">
-                        <p className="text-white font-medium">
+                        <p className="text-gray-900 dark:text-white font-medium">
                           ${user.total_payment_made.toFixed(2)}
                         </p>
                       </td>
@@ -208,7 +208,7 @@ export default function AdminUsersPage() {
                             <span className="text-gray-400">{user.credits_used} used</span>
                             <span className="text-gray-500">{user.credits_left} left</span>
                           </div>
-                          <div className="h-1.5 bg-[#1A2332] rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
                             <div
                               className="h-full bg-cyan-500 rounded-full transition-all"
                               style={{ width: `${usedPercentage}%` }}
@@ -219,7 +219,7 @@ export default function AdminUsersPage() {
 
                       {/* Videos */}
                       <td className="py-4 px-5">
-                        <span className="text-white font-medium">{user.total_videos_generated}</span>
+                        <span className="text-gray-900 dark:text-white font-medium">{user.total_videos_generated}</span>
                       </td>
 
                       {/* Status */}
@@ -237,17 +237,17 @@ export default function AdminUsersPage() {
                         <div className="relative" ref={openMenuId === user.id ? menuRef : null}>
                           <button
                             onClick={() => setOpenMenuId(openMenuId === user.id ? null : user.id)}
-                            className="text-gray-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-[#1A2332]"
+                            className="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#1A2332]"
                           >
                             <MoreVertical className="w-5 h-5" />
                           </button>
 
                           {openMenuId === user.id && (
-                            <div className="absolute right-0 top-8 z-50 w-44 bg-[#0D1117] border border-[#1A3155] rounded-xl shadow-xl overflow-hidden">
+                            <div className="absolute right-0 top-8 z-50 w-44 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl shadow-xl overflow-hidden">
                               {effectiveStatus === "active" ? (
                                 <button
                                   onClick={() => { handleToggleStatus(user); setOpenMenuId(null); }}
-                                  className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-[#FF3C3C] hover:bg-[#1A2332] transition-colors"
+                                  className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-[#FF3C3C] hover:bg-gray-100 dark:hover:bg-[#1A2332] transition-colors"
                                 >
                                   <UserX className="w-4 h-4" />
                                   Suspend User
@@ -255,7 +255,7 @@ export default function AdminUsersPage() {
                               ) : (
                                 <button
                                   onClick={() => { handleToggleStatus(user); setOpenMenuId(null); }}
-                                  className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-[#00D492] hover:bg-[#1A2332] transition-colors"
+                                  className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-[#00D492] hover:bg-gray-100 dark:hover:bg-[#1A2332] transition-colors"
                                 >
                                   <UserCheck className="w-4 h-4" />
                                   Activate User
@@ -274,7 +274,7 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-5 py-3 sm:py-4 border-t border-[#1A3155]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-5 py-3 sm:py-4 border-t border-gray-200 dark:border-[#1A3155]">
           <p className="text-xs sm:text-sm text-gray-500">
             Page {currentPage}
           </p>
@@ -282,7 +282,7 @@ export default function AdminUsersPage() {
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 sm:px-4 py-2 rounded-lg bg-[#1A2332] border border-[#1A3155] text-xs sm:text-sm text-gray-400 hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>

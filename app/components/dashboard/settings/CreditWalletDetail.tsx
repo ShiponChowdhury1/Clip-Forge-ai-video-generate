@@ -115,7 +115,7 @@ export default function CreditWalletDetail({
       {/* Back Link */}
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-gray-400 hover:text-white text-sm mb-4 transition-colors"
+        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm mb-4 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Profile
@@ -124,8 +124,8 @@ export default function CreditWalletDetail({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-white">Credit Wallet</h1>
-          <p className="text-gray-400 text-sm mt-1">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Credit Wallet</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
             Track your credits, purchases, and usage
           </p>
         </div>
@@ -159,62 +159,62 @@ export default function CreditWalletDetail({
         </div>
 
         {/* Purchased */}
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-5">
+        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="w-9 h-9 bg-green-500/10 rounded-lg flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-green-400" />
             </div>
             <TrendingUp className="w-4 h-4 text-green-400" />
           </div>
-          <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <p className="text-gray-600 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
             Purchased
           </p>
-          <p className="text-3xl font-bold text-white mb-1">600</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">600</p>
           <p className="text-green-400 text-xs">All time</p>
         </div>
 
         {/* Used */}
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-5">
+        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="w-9 h-9 bg-yellow-500/10 rounded-lg flex items-center justify-center">
               <TrendingDown className="w-4 h-4 text-yellow-400" />
             </div>
             <TrendingDown className="w-4 h-4 text-yellow-400" />
           </div>
-          <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <p className="text-gray-600 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
             Used
           </p>
-          <p className="text-3xl font-bold text-white mb-1">70</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">70</p>
           <p className="text-yellow-400 text-xs">All time</p>
         </div>
 
         {/* Remaining */}
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-5">
+        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="w-9 h-9 bg-blue-500/10 rounded-lg flex items-center justify-center">
               <Wallet className="w-4 h-4 text-blue-400" />
             </div>
             <Sparkles className="w-4 h-4 text-blue-400" />
           </div>
-          <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <p className="text-gray-600 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
             Remaining
           </p>
-          <p className="text-3xl font-bold text-white mb-1">{credits}</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{credits}</p>
           <p className="text-blue-400 text-xs">Current balance</p>
         </div>
       </div>
 
       {/* Transaction History */}
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 mb-6">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 mb-6">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-xl font-bold text-white">Transaction History</h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Transaction History</h3>
           <span className="text-gray-500 text-sm">
             {transactions.length} transactions
           </span>
         </div>
 
         {/* Table Header */}
-        <div className="grid grid-cols-[120px_1fr_100px_100px] gap-4 pb-3 border-b border-[#1A2332] mb-1">
+        <div className="grid grid-cols-[120px_1fr_100px_100px] gap-4 pb-3 border-b border-gray-200 dark:border-[#1A2332] mb-1">
           <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
             Date
           </span>
@@ -230,23 +230,23 @@ export default function CreditWalletDetail({
         </div>
 
         {/* Rows */}
-        <div className="divide-y divide-[#1A2332]">
+        <div className="divide-y divide-gray-200 dark:divide-[#1A2332]">
           {transactions.map((tx, idx) => (
             <div
               key={idx}
               className="grid grid-cols-[120px_1fr_100px_100px] gap-4 py-4 items-center"
             >
-              <span className="text-gray-400 text-sm">{tx.date}</span>
+              <span className="text-gray-600 dark:text-gray-400 text-sm">{tx.date}</span>
               <div className="flex items-center gap-3">
                 {getActionIcon(tx.type)}
                 <div>
-                  <p className="text-white text-sm font-medium">{tx.action}</p>
+                  <p className="text-gray-900 dark:text-white text-sm font-medium">{tx.action}</p>
                   <p className="text-gray-500 text-xs">{tx.type}</p>
                 </div>
               </div>
               <span
                 className={`text-sm font-semibold text-right ${
-                  tx.credits > 0 ? "text-green-400" : "text-white"
+                  tx.credits > 0 ? "text-green-400" : "text-gray-900 dark:text-white"
                 }`}
               >
                 {tx.credits > 0 ? `+${tx.credits}` : tx.credits}
@@ -273,7 +273,7 @@ export default function CreditWalletDetail({
         </button>
         <button
           onClick={onBack}
-          className="flex items-center gap-2 bg-[#1A1F2E] hover:bg-[#252B3B] border border-[#2A3040] text-white px-6 py-3 rounded-xl font-medium transition-colors text-sm"
+          className="flex items-center gap-2 bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] border border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white px-6 py-3 rounded-xl font-medium transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Profile

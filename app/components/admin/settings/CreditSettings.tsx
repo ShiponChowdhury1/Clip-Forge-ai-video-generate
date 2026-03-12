@@ -11,15 +11,15 @@ export function CreditSettings() {
   const [allowNegativeBalance, setAllowNegativeBalance] = useState(false);
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 sm:p-8">
-      <h2 className="text-white text-xl font-bold mb-8">
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 sm:p-8">
+      <h2 className="text-gray-900 dark:text-white text-xl font-bold mb-8">
         Credit Consumption Rules
       </h2>
 
       {/* Credit Cost Per Video & Add-On Credit Cost */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
-          <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">
+          <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-2">
             Credit Cost Per Video
           </label>
           <div className="relative">
@@ -27,7 +27,7 @@ export function CreditSettings() {
               type="text"
               value={creditCostPerVideo}
               onChange={(e) => setCreditCostPerVideo(e.target.value)}
-              className="w-full bg-[#0A0F18] border border-[#1A3155] rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors pr-20"
+              className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3.5 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors pr-20"
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
               CREDITS
@@ -39,7 +39,7 @@ export function CreditSettings() {
         </div>
 
         <div>
-          <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">
+          <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-2">
             Add-On Credit Cost
           </label>
           <div className="relative">
@@ -50,7 +50,7 @@ export function CreditSettings() {
               type="text"
               value={addOnCreditCost}
               onChange={(e) => setAddOnCreditCost(e.target.value)}
-              className="w-full bg-[#0A0F18] border border-[#1A3155] rounded-xl pl-8 pr-4 py-3.5 text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors"
+              className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl pl-8 pr-4 py-3.5 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors"
             />
           </div>
           <p className="text-gray-500 text-xs mt-2">
@@ -62,14 +62,14 @@ export function CreditSettings() {
       {/* Credit Expiry Rules & Allow Negative Balance */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
-          <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">
+          <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-2">
             Credit Expiry Rules
           </label>
           <div className="relative">
             <select
               value={creditExpiry}
               onChange={(e) => setCreditExpiry(e.target.value)}
-              className="w-full bg-[#0A0F18] border border-[#1A3155] rounded-xl px-4 py-3.5 text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors appearance-none cursor-pointer"
+              className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3.5 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors appearance-none cursor-pointer"
             >
               <option value="Never">Never</option>
               <option value="30 Days">30 Days</option>
@@ -84,9 +84,9 @@ export function CreditSettings() {
           </p>
         </div>
 
-        <div className="bg-[#0A0F18] border border-[#1A3155] rounded-xl p-5 flex items-center justify-between">
+        <div className="bg-gray-50 dark:bg-[#0A0F18] border border-gray-200 dark:border-[#1A3155] rounded-xl p-5 flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               Allow Negative Balance
             </p>
             <p className="text-gray-500 text-xs">

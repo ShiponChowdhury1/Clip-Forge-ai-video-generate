@@ -142,10 +142,10 @@ export default function Step2FormatStyleMedia({
   setSceneMedia,
 }: Step2FormatStyleMediaProps) {
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-8">
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-8">
       {/* Video Format */}
       <div>
-        <h3 className="text-white text-base font-semibold mb-4">
+        <h3 className="text-gray-900 dark:text-white text-base font-semibold mb-4">
           Video Format
         </h3>
         <div className="flex items-end gap-3">
@@ -165,15 +165,15 @@ export default function Step2FormatStyleMedia({
                   className={`${option.innerWidth} ${option.innerHeight} rounded-lg border-2 ${
                     videoFormat === option.value
                       ? "border-[#3B82F6]"
-                      : "border-[#2A3A50]"
+                      : "border-gray-300 dark:border-[#2A3A50]"
                   } transition-colors`}
                 />
               </div>
               <span
                 className={`text-sm font-medium ${
                   videoFormat === option.value
-                    ? "text-white"
-                    : "text-gray-400"
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-600 dark:text-gray-400"
                 }`}
               >
                 {option.label}
@@ -185,7 +185,7 @@ export default function Step2FormatStyleMedia({
 
       {/* Video Style */}
       <div>
-        <h3 className="text-white text-lg font-semibold mb-5">Video Style</h3>
+        <h3 className="text-gray-900 dark:text-white text-lg font-semibold mb-5">Video Style</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {videoStyles.map((style) => (
             <button
@@ -213,8 +213,8 @@ export default function Step2FormatStyleMedia({
               <span
                 className={`text-xs font-medium transition-colors ${
                   videoStyle === style.value
-                    ? "text-white"
-                    : "text-gray-400 group-hover:text-gray-300"
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-600 dark:text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300"
                 }`}
               >
                 {style.label}
@@ -226,7 +226,7 @@ export default function Step2FormatStyleMedia({
 
       {/* Scene Media Options */}
       <div>
-        <h3 className="text-white text-sm font-semibold mb-4">
+        <h3 className="text-gray-900 dark:text-white text-sm font-semibold mb-4">
           Scene Media Options
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -237,10 +237,10 @@ export default function Step2FormatStyleMedia({
               className={`relative flex flex-col items-start p-4 rounded-xl border transition-all text-left ${
                 sceneMedia === option.value
                   ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-[#1A3155] bg-[#0B0E12] hover:border-[#2A4A7A]"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-[#2A4A7A]"
               }`}
             >
-              <span className="text-white text-sm font-medium">
+              <span className="text-gray-900 dark:text-white text-sm font-medium">
                 {option.label}
               </span>
               <span className="text-gray-500 text-xs mt-0.5">

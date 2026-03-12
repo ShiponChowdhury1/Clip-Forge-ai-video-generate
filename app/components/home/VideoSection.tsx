@@ -84,7 +84,7 @@ export default function VideoSection() {
                     scale: { duration: 0.25 },
                     layout: { type: "spring", stiffness: 260, damping: 28 },
                   }}
-                  className={`relative rounded-2xl overflow-hidden cursor-pointer group border border-gray-800/50 hover:border-gray-700/50 transition-colors duration-300 w-full sm:w-[calc(50%-10px)] xl:w-[calc(25%-15px)] ${
+                  className={`relative rounded-2xl overflow-hidden cursor-pointer group border border-gray-200 dark:border-gray-800/50 hover:border-gray-300 dark:hover:border-gray-700/50 transition-colors duration-300 w-full sm:w-[calc(50%-10px)] xl:w-[calc(25%-15px)] ${
                     index === 1 || index === 2 ? "aspect-[3/4]" : "aspect-[4/5]"
                   }`}
                 >
@@ -132,7 +132,7 @@ export default function VideoSection() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={prevSlide}
-          className="absolute left-2 sm:-left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-black/70 hover:bg-black/90 backdrop-blur-sm border border-gray-700/50 rounded-full flex items-center justify-center text-white transition-all duration-200"
+          className="absolute left-2 sm:-left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-white/70 dark:bg-black/70 hover:bg-white/90 dark:hover:bg-black/90 backdrop-blur-sm border border-gray-300 dark:border-gray-700/50 rounded-full flex items-center justify-center text-gray-900 dark:text-white transition-all duration-200"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -142,7 +142,7 @@ export default function VideoSection() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={nextSlide}
-          className="absolute right-2 sm:-right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-black/70 hover:bg-black/90 backdrop-blur-sm border border-gray-700/50 rounded-full flex items-center justify-center text-white transition-all duration-200"
+          className="absolute right-2 sm:-right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-white/70 dark:bg-black/70 hover:bg-white/90 dark:hover:bg-black/90 backdrop-blur-sm border border-gray-300 dark:border-gray-700/50 rounded-full flex items-center justify-center text-gray-900 dark:text-white transition-all duration-200"
           aria-label="Next slide"
         >
           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />

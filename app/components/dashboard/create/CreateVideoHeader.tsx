@@ -11,7 +11,7 @@ export default function CreateVideoHeader({
   credits = 450,
 }: CreateVideoHeaderProps) {
   return (
-    <div className="bg-[#0A0A0A] border border-[#1F1F1F] rounded-2xl p-6 mb-6 w-full">
+    <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6 mb-6 w-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Image
@@ -22,11 +22,11 @@ export default function CreateVideoHeader({
             className="w-12 h-12 rounded-xl object-cover"
           />
           <div>
-            <h1 className="text-xl font-bold text-white">Create New Video</h1>
-            <p className="text-sm text-gray-400">Design your video step by step</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Create New Video</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Design your video step by step</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-gray-400 text-sm">
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-sm">
           <Sparkles className="w-4 h-4" />
           <span>Credits: {credits}</span>
         </div>

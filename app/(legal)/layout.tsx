@@ -6,7 +6,7 @@ export default function LegalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-black flex flex-col">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />

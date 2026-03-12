@@ -78,7 +78,7 @@ export default function VerifyEmailForm() {
 
         <AuthButton text="Verify" loading={isLoading} />
 
-        <p className="text-gray-400 text-sm text-center">
+        <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
           Didn&apos;t receive the code?{" "}
           <button
             type="button"

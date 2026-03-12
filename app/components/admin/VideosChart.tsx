@@ -94,8 +94,8 @@ export default function VideosChart({ data }: VideosChartProps) {
   }, [data]);
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-6">
-      <h3 className="text-white font-semibold text-base sm:text-lg mb-4">Videos Generated</h3>
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 sm:p-6">
+      <h3 className="text-gray-900 dark:text-white font-semibold text-base sm:text-lg mb-4">Videos Generated</h3>
       <canvas
         ref={canvasRef}
         className="w-full h-[180px] sm:h-[220px]"

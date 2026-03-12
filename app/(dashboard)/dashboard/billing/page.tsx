@@ -82,7 +82,7 @@ export default function BillingPage() {
       {view !== "main" && (
         <button
           onClick={handleBackToMain}
-          className="flex items-center gap-2 text-gray-400 hover:text-white text-sm mb-4 transition-colors"
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Billing

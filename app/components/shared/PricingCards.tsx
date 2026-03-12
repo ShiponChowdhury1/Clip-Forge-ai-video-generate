@@ -20,7 +20,7 @@ export default function PricingCards({
     <div>
       {/* Heading */}
       <h2
-        className={`font-bold text-center text-white ${
+        className={`font-bold text-center ${
           isSection
             ? "text-2xl sm:text-3xl md:text-4xl mb-2 sm:mb-3"
             : "text-2xl sm:text-3xl mb-2"
@@ -29,7 +29,7 @@ export default function PricingCards({
         Simple, credit-based pricing
       </h2>
       <p
-        className={`text-center text-gray-400 ${
+        className={`text-center text-gray-600 dark:text-gray-400 ${
           isSection
             ? "text-xs sm:text-sm mb-8 sm:mb-10 md:mb-12"
             : "text-sm mb-8"
@@ -49,8 +49,8 @@ export default function PricingCards({
             key={plan.name}
             className={`relative transition-all duration-300 flex flex-col w-full ${
               plan.highlighted
-                ? "bg-linear-to-b from-gray-800/80 to-gray-900/80 border-cyan-500/50 shadow-lg shadow-cyan-500/5 order-first lg:order-none"
-                : "bg-linear-to-b from-gray-900/50 to-black border-gray-800/50 hover:border-gray-700/50"
+                ? "bg-linear-to-b from-gray-100 dark:from-gray-800/80 to-white dark:to-gray-900/80 border-cyan-500/50 shadow-lg shadow-cyan-500/5 order-first lg:order-none"
+                : "bg-linear-to-b from-gray-50 dark:from-gray-900/50 to-white dark:to-black border-gray-200 dark:border-gray-800/50 hover:border-gray-300 dark:hover:border-gray-700/50"
             }`}
             style={
               isSection
@@ -96,11 +96,11 @@ export default function PricingCards({
             {/* Card Content */}
             <div className="flex flex-col h-full flex-1">
               <div style={{ marginBottom: isSection ? "35.46px" : "0" }} className={isSection ? "" : "mb-6"}>
-                <h3 className="text-lg font-semibold mb-1 text-white">
+                <h3 className="text-lg font-semibold mb-1">
                   {plan.name}
                 </h3>
                 <div className="mb-1">
-                  <span className="text-3xl font-bold text-white">
+                  <span className="text-3xl font-bold">
                     {plan.price}
                   </span>
                   <span className="text-gray-500 text-sm ml-2">
@@ -123,7 +123,7 @@ export default function PricingCards({
                     )}
                     <span
                       className={`text-sm ${
-                        feature.included ? "text-gray-300" : "text-gray-600"
+                        feature.included ? "text-gray-700 dark:text-gray-300" : "text-gray-400 dark:text-gray-600"
                       }`}
                     >
                       {feature.text}
@@ -138,7 +138,7 @@ export default function PricingCards({
                   className={`w-full py-3 font-medium transition text-sm ${
                     plan.highlighted
                       ? "bg-cyan-500 hover:bg-cyan-400 text-white"
-                      : "bg-transparent border border-gray-700 hover:border-gray-600 text-white"
+                      : "bg-transparent border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600"
                   }`}
                   style={{ borderRadius: "12px" }}
                 >

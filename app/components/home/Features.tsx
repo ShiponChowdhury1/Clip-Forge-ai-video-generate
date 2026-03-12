@@ -13,13 +13,13 @@ export default function Features() {
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="bg-gradient-to-b from-gray-900/50 to-black border border-gray-800/50 rounded-xl p-5 sm:p-6 md:p-8 hover:border-gray-700/50 transition-all duration-300"
+            className="bg-gradient-to-b from-gray-100 dark:from-gray-900/50 to-white dark:to-black border border-gray-200 dark:border-gray-800/50 rounded-xl p-5 sm:p-6 md:p-8 hover:border-gray-300 dark:hover:border-gray-700/50 transition-all duration-300"
           >
             <div className={`w-10 h-10 sm:w-12 sm:h-12 ${feature.iconBg} rounded-lg flex items-center justify-center mb-4 sm:mb-5`}>
               <feature.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${feature.iconColor}`} />
             </div>
-            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-white">{feature.title}</h3>
-            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">{feature.desc}</p>
+            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3">{feature.title}</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed">{feature.desc}</p>
           </div>
         ))}
       </div>

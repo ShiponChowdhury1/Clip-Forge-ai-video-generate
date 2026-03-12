@@ -17,7 +17,7 @@ export default function StepProgress({
           className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
             i < currentStep
               ? "bg-[#3B82F6]"
-              : "bg-[#1A2332]"
+              : "bg-gray-200 dark:bg-[#1A2332]"
           }`}
         />
       ))}

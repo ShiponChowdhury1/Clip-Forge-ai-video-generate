@@ -27,21 +27,21 @@ export default function GeneratingProgress({
   const isProcessing = !isComplete && !error;
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-6">
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}
-          className="text-gray-400 hover:text-white transition-colors"
+          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h2 className="text-white text-lg font-bold">Create New Video</h2>
+        <h2 className="text-gray-900 dark:text-white text-lg font-bold">Create New Video</h2>
       </div>
 
       {/* Generate heading */}
       <div className="flex items-center gap-3">
-        <h3 className="text-white text-base font-semibold">
+        <h3 className="text-gray-900 dark:text-white text-base font-semibold">
           {error ? "Generation Failed" : isComplete ? "Generation Complete" : "Generating..."}
         </h3>
         {isProcessing && (
@@ -51,7 +51,7 @@ export default function GeneratingProgress({
 
       {/* Progress bar */}
       <div>
-        <div className="relative w-full h-2 bg-[#1A2332] rounded-full overflow-hidden">
+        <div className="relative w-full h-2 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-1000 ease-out ${
               error ? "bg-[#E33629]" : isComplete ? "bg-[#22C55E]" : "bg-[#3B82F6]"
@@ -66,7 +66,7 @@ export default function GeneratingProgress({
             style={{ left: `calc(${progress}% - 7px)` }}
           />
         </div>
-        <p className="text-gray-400 text-sm mt-2">{progress}% Completed</p>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">{progress}% Completed</p>
       </div>
 
       {/* Steps */}
@@ -78,8 +78,8 @@ export default function GeneratingProgress({
               step.completed
                 ? "bg-[#22C55E] border-[#22C55E] text-white"
                 : step.active
-                ? "bg-[#0B0E12] border-[#3B82F6] text-white"
-                : "bg-[#0B0E12] border-[#1A3155] text-gray-400"
+                ? "bg-gray-50 dark:bg-[#0B0E12] border-[#3B82F6] text-gray-900 dark:text-white"
+                : "bg-gray-50 dark:bg-[#0B0E12] border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-400"
             }`}
           >
             <div
@@ -123,7 +123,7 @@ export default function GeneratingProgress({
       <div className="grid grid-cols-2 gap-3 pt-2">
         <button
           onClick={onBack}
-          className="bg-[#1A2332] hover:bg-[#243044] text-white font-medium text-sm py-3 rounded-xl transition-colors border border-[#1A3155]"
+          className="bg-gray-100 dark:bg-[#1A2332] hover:bg-gray-200 dark:hover:bg-[#243044] text-gray-900 dark:text-white font-medium text-sm py-3 rounded-xl transition-colors border border-gray-300 dark:border-[#1A3155]"
         >
           {error ? "Try Again" : "Back"}
         </button>
@@ -133,7 +133,7 @@ export default function GeneratingProgress({
           className={`font-medium text-sm py-3 rounded-xl transition-colors ${
             isComplete
               ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-              : "bg-[#1A2332] text-gray-500 cursor-not-allowed border border-[#1A3155]"
+              : "bg-gray-100 dark:bg-[#1A2332] text-gray-500 cursor-not-allowed border border-gray-300 dark:border-[#1A3155]"
           }`}
         >
           {isComplete ? "View Video" : "Generating..."}

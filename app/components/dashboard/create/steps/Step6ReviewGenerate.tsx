@@ -94,25 +94,25 @@ export default function Step6ReviewGenerate({
   return (
     <div className="space-y-4">
       {/* Main review card */}
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-6">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-6">
         {/* Header */}
         <div>
-          <h3 className="text-white text-lg font-bold">Review & Generate</h3>
-          <p className="text-gray-400 text-sm mt-1">
+          <h3 className="text-gray-900 dark:text-white text-lg font-bold">Review & Generate</h3>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
             Confirm your settings before generating
           </p>
         </div>
 
         {/* Configuration Summary */}
         <div>
-          <h4 className="text-white text-sm font-semibold mb-4">
+          <h4 className="text-gray-900 dark:text-white text-sm font-semibold mb-4">
             Configuration Summary
           </h4>
 
           {/* Script Preview */}
-          <div className="bg-[#0B0E12] border border-[#1A3155] rounded-xl p-4 mb-4">
-            <h5 className="text-white text-sm font-semibold">Script Preview</h5>
-            <p className="text-gray-400 text-xs mt-1">
+          <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 mb-4">
+            <h5 className="text-gray-900 dark:text-white text-sm font-semibold">Script Preview</h5>
+            <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
               Choose how captions will appear in your video
             </p>
             <p className="text-gray-500 text-xs mt-2">
@@ -125,7 +125,7 @@ export default function Step6ReviewGenerate({
             {configCards.map((card) => (
               <div
                 key={card.label}
-                className="flex items-center gap-3 bg-[#0B0E12] border border-[#1A3155] rounded-xl p-4"
+                className="flex items-center gap-3 bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4"
               >
                 <div
                   className={`w-9 h-9 rounded-lg ${card.iconBg} flex items-center justify-center shrink-0`}
@@ -133,7 +133,7 @@ export default function Step6ReviewGenerate({
                   <card.icon className={`w-4 h-4 ${card.iconColor}`} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-white text-sm font-medium">{card.label}</p>
+                  <p className="text-gray-900 dark:text-white text-sm font-medium">{card.label}</p>
                   <p className="text-gray-500 text-xs truncate">{card.value}</p>
                 </div>
               </div>
@@ -143,40 +143,40 @@ export default function Step6ReviewGenerate({
       </div>
 
       {/* Credit Usage */}
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-white text-sm font-bold">Credit Usage</h4>
+          <h4 className="text-gray-900 dark:text-white text-sm font-bold">Credit Usage</h4>
           <div className="flex items-center gap-1.5">
-            <span className="text-gray-400 text-sm">Balance:</span>
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Balance:</span>
             <span className="text-emerald-400 text-lg font-bold">127</span>
           </div>
         </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-gray-400 text-sm">
+            <span className="text-gray-600 dark:text-gray-400 text-sm">
               Base video ({estimatedMinutes} min)
             </span>
-            <span className="text-white text-sm font-medium">
+            <span className="text-gray-900 dark:text-white text-sm font-medium">
               +{baseCredits} credit
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-400 text-sm">Subtitles</span>
-            <span className="text-white text-sm font-medium">
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Subtitles</span>
+            <span className="text-gray-900 dark:text-white text-sm font-medium">
               +{subtitleCredits} credit
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-400 text-sm">VideoScenes</span>
-            <span className="text-white text-sm font-medium">
+            <span className="text-gray-600 dark:text-gray-400 text-sm">VideoScenes</span>
+            <span className="text-gray-900 dark:text-white text-sm font-medium">
               +{sceneCredits} credits
             </span>
           </div>
 
-          <div className="border-t border-[#1A3155] pt-3">
+          <div className="border-t border-gray-200 dark:border-[#1A3155] pt-3">
             <div className="flex items-center justify-between">
-              <span className="text-white text-sm font-bold">Total</span>
+              <span className="text-gray-900 dark:text-white text-sm font-bold">Total</span>
               <span className="text-[#3B82F6] text-sm font-bold">
                 {totalCredits} credits
               </span>

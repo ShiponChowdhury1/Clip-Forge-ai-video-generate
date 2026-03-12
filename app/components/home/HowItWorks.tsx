@@ -14,10 +14,10 @@ export default function HowItWorks() {
             <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6 bg-cyan-500/10 border border-cyan-500/20 rounded-xl sm:rounded-2xl flex items-center justify-center">
               <item.icon className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-500" />
             </div>
-            <h3 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3 text-white">
+            <h3 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3">
               {item.step}. {item.title}
             </h3>
-            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed max-w-xs mx-auto">{item.desc}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed max-w-xs mx-auto">{item.desc}</p>
           </div>
         ))}
       </div>

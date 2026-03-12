@@ -240,10 +240,10 @@ export default function VideoCard({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#111111] border border-[#1F1F1F] rounded-2xl overflow-hidden group hover:border-[#2A2A2A] transition-all duration-300"
+        className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl overflow-hidden group hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all duration-300"
       >
         {/* Video Preview */}
-        <div className="relative h-[230px] bg-[#0A0A0A] overflow-hidden">
+        <div className="relative h-[230px] bg-gray-100 dark:bg-[#0A0A0A] overflow-hidden">
           <video
             ref={previewVideoRef}
             src={videoUrl}
@@ -268,9 +268,9 @@ export default function VideoCard({
 
         {/* Content */}
         <div className="p-5">
-          <h3 className="text-white font-semibold text-lg mb-1">{title}</h3>
+          <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-1">{title}</h3>
           <p className="text-gray-500 text-sm mb-3">{category}</p>
-          <p className="text-gray-600 text-xs mb-4">{createdAt}</p>
+          <p className="text-gray-500 dark:text-gray-600 text-xs mb-4">{createdAt}</p>
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
@@ -292,7 +292,7 @@ export default function VideoCard({
             </button>
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="bg-[#1A1A1A] hover:bg-[#1A1A1A] border border-[#1F1F1F] hover:border-[#E33629] rounded-lg transition-all duration-200 flex items-center justify-center"
+              className="bg-gray-100 dark:bg-[#1A1A1A] hover:bg-gray-100 dark:hover:bg-[#1A1A1A] border border-gray-200 dark:border-[#1F1F1F] hover:border-[#E33629] dark:hover:border-[#E33629] rounded-lg transition-all duration-200 flex items-center justify-center"
               style={{ width: '40px', height: '40px', padding: '12px' }}
             >
               <Trash2 className="w-6 h-6 text-[#E33629]" />
@@ -316,16 +316,16 @@ export default function VideoCard({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 w-full max-w-sm mx-4"
+              className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 w-full max-w-sm mx-4"
             >
-              <h3 className="text-white text-lg font-bold mb-2">Delete Video</h3>
-              <p className="text-gray-400 text-sm mb-6">
-                Are you sure you want to delete <span className="text-white font-medium">&quot;{title}&quot;</span>? This action cannot be undone.
+              <h3 className="text-gray-900 dark:text-white text-lg font-bold mb-2">Delete Video</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+                Are you sure you want to delete <span className="text-gray-900 dark:text-white font-medium">&quot;{title}&quot;</span>? This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-[#1A3155] text-gray-300 text-sm font-medium hover:border-gray-500 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 text-sm font-medium hover:border-gray-500 transition-colors"
                 >
                   Cancel
                 </button>

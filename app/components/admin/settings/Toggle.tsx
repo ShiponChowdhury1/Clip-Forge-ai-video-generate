@@ -11,7 +11,7 @@ export function Toggle({
     <button
       onClick={() => onChange(!enabled)}
       className={`relative w-12 h-6 rounded-full transition-colors ${
-        enabled ? "bg-cyan-500" : "bg-[#1A3155]"
+        enabled ? "bg-cyan-500" : "bg-gray-300 dark:bg-[#1A3155]"
       }`}
     >
       <span

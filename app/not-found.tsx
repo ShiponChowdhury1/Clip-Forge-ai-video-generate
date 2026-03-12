@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen w-full bg-black text-white flex items-center justify-center px-6">
+    <div className="min-h-screen w-full bg-white dark:bg-black text-gray-900 dark:text-white flex items-center justify-center px-6">
       <div className="text-center max-w-lg">
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-2 mb-12">
@@ -27,7 +27,7 @@ export default function NotFound() {
         </h1>
         
         {/* Description */}
-        <p className="text-gray-400 text-base mb-8 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-400 text-base mb-8 leading-relaxed">
           Oops! The page you&apos;re looking for doesn&apos;t exist. It might have been moved or deleted.
         </p>
         
@@ -41,7 +41,7 @@ export default function NotFound() {
           </Link>
           <Link
             href="/#faq"
-            className="bg-transparent border border-gray-700 hover:border-gray-500 text-white font-medium px-6 py-3 rounded-lg transition text-sm"
+            className="bg-transparent border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 font-medium px-6 py-3 rounded-lg transition text-sm"
           >
             View FAQ
           </Link>

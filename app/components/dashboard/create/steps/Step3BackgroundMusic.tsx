@@ -123,14 +123,14 @@ export default function Step3BackgroundMusic({
   ];
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 space-y-8">
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-8">
       {/* Background Music */}
       <div>
-        <h3 className="text-white text-base font-semibold mb-4">
+        <h3 className="text-gray-900 dark:text-white text-base font-semibold mb-4">
           Background Music
         </h3>
         {isLoading ? (
-          <div className="text-gray-400 text-sm py-4 text-center">Loading music...</div>
+          <div className="text-gray-600 dark:text-gray-400 text-sm py-4 text-center">Loading music...</div>
         ) : (
         <div className="space-y-2">
           {musicOptions.map((option) => (
@@ -145,7 +145,7 @@ export default function Step3BackgroundMusic({
               className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${
                 backgroundMusic === option.value
                   ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-[#1A3155] bg-[#0B0E12] hover:border-[#2A4A7A]"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-[#2A4A7A]"
               }`}
             >
               {/* Color indicator */}
@@ -155,7 +155,7 @@ export default function Step3BackgroundMusic({
 
               {/* Info */}
               <div className="flex-1 text-left">
-                <span className="text-white text-sm font-medium">
+                <span className="text-gray-900 dark:text-white text-sm font-medium">
                   {option.label}
                 </span>
               </div>
@@ -166,7 +166,7 @@ export default function Step3BackgroundMusic({
                   className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                     playingId === option.value
                       ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
-                      : "bg-[#1A2332] border border-[#1A3155]"
+                      : "bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155]"
                   }`}
                 >
                   {playingId === option.value ? (

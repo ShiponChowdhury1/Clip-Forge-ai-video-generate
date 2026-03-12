@@ -108,8 +108,8 @@ export default function CreditsChart({ data }: CreditsChartProps) {
   }, [data]);
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-6">
-      <h3 className="text-white font-semibold text-lg mb-4">Credits Used Over Time</h3>
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-6">
+      <h3 className="text-gray-900 dark:text-white font-semibold text-lg mb-4">Credits Used Over Time</h3>
       <canvas
         ref={canvasRef}
         className="w-full h-[220px]"

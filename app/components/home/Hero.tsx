@@ -16,7 +16,7 @@ export default function Hero() {
       </h1>
       
       {/* Description */}
-      <p className="text-gray-400 text-sm sm:text-base md:text-lg text-center max-w-2xl leading-relaxed px-2">
+      <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base md:text-lg text-center max-w-2xl leading-relaxed px-2">
         Scale your social media presence without ever showing your face. Automated generation for TikTok, Reels, and Shorts.
       </p>
 
@@ -28,7 +28,7 @@ export default function Hero() {
             <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
-        <button className="w-full sm:w-auto bg-transparent border border-gray-700 hover:border-gray-500 text-white font-medium px-5 sm:px-6 py-3 rounded-lg transition flex items-center justify-center gap-2 text-sm">
+        <button className="w-full sm:w-auto bg-transparent border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 font-medium px-5 sm:px-6 py-3 rounded-lg transition flex items-center justify-center gap-2 text-sm">
           <Play className="w-4 h-4" />
           Watch Demo
         </button>

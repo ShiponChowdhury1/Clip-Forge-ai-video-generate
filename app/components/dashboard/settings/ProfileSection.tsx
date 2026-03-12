@@ -115,14 +115,14 @@ export default function ProfileSection({
     <div className="space-y-6">
       {/* Page Title */}
       <div>
-        <h1 className="text-3xl font-bold text-white">Profile</h1>
-        <p className="text-gray-400 text-sm mt-1">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
           Manage your account settings and preferences
         </p>
       </div>
 
       {/* Profile Card */}
-      <div className="w-full lg:w-[60%] bg-[#0D1117] border border-[#1A3155] rounded-2xl overflow-hidden">
+      <div className="w-full lg:w-[60%] bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden">
         {/* Cover Banner with mesh gradient */}
         <div className="h-32 relative overflow-hidden">
           <div className="absolute inset-0 bg-linear-to-br from-[#1E3A5F] via-[#0D2847] to-[#162447]" />
@@ -140,7 +140,7 @@ export default function ProfileSection({
                 onChange={handlePictureChange}
                 className="hidden"
               />
-              <div className="w-26 h-26 rounded-2xl ring-[5px] ring-[#0D1117] overflow-hidden shadow-xl shadow-black/30">
+              <div className="w-26 h-26 rounded-2xl ring-[5px] ring-white dark:ring-[#0D1117] overflow-hidden shadow-xl shadow-black/10 dark:shadow-black/30">
                 {user?.picture ? (
                   <img
                     src={user.picture}
@@ -172,7 +172,7 @@ export default function ProfileSection({
                 )}
               </button>
               {/* Status dot */}
-              <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-emerald-500 rounded-md border-[3px] border-[#0D1117] rotate-45" />
+              <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-emerald-500 rounded-md border-[3px] border-white dark:border-[#0D1117] rotate-45" />
             </div>
           </div>
 
@@ -195,7 +195,7 @@ export default function ProfileSection({
                         }
                       }}
                       autoFocus
-                      className="bg-[#0A1628] border border-[#1A3155] rounded-lg px-3 py-1 text-white text-lg font-bold focus:outline-none focus:border-[#3B82F6] transition-colors w-48 h-9"
+                      className="bg-gray-100 dark:bg-[#0A1628] border border-gray-300 dark:border-[#1A3155] rounded-lg px-3 py-1 text-gray-900 dark:text-white text-lg font-bold focus:outline-none focus:border-[#3B82F6] transition-colors w-48 h-9"
                     />
                     <button
                       onClick={handleSaveName}
@@ -209,20 +209,20 @@ export default function ProfileSection({
                         setIsEditingName(false);
                         setEditName(user?.name || "");
                       }}
-                      className="w-8 h-8 bg-[#1A1F2E] hover:bg-[#252B3B] border border-[#2A3040] rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors shrink-0"
+                      className="w-8 h-8 bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] border border-gray-300 dark:border-[#2A3040] rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors shrink-0"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
                   <>
-                    <h2 className="text-2xl font-bold text-white truncate">{user?.name || "User"}</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white truncate">{user?.name || "User"}</h2>
                     <button
                       onClick={() => {
                         setEditName(user?.name || "");
                         setIsEditingName(true);
                       }}
-                      className="w-7 h-7 bg-white/5 hover:bg-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all shrink-0"
+                      className="w-7 h-7 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all shrink-0"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
@@ -231,7 +231,7 @@ export default function ProfileSection({
               </div>
               {/* Email */}
               <div className="flex items-center gap-3 mt-1 flex-wrap">
-                <span className="flex items-center gap-1.5 text-gray-400 text-sm">
+                <span className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 text-sm">
                   <Mail className="w-3.5 h-3.5" />
                   {user?.email || "—"}
                 </span>
@@ -253,14 +253,14 @@ export default function ProfileSection({
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-8">
-            <div className="bg-[#0A1628]/80 border border-[#1A3155] rounded-xl p-4 text-center">
+            <div className="bg-gray-50 dark:bg-[#0A1628]/80 border border-gray-200 dark:border-[#1A3155] rounded-xl p-4 text-center">
               <div className="w-9 h-9 bg-cyan-500/10 rounded-lg flex items-center justify-center mx-auto mb-2.5">
                 <CreditCard className="w-4 h-4 text-cyan-400" />
               </div>
-              <p className="text-white font-bold text-2xl leading-none">{user?.credits ?? 0}</p>
+              <p className="text-gray-900 dark:text-white font-bold text-2xl leading-none">{user?.credits ?? 0}</p>
               <p className="text-gray-500 text-[11px] uppercase tracking-wider font-medium mt-1.5">Credits</p>
             </div>
-            <div className="bg-[#0A1628]/80 border border-[#1A3155] rounded-xl p-4 text-center">
+            <div className="bg-gray-50 dark:bg-[#0A1628]/80 border border-gray-200 dark:border-[#1A3155] rounded-xl p-4 text-center">
               <div className="w-9 h-9 bg-purple-500/10 rounded-lg flex items-center justify-center mx-auto mb-2.5">
                 <Crown className="w-4 h-4 text-purple-400" />
               </div>
@@ -272,17 +272,17 @@ export default function ProfileSection({
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6">
         <div className="flex items-center gap-2 mb-5">
           <Settings className="w-5 h-5 text-gray-400" />
-          <h3 className="text-lg font-bold text-white">Quick Actions</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Quick Actions</h3>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Credit Wallet */}
           <button
             onClick={() => onNavigate("wallet")}
-            className="bg-[#0A1628] border border-cyan-500/20 rounded-xl p-5 text-left hover:border-cyan-500/40 hover:bg-[#0B1A30] transition-all group"
+            className="bg-gray-50 dark:bg-[#0A1628] border border-cyan-500/20 rounded-xl p-5 text-left hover:border-cyan-500/40 hover:bg-gray-100 dark:hover:bg-[#0B1A30] transition-all group"
           >
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 bg-cyan-500/10 rounded-lg flex items-center justify-center">
@@ -290,14 +290,14 @@ export default function ProfileSection({
               </div>
               <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-cyan-400 transition-colors" />
             </div>
-            <p className="text-white font-semibold text-sm">Credit Wallet</p>
+            <p className="text-gray-900 dark:text-white font-semibold text-sm">Credit Wallet</p>
             <p className="text-gray-500 text-xs mt-0.5">View balance & history</p>
           </button>
 
           {/* Change Password */}
           <button
             onClick={() => onNavigate("password")}
-            className="bg-[#0A1020] border border-[#1A2332] rounded-xl p-5 text-left hover:border-[#3B82F6]/30 hover:bg-[#0B1322] transition-all group"
+            className="bg-gray-50 dark:bg-[#0A1020] border border-gray-200 dark:border-[#1A2332] rounded-xl p-5 text-left hover:border-[#3B82F6]/30 hover:bg-gray-100 dark:hover:bg-[#0B1322] transition-all group"
           >
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
@@ -305,14 +305,14 @@ export default function ProfileSection({
               </div>
               <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-blue-400 transition-colors" />
             </div>
-            <p className="text-white font-semibold text-sm">Change Password</p>
+            <p className="text-gray-900 dark:text-white font-semibold text-sm">Change Password</p>
             <p className="text-gray-500 text-xs mt-0.5">Update security</p>
           </button>
 
           {/* Notifications */}
           <button
             onClick={() => onNavigate("notifications")}
-            className="bg-[#0A1020] border border-[#1A2332] rounded-xl p-5 text-left hover:border-amber-500/30 hover:bg-[#0B1322] transition-all group"
+            className="bg-gray-50 dark:bg-[#0A1020] border border-gray-200 dark:border-[#1A2332] rounded-xl p-5 text-left hover:border-amber-500/30 hover:bg-gray-100 dark:hover:bg-[#0B1322] transition-all group"
           >
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center">
@@ -320,7 +320,7 @@ export default function ProfileSection({
               </div>
               <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-amber-400 transition-colors" />
             </div>
-            <p className="text-white font-semibold text-sm">Notifications</p>
+            <p className="text-gray-900 dark:text-white font-semibold text-sm">Notifications</p>
             <p className="text-gray-500 text-xs mt-0.5">Manage alerts</p>
           </button>
         </div>

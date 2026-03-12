@@ -35,7 +35,7 @@ export default function AuthCard({
 
   return (
     <div
-      className="w-full mx-auto bg-[#161D21] border border-gray-700/50 flex flex-col items-center gap-[10px]"
+      className="w-full mx-auto bg-white dark:bg-[#161D21] border border-gray-200 dark:border-gray-700/50 flex flex-col items-center gap-[10px]"
       style={{
         maxWidth: style.maxWidth,
         minHeight: style.minHeight,
@@ -50,13 +50,13 @@ export default function AuthCard({
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl sm:text-3xl font-bold text-white text-center">
+      <h1 className="text-2xl sm:text-3xl font-bold text-center">
         {title}
       </h1>
 
       {/* Subtitle */}
       {subtitle && (
-        <p className="text-gray-400 text-sm text-center mb-2">{subtitle}</p>
+        <p className="text-gray-600 dark:text-gray-400 text-sm text-center mb-2">{subtitle}</p>
       )}
 
       {/* Form Content */}

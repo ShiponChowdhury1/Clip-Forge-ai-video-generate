@@ -72,24 +72,24 @@ export default function NotificationSettings({
             <Bell className="w-6 h-6 text-emerald-400" />
           </div>
         </div>
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Notification Settings
         </h1>
-        <p className="text-gray-400 text-sm mt-1">
+        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
           Manage your alerts and preferences
         </p>
       </div>
 
       {/* Notification Items */}
-      <div className="max-w-2xl mx-auto bg-[#0D1117] border border-[#1A3155] rounded-2xl p-6 mb-6">
+      <div className="max-w-2xl mx-auto bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 mb-6">
         <div className="space-y-3">
           {notifications.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between bg-[#0A1020] border border-[#1A2332] rounded-xl px-5 py-4"
+              className="flex items-center justify-between bg-gray-50 dark:bg-[#0A1020] border border-gray-200 dark:border-[#1A2332] rounded-xl px-5 py-4"
             >
               <div>
-                <p className="text-white text-sm font-semibold">
+                <p className="text-gray-900 dark:text-white text-sm font-semibold">
                   {item.title}
                 </p>
                 <p className="text-gray-500 text-xs mt-0.5">
@@ -100,7 +100,7 @@ export default function NotificationSettings({
               <button
                 onClick={() => toggleNotification(item.id)}
                 className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-200 ${
-                  item.enabled ? "bg-emerald-500" : "bg-gray-600"
+                  item.enabled ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
                 }`}
               >
                 <span
@@ -125,11 +125,11 @@ export default function NotificationSettings({
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
-            className="bg-[#1A1F2E] hover:bg-[#252B3B] border border-[#2A3040] text-white font-semibold px-6 py-2.5 rounded-xl transition-colors text-sm"
+            className="bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] border border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white font-semibold px-6 py-2.5 rounded-xl transition-colors text-sm"
           >
             Back
           </button>
-          <button className="bg-[#1A1F2E] hover:bg-[#252B3B] text-gray-300 font-medium px-6 py-2.5 rounded-xl transition-colors text-sm">
+          <button className="bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] text-gray-700 dark:text-gray-300 font-medium px-6 py-2.5 rounded-xl transition-colors text-sm">
             Save Preferences
           </button>
         </div>

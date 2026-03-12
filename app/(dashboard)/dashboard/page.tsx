@@ -26,18 +26,18 @@ export default function DashboardPage() {
 
       {/* Recently Generated Videos */}
       <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
           Recently Generated Video
         </h2>
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="bg-[#111111] border border-[#1F1F1F] rounded-2xl overflow-hidden animate-pulse">
-                <div className="h-[230px] bg-[#1A1A1A]" />
+              <div key={i} className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl overflow-hidden animate-pulse">
+                <div className="h-[230px] bg-gray-200 dark:bg-[#1A1A1A]" />
                 <div className="p-5 space-y-3">
-                  <div className="h-5 bg-[#1A1A1A] rounded w-3/4" />
-                  <div className="h-4 bg-[#1A1A1A] rounded w-1/2" />
-                  <div className="h-3 bg-[#1A1A1A] rounded w-1/3" />
+                  <div className="h-5 bg-gray-200 dark:bg-[#1A1A1A] rounded w-3/4" />
+                  <div className="h-4 bg-gray-200 dark:bg-[#1A1A1A] rounded w-1/2" />
+                  <div className="h-3 bg-gray-200 dark:bg-[#1A1A1A] rounded w-1/3" />
                 </div>
               </div>
             ))}

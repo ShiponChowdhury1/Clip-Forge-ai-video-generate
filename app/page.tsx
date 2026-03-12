@@ -11,7 +11,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="w-full min-h-screen bg-black text-white overflow-x-hidden">
+    <div className="w-full min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white overflow-x-hidden">
       <Navbar />
       <Hero />
       <VideoSection />

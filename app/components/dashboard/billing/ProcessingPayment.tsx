@@ -3,16 +3,16 @@
 export default function ProcessingPayment() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-2xl p-12 text-center max-w-md w-full">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-12 text-center max-w-md w-full">
         {/* Spinning Loader */}
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
         </div>
 
-        <h2 className="text-2xl font-bold text-white mb-3">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
           Processing Payment
         </h2>
-        <p className="text-gray-400 text-sm mb-6">
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
           Please wait while we securely process your transaction...
         </p>
 

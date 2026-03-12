@@ -45,8 +45,8 @@ export default function PlanDistribution({ plans }: PlanDistributionProps) {
   }, [coloredPlans, total]);
 
   return (
-    <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-6">
-      <h3 className="text-white font-semibold text-base sm:text-lg mb-4 sm:mb-6">Plan Distribution</h3>
+    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 sm:p-6">
+      <h3 className="text-gray-900 dark:text-white font-semibold text-base sm:text-lg mb-4 sm:mb-6">Plan Distribution</h3>
 
       <div className="flex justify-center mb-4 sm:mb-6">
         <canvas
@@ -64,7 +64,7 @@ export default function PlanDistribution({ plans }: PlanDistributionProps) {
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: plan.color }}
               />
-              <span className="text-gray-300">{plan.plan_name}</span>
+              <span className="text-gray-700 dark:text-gray-300">{plan.plan_name}</span>
             </div>
             <span className="text-gray-400">{plan.user_count} users</span>
           </div>

@@ -24,23 +24,23 @@ export default function PaymentSuccess({
           </div>
         </div>
 
-        <h2 className="text-3xl font-bold text-white mb-2">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           Payment Successful!
         </h2>
-        <p className="text-gray-400 text-sm mb-8">
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-8">
           <span className="text-cyan-400 font-semibold">{creditsAdded} credits</span>{" "}
           have been added to your account
         </p>
 
         {/* Updated Balance Card */}
-        <div className="bg-[#0D1117] border border-cyan-500/30 rounded-2xl p-6 mb-8">
+        <div className="bg-white dark:bg-[#0D1117] border border-cyan-500/30 rounded-2xl p-6 mb-8">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Wallet className="w-5 h-5 text-cyan-400" />
-            <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+            <span className="text-gray-600 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider">
               Updated Balance
             </span>
           </div>
-          <p className="text-5xl font-bold text-white mb-2">
+          <p className="text-5xl font-bold text-gray-900 dark:text-white mb-2">
             {updatedBalance.toLocaleString()}
           </p>
           <p className="text-cyan-400 text-sm">+{creditsAdded} credits added</p>
@@ -57,7 +57,7 @@ export default function PaymentSuccess({
           </Link>
           <button
             onClick={onViewInvoice}
-            className="flex items-center gap-2 bg-transparent border border-[#1A3155] text-cyan-400 hover:bg-[#1A2332] font-medium px-6 py-3 rounded-xl transition-colors text-sm"
+            className="flex items-center gap-2 bg-transparent border border-gray-300 dark:border-[#1A3155] text-cyan-400 hover:bg-gray-100 dark:hover:bg-[#1A2332] font-medium px-6 py-3 rounded-xl transition-colors text-sm"
           >
             <FileText className="w-4 h-4" />
             View Invoice

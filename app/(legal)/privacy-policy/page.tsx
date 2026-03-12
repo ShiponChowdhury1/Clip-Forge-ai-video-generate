@@ -15,10 +15,10 @@ export default function PrivacyPolicyPage() {
   };
 
   return (
-    <div className="w-full bg-black min-h-screen">
+    <div className="w-full bg-white dark:bg-black min-h-screen">
       <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
         {/* Title */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">
           Privacy Policy
         </h1>
         {policy?.updated_at && (
@@ -49,17 +49,17 @@ export default function PrivacyPolicyPage() {
             </div>
           ) : policy?.content ? (
             <div
-              className="text-gray-400 text-sm leading-relaxed
-                [&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-6
-                [&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-6
-                [&_h3]:text-white [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-4
+              className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed
+                [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-6
+                [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-6
+                [&_h3]:text-gray-900 dark:[&_h3]:text-white [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-4
                 [&_p]:mb-4
                 [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:space-y-1 [&_ul]:mb-4
                 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:space-y-1 [&_ol]:mb-4
-                [&_li]:text-gray-400
+                [&_li]:text-gray-600 dark:[&_li]:text-gray-400
                 [&_a]:text-cyan-400 [&_a]:underline [&_a]:hover:text-cyan-300
                 [&_blockquote]:border-l-4 [&_blockquote]:border-cyan-500/50 [&_blockquote]:pl-4 [&_blockquote]:py-1 [&_blockquote]:my-3 [&_blockquote]:text-gray-500 [&_blockquote]:italic
-                [&_strong]:text-white [&_strong]:font-semibold"
+                [&_strong]:text-gray-900 dark:[&_strong]:text-white [&_strong]:font-semibold"
               dangerouslySetInnerHTML={{ __html: policy.content }}
             />
           ) : (

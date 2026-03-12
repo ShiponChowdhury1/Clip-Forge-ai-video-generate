@@ -42,7 +42,7 @@ export default function AdminSettingsPage() {
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                     isActive
                       ? "bg-[#3B82F6] text-white"
-                      : "text-gray-400 hover:text-white hover:bg-[#1A2332]"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#1A2332]"
                   }`}
                 >
                   <Icon className="w-5 h-5 shrink-0" />

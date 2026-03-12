@@ -114,7 +114,7 @@ export default function RegisterForm() {
               className="w-5 h-5 mt-0.5 rounded border-gray-600 cursor-pointer accent-[#00A6F4]"
               style={{ backgroundColor: "#2D3235" }}
             />
-            <label htmlFor="terms" className="text-gray-400 text-sm leading-relaxed">
+            <label htmlFor="terms" className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
               I&apos;ve read and agree with the{" "}
               <Link href="/terms-of-service" className="text-[#00A6F4] font-semibold hover:underline">
                 Terms and Conditions
@@ -129,7 +129,7 @@ export default function RegisterForm() {
 
           <SocialButtons />
 
-          <p className="text-gray-400 text-sm text-center">
+          <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
             Already have an account?{" "}
             <Link href="/login" className="text-[#00A6F4] font-bold hover:underline">
               Log in
@@ -141,11 +141,11 @@ export default function RegisterForm() {
       {/* OTP Verification Modal */}
       {showOtpModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-          <div className="bg-[#0A0F1A] border border-[#1A3155] rounded-2xl w-full max-w-md p-6 sm:p-8 relative">
+          <div className="bg-white dark:bg-[#0A0F1A] border border-gray-200 dark:border-[#1A3155] rounded-2xl w-full max-w-md p-6 sm:p-8 relative">
             {/* Close button */}
             <button
               onClick={() => setShowOtpModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-white transition"
+              className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -157,8 +157,8 @@ export default function RegisterForm() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h2 className="text-white text-xl font-bold">Verify Your Email</h2>
-              <p className="text-gray-400 text-sm mt-2">
+              <h2 className="text-xl font-bold">Verify Your Email</h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
                 Enter the 6-digit verification code sent to{" "}
                 <span className="text-[#00A6F4] font-medium">{email}</span>
               </p>
@@ -180,7 +180,7 @@ export default function RegisterForm() {
 
               <AuthButton text="Verify" loading={isVerifying} />
 
-              <p className="text-gray-400 text-sm text-center">
+              <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
                 Didn&apos;t receive the code?{" "}
                 <button
                   type="button"

@@ -13,7 +13,7 @@ export default function FAQ() {
         {faqs.map((faq, index) => (
           <details
             key={index}
-            className="group border border-gray-800/50 rounded-xl sm:rounded-[18px] overflow-hidden bg-gray-900/30 hover:border-gray-700/50 transition-all duration-300"
+            className="group border border-gray-200 dark:border-gray-800/50 rounded-xl sm:rounded-[18px] overflow-hidden bg-gray-50 dark:bg-gray-900/30 hover:border-gray-300 dark:hover:border-gray-700/50 transition-all duration-300"
             style={{
               minHeight: "auto",
               padding: "1.24px",
@@ -21,11 +21,11 @@ export default function FAQ() {
             }}
           >
             <summary className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-6 cursor-pointer list-none min-h-[60px] sm:min-h-[82px] gap-4">
-              <span className="text-xs sm:text-sm font-medium text-white">{faq.question}</span>
+              <span className="text-xs sm:text-sm font-medium">{faq.question}</span>
               <ChevronDown className="w-4 h-4 text-gray-500 group-open:rotate-180 transition-transform duration-300 flex-shrink-0" />
             </summary>
             <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-              <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">{faq.answer}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed">{faq.answer}</p>
             </div>
           </details>
         ))}

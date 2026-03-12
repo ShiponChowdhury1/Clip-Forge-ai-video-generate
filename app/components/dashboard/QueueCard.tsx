@@ -75,14 +75,14 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
 
   return (
     <div
-      className={`bg-[#0D1117] border rounded-2xl overflow-hidden ${
+      className={`bg-white dark:bg-[#0D1117] border rounded-2xl overflow-hidden ${
         isProcessing
           ? "border-[#F59E0B]/30"
-          : "border-[#1A3155]"
+          : "border-gray-300 dark:border-[#1A3155]"
       }`}
     >
       {/* Thumbnail area with spinner */}
-      <div className="relative h-[230px] bg-[#0A0E14] flex flex-col items-center justify-center gap-3">
+      <div className="relative h-[230px] bg-gray-50 dark:bg-[#0A0E14] flex flex-col items-center justify-center gap-3">
         {isProcessing ? (
           <>
             {/* Animated spinner */}
@@ -150,7 +150,7 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
 
       {/* Info */}
       <div className="p-4">
-        <h3 className="text-white font-semibold text-sm truncate mb-2">
+        <h3 className="text-gray-900 dark:text-white font-semibold text-sm truncate mb-2">
           {item.video_data.title}
         </h3>
         <div className="flex items-center justify-between">
@@ -164,7 +164,7 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
         {/* Progress bar for processing */}
         {isProcessing && (
           <div className="mt-3">
-            <div className="w-full h-1.5 bg-[#1A2332] rounded-full overflow-hidden">
+            <div className="w-full h-1.5 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#F59E0B] to-[#F97316] rounded-full transition-all duration-500"
                 style={{ width: `${item.progress}%` }}

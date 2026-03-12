@@ -52,8 +52,8 @@ export default function AdminBillingRefundsPage() {
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">Billing / Refunds</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Billing / Refunds</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Manage billing information and process refunds
           </p>
         </div>
@@ -62,21 +62,21 @@ export default function AdminBillingRefundsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-5">
+        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 sm:p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wider">Total Revenue</p>
-          <p className="text-xl sm:text-2xl font-bold text-white mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
             {isLoading ? "—" : formatAmount(data?.total_revenue ?? 0)}
           </p>
         </div>
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-5">
+        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 sm:p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wider">Refunds Issued</p>
-          <p className="text-xl sm:text-2xl font-bold text-white mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
             {isLoading ? "—" : formatAmount(data?.refund_amount ?? 0)}
           </p>
         </div>
-        <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl p-4 sm:p-5">
+        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 sm:p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wider">Net Revenue</p>
-          <p className="text-xl sm:text-2xl font-bold text-white mt-1">
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
             {isLoading ? "—" : formatAmount(data?.net_revenue ?? 0)}
           </p>
         </div>
@@ -91,20 +91,20 @@ export default function AdminBillingRefundsPage() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(0); }}
             placeholder="Search transactions..."
-            className="w-full bg-[#0D1117] border border-[#1A3155] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#2563EB] transition-colors"
+            className="w-full bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2563EB] transition-colors"
           />
         </div>
         <div className="relative">
           <button
             onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-            className="flex items-center gap-2 bg-[#0D1117] border border-[#1A3155] rounded-lg px-4 py-2.5 text-sm text-gray-300 hover:border-[#2563EB] transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:border-[#2563EB] transition-colors whitespace-nowrap"
           >
             <CalendarDays className="w-4 h-4 text-gray-400" />
             {timeRanges.find((r) => r.value === timeFilter)?.label}
             <ChevronDown className="w-4 h-4" />
           </button>
           {showFilterDropdown && (
-            <div className="absolute right-0 top-full mt-1 bg-[#0D1117] border border-[#1A3155] rounded-lg py-1 z-50 min-w-40">
+            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg py-1 z-50 min-w-40">
               {timeRanges.map((range) => (
                 <button
                   key={range.value}
@@ -113,8 +113,8 @@ export default function AdminBillingRefundsPage() {
                     setPage(0);
                     setShowFilterDropdown(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-[#1A2332] transition-colors ${
-                    timeFilter === range.value ? "text-cyan-400" : "text-gray-300"
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#1A2332] transition-colors ${
+                    timeFilter === range.value ? "text-cyan-400" : "text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   {range.label}
@@ -126,11 +126,11 @@ export default function AdminBillingRefundsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-[#0D1117] border border-[#1A3155] rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[700px]">
             <thead>
-              <tr className="border-b border-[#1A3155]">
+              <tr className="border-b border-gray-200 dark:border-[#1A3155]">
                 <th className="text-left py-3 px-4 text-gray-500 font-medium">Transaction ID</th>
                 <th className="text-left py-3 px-4 text-gray-500 font-medium">User</th>
                 <th className="text-left py-3 px-4 text-gray-500 font-medium">Type</th>
@@ -159,16 +159,16 @@ export default function AdminBillingRefundsPage() {
                   const StatusIcon = cfg.icon;
                   const date = new Date(txn.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
                   return (
-                    <tr key={txn.id} className="border-b border-[#1A3155]/50 hover:bg-[#1A2332]/40 transition-colors">
-                      <td className="py-3 px-4 text-gray-400 font-mono text-xs">{txn.transaction_id}</td>
-                      <td className="py-3 px-4 text-white">{txn.user}</td>
+                    <tr key={txn.id} className="border-b border-gray-100 dark:border-[#1A3155]/50 hover:bg-gray-50 dark:hover:bg-[#1A2332]/40 transition-colors">
+                      <td className="py-3 px-4 text-gray-500 dark:text-gray-400 font-mono text-xs">{txn.transaction_id}</td>
+                      <td className="py-3 px-4 text-gray-900 dark:text-white">{txn.user}</td>
                       <td className="py-3 px-4">
                         <span className={`text-xs font-medium capitalize ${txn.payment_type === "refund" ? "text-red-400" : "text-green-400"}`}>
                           {txn.payment_type}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-gray-300">{formatAmount(txn.amount)}</td>
-                      <td className="py-3 px-4 text-gray-300">
+                      <td className="py-3 px-4 text-gray-700 dark:text-gray-300">{formatAmount(txn.amount)}</td>
+                      <td className="py-3 px-4 text-gray-700 dark:text-gray-300">
                         {txn.payment_type === "refund" ? "-" : "+"}{txn.credits.toLocaleString()}
                       </td>
                       <td className="py-3 px-4">
@@ -186,7 +186,7 @@ export default function AdminBillingRefundsPage() {
           </table>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-3 sm:px-4 py-3 border-t border-[#1A3155]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-3 sm:px-4 py-3 border-t border-gray-200 dark:border-[#1A3155]">
           <p className="text-xs text-gray-500">
             Showing {filtered.length} records
           </p>
@@ -194,7 +194,7 @@ export default function AdminBillingRefundsPage() {
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="w-8 h-8 rounded-lg bg-[#1A2332] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -204,7 +204,7 @@ export default function AdminBillingRefundsPage() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={records.length < LIMIT}
-              className="w-8 h-8 rounded-lg bg-[#1A2332] border border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

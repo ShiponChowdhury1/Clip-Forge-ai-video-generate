@@ -68,9 +68,9 @@ export default function AuthInput({
       </div>
 
       {/* Input Field */}
-      <div className="relative flex items-center w-full bg-[#0d1117] border border-gray-700/50 rounded-xl overflow-hidden focus-within:border-[#00A6F4]/50 transition">
+      <div className="relative flex items-center w-full bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl overflow-hidden focus-within:border-[#00A6F4]/50 transition">
         <div className="pl-4 flex items-center">
-          <Icon className="w-5 h-5 text-gray-500" />
+          <Icon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         </div>
         <input
           type={inputType}
@@ -78,8 +78,7 @@ export default function AuthInput({
           onChange={(e) => handleChange(e.target.value)}
           placeholder={placeholder}
           autoComplete="off"
-          className="w-full bg-transparent px-3 py-4 text-sm outline-none [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_9999px_#0d1117_inset] [&:-webkit-autofill]:[-webkit-text-fill-color:rgba(255,255,255,0.5)]"
-          style={{ color: "#FFFFFF80", backgroundColor: "transparent" }}
+          className="w-full bg-transparent px-3 py-4 text-sm outline-none text-gray-900 dark:text-white/50 placeholder-gray-400 dark:placeholder-gray-500"
         />
         {type === "password" && (
           <button
