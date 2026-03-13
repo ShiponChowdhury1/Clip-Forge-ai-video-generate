@@ -1,123 +1,51 @@
-export const metadata = {
-  title: "Terms of Service | Clipforge",
-};
+"use client";
+
+import { useGetAdminPoliciesQuery } from "@/lib/redux/features/admin/adminApi";
 
 export default function TermsOfServicePage() {
+  const { data: policies = [], isLoading } = useGetAdminPoliciesQuery();
+  const policy = policies[0];
+
   return (
     <div className="w-full bg-white dark:bg-black min-h-screen">
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
-        {/* Title */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">
+      <div className="max-w-330 mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">
           Terms of Service
         </h1>
-        <p className="text-gray-500 text-sm mb-8 sm:mb-12">
-          Last updated: February 1, 2026 • Version 2.4
+        {policy?.updated_at && (
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">
+            Effective Date: {new Date(policy.updated_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+          </p>
+        )}
+        <p className="max-w-4xl text-gray-600 dark:text-gray-400 text-sm sm:text-base leading-relaxed mb-8 sm:mb-12">
+          Welcome to ClipForge. These Terms of Service (&quot;Terms&quot;) govern your access to and use of the ClipForge website and AI-powered video generation platform (the &quot;Service&quot;). By accessing or using ClipForge, you agree to these Terms. If you do not agree, you may not use the Service.
         </p>
 
-        {/* Content Card */}
-        <div
-          className="w-full"
-          style={{
-            maxWidth: "1320px",
-            paddingTop: "33.11px",
-            paddingRight: "33.11px",
-            paddingBottom: "1.11px",
-            paddingLeft: "33.11px",
-            borderRadius: "16px",
-            borderWidth: "1.11px",
-            borderStyle: "solid",
-            borderColor: "#FFFFFF0D",
-            backgroundColor: "rgba(24, 24, 27, 0.5)",
-          }}
-        >
-          {/* Section 1 */}
-          <div className="mb-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4">
-              1. Acceptance of Terms
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-              By accessing or using Clipforge (&quot;Service&quot;), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.
-            </p>
-          </div>
-
-          {/* Section 2 */}
-          <div className="mb-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4">
-              2. Use of Service
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">
-              You agree to use the Service only for lawful purposes and in accordance with these Terms. You agree not to:
-            </p>
-            <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 text-sm leading-relaxed space-y-2 ml-4">
-              <li>Use the Service in any way that violates applicable laws or regulations</li>
-              <li>Generate content that is harmful, offensive, or infringes on intellectual property rights</li>
-              <li>Attempt to gain unauthorized access to our systems or other users&apos; accounts</li>
-              <li>Interfere with or disrupt the integrity or performance of the Service</li>
-            </ul>
-          </div>
-
-          {/* Section 3 */}
-          <div className="mb-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4">
-              3. Account Registration
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-              To access certain features of the Service, you must create an account. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
-            </p>
-          </div>
-
-          {/* Section 4 */}
-          <div className="mb-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4">
-              4. Credit System and Payments
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-              Our Service operates on a credit-based system. Credits are non-transferable and non-refundable except as outlined in our Refund Policy. Prices are subject to change with reasonable notice.
-            </p>
-          </div>
-
-          {/* Section 5 */}
-          <div className="mb-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4">
-              5. Intellectual Property
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-              Content generated through our platform belongs to you, subject to our licensing terms. The Service itself, including its original content, features, and functionality, is owned by Clipforge and is protected by international copyright, trademark, and other intellectual property laws.
-            </p>
-          </div>
-
-          {/* Section 6 */}
-          <div className="mb-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4">
-              6. Limitation of Liability
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-              In no event shall Clipforge be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, or other intangible losses resulting from your use of the Service.
-            </p>
-          </div>
-
-          {/* Section 7 */}
-          <div className="mb-8">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4">
-              7. Contact Us
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">
-              If you have any questions about these Terms of Service, please contact us at:
-            </p>
-            <div
-              className="rounded-lg p-5"
-              style={{
-                backgroundColor: "rgba(24, 24, 27, 0.8)",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "#FFFFFF0D",
-              }}
-            >
-              <p className="text-gray-900 dark:text-white text-sm font-semibold mb-2">Clipforge Legal Team</p>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Email: legal@clipforge.com</p>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Address: 123 Tech Avenue, San Francisco, CA 94105</p>
+        <div className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/3 p-6 sm:p-8 md:p-10">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="w-8 h-8 border-4 border-gray-300 dark:border-[#1A3155] border-t-cyan-500 rounded-full animate-spin" />
             </div>
-          </div>
+          ) : policy?.terms_of_service ? (
+            <div
+              className="text-gray-600 dark:text-gray-400 text-sm sm:text-[15px] leading-7
+                [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-6
+                [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:mt-6
+                [&_h3]:text-gray-900 dark:[&_h3]:text-white [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mb-2 [&_h3]:mt-4
+                [&_p]:mb-4
+                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ul]:mb-4
+                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_ol]:mb-4
+                [&_li]:text-gray-600 dark:[&_li]:text-gray-400
+                [&_a]:text-cyan-400 [&_a]:underline [&_a]:hover:text-cyan-300
+                [&_blockquote]:border-l-4 [&_blockquote]:border-cyan-500/50 [&_blockquote]:pl-4 [&_blockquote]:py-1 [&_blockquote]:my-3 [&_blockquote]:text-gray-500 [&_blockquote]:italic
+                [&_strong]:text-gray-900 dark:[&_strong]:text-white [&_strong]:font-semibold"
+              dangerouslySetInnerHTML={{ __html: policy.terms_of_service }}
+            />
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400 text-sm py-10 text-center">
+              No terms of service content available.
+            </p>
+          )}
         </div>
       </div>
     </div>

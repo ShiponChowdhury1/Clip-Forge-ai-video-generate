@@ -5,34 +5,30 @@ import { Save, Pencil, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { RichTextEditor } from "./RichTextEditor";
 import {
-  useGetPrivacyPolicyQuery,
-  useUpdatePrivacyPolicyMutation,
+  useCreateAdminPoliciesMutation,
+  useGetAdminPoliciesQuery,
+  useUpdateAdminPoliciesMutation,
 } from "@/lib/redux/features/admin/adminApi";
 
+const policyTabs = [
+  { key: "privacy_policy", label: "Privacy Policy" },
+  { key: "terms_of_service", label: "Terms of Service" },
+  { key: "refund_policy", label: "Refund Policy" },
+] as const;
+
+type PolicyKey = (typeof policyTabs)[number]["key"];
+
 export function LegalPolicy() {
-  const { data: policy, isLoading, refetch } = useGetPrivacyPolicyQuery();
-  const [updatePolicy, { isLoading: isSaving }] = useUpdatePrivacyPolicyMutation();
+  const { data: policies = [], isLoading, refetch } = useGetAdminPoliciesQuery();
+  const [createPolicies, { isLoading: isCreating }] = useCreateAdminPoliciesMutation();
+  const [updatePolicies, { isLoading: isUpdating }] = useUpdateAdminPoliciesMutation();
 
+  const [activeTab, setActiveTab] = useState<PolicyKey>("privacy_policy");
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState<string | null>(null);
-  const content = editContent ?? policy?.content ?? "";
+  const [draftContent, setDraftContent] = useState("");
 
-  const handleSave = async () => {
-    try {
-      await updatePolicy({ content }).unwrap();
-      refetch();
-      setEditContent(null);
-      setIsEditing(false);
-      toast.success("Privacy policy updated successfully!");
-    } catch {
-      toast.error("Failed to update privacy policy. Please try again.");
-    }
-  };
-
-  const handleCancel = () => {
-    setEditContent(null);
-    setIsEditing(false);
-  };
+  const currentPolicy = policies[0] ?? null;
+  const isSaving = isCreating || isUpdating;
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "";
@@ -43,18 +39,68 @@ export function LegalPolicy() {
     });
   };
 
+  const getPolicyValue = (key: PolicyKey) => {
+    if (!currentPolicy) return "";
+    return currentPolicy[key] ?? "";
+  };
+
+  const displayedContent = isEditing ? draftContent : getPolicyValue(activeTab);
+
+  const handleTabChange = (nextTab: PolicyKey) => {
+    setActiveTab(nextTab);
+    setIsEditing(false);
+    setDraftContent("");
+  };
+
+  const handleEdit = () => {
+    setDraftContent(getPolicyValue(activeTab));
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setDraftContent("");
+  };
+
+  const buildPayload = (nextValue: string) => ({
+    privacy_policy: activeTab === "privacy_policy" ? nextValue : getPolicyValue("privacy_policy"),
+    terms_of_service: activeTab === "terms_of_service" ? nextValue : getPolicyValue("terms_of_service"),
+    refund_policy: activeTab === "refund_policy" ? nextValue : getPolicyValue("refund_policy"),
+  });
+
+  const handleSave = async () => {
+    try {
+      const payload = buildPayload(draftContent);
+
+      if (!currentPolicy) {
+        await createPolicies(payload).unwrap();
+      } else {
+        await updatePolicies({ id: currentPolicy.id, body: payload }).unwrap();
+      }
+
+      await refetch();
+      setIsEditing(false);
+      setDraftContent("");
+      toast.success(`${policyTabs.find((tab) => tab.key === activeTab)?.label} updated successfully!`);
+    } catch {
+      toast.error("Failed to update policy. Please try again.");
+    }
+  };
+
+  const activeLabel = policyTabs.find((tab) => tab.key === activeTab)?.label ?? "Policy";
+
   return (
     <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 sm:p-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
         <div>
-          <h2 className="text-gray-900 dark:text-white text-xl sm:text-2xl font-bold px-5 ">Privacy Policy</h2>
-          {policy?.updated_at && (
-            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 px-5 ">
-              Last updated: {formatDate(policy.updated_at)}
+          <h2 className="text-gray-900 dark:text-white text-xl sm:text-2xl font-bold">Legal & Policy Manager</h2>
+          {currentPolicy?.updated_at && (
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+              Last updated: {formatDate(currentPolicy.updated_at)}
             </p>
           )}
         </div>
+
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
           {isEditing ? (
             <>
@@ -79,39 +125,57 @@ export function LegalPolicy() {
               </button>
             </>
           ) : (
-            <>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
-              >
-                <Pencil className="w-4 h-4" />
-                Edit
-              </button>
-             
-            </>
+            <button
+              onClick={handleEdit}
+              className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit {activeLabel}
+            </button>
           )}
         </div>
       </div>
 
-      {/* Editing indicator */}
+      <div className="mt-5 flex flex-wrap gap-2">
+        {policyTabs.map((tab) => {
+          const isActive = activeTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => handleTabChange(tab.key)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-[#3B82F6] text-white"
+                  : "bg-gray-100 dark:bg-[#0A0F18] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#1A2332]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
       {isEditing && (
         <div className="mt-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl px-4 py-3 flex items-center gap-2">
           <Pencil className="w-4 h-4 text-cyan-400" />
-          <p className="text-cyan-400 text-sm">You are now in edit mode. Use the toolbar to format content and click Save Changes.</p>
+          <p className="text-cyan-400 text-sm">Editing {activeLabel}. Use rich text tools and click Save Changes.</p>
         </div>
       )}
 
-      {/* Content */}
       <div className="mt-6">
         {isLoading ? (
           <div className="bg-gray-50 dark:bg-[#0A0F18] border border-gray-200 dark:border-[#1A3155] rounded-xl p-8 flex items-center justify-center">
             <div className="w-6 h-6 border-2 border-gray-300 dark:border-[#1A3155] border-t-cyan-500 rounded-full animate-spin" />
           </div>
         ) : isEditing ? (
-          <RichTextEditor value={content} onChange={setEditContent} />
+          <RichTextEditor
+            key={`policy-editor-${activeTab}-${currentPolicy?.updated_at ?? "new"}`}
+            value={displayedContent}
+            onChange={setDraftContent}
+          />
         ) : (
           <div
-            className="bg-gray-50 dark:bg-[#0A0F18]  rounded-xl p-6 sm:p-8 text-gray-700 dark:text-gray-300 text-sm leading-relaxed
+            className="bg-gray-50 dark:bg-[#0A0F18] rounded-xl p-6 sm:p-8 text-gray-700 dark:text-gray-300 text-sm leading-relaxed
               [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
               [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
               [&_a]:text-cyan-400 [&_a]:underline [&_a]:hover:text-cyan-300
@@ -122,7 +186,7 @@ export function LegalPolicy() {
               [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:space-y-1 [&_ol]:my-2
               [&_li]:text-gray-700 dark:[&_li]:text-gray-300
               [&_p]:my-1.5"
-            dangerouslySetInnerHTML={{ __html: content || "<p>No privacy policy content yet. Click Edit to add content.</p>" }}
+            dangerouslySetInnerHTML={{ __html: displayedContent || `<p>No ${activeLabel.toLowerCase()} content yet. Click Edit to add content.</p>` }}
           />
         )}
       </div>

@@ -8,12 +8,19 @@ import type {
   AdminBillingParams,
   AdminBillingResponse,
   AdminLogEntry,
+  AdminFaq,
+  AdminFaqParams,
+  CreateAdminFaqPayload,
+  UpdateAdminFaqPayload,
+  LegalPolicies,
+  LegalPoliciesPayload,
 } from "@/types/admin";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 
 export const adminApi = createApi({
   reducerPath: "adminApi",
+  tagTypes: ["AdminFaq", "AdminPolicies"],
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_BASE_URL}/v1/admin`,
     prepareHeaders: (headers, { getState }) => {
@@ -124,6 +131,67 @@ export const adminApi = createApi({
         body,
       }),
     }),
+
+    // 12. Get Unified Policies
+    getAdminPolicies: builder.query<LegalPolicies[], void>({
+      query: () => "/policies",
+      providesTags: ["AdminPolicies"],
+    }),
+
+    // 13. Create Unified Policies
+    createAdminPolicies: builder.mutation<LegalPolicies, LegalPoliciesPayload>({
+      query: (body) => ({
+        url: "/policies",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["AdminPolicies"],
+    }),
+
+    // 14. Update Unified Policies
+    updateAdminPolicies: builder.mutation<LegalPolicies, { id: number; body: LegalPoliciesPayload }>({
+      query: ({ id, body }) => ({
+        url: `/policies/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["AdminPolicies"],
+    }),
+
+    // 15. Get FAQ
+    getAdminFaq: builder.query<AdminFaq[], AdminFaqParams>({
+      query: ({ skip = 0, limit = 50 } = {}) => `/faq?skip=${skip}&limit=${limit}`,
+      providesTags: ["AdminFaq"],
+    }),
+
+    // 16. Create FAQ
+    createAdminFaq: builder.mutation<AdminFaq, CreateAdminFaqPayload>({
+      query: (body) => ({
+        url: "/faq",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["AdminFaq"],
+    }),
+
+    // 17. Update FAQ
+    updateAdminFaq: builder.mutation<AdminFaq, UpdateAdminFaqPayload>({
+      query: ({ id, ...body }) => ({
+        url: `/faq/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["AdminFaq"],
+    }),
+
+    // 18. Delete FAQ
+    deleteAdminFaq: builder.mutation<{ message: string }, number>({
+      query: (id) => ({
+        url: `/faq/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AdminFaq"],
+    }),
   }),
 });
 
@@ -141,6 +209,13 @@ export const {
   useDeleteAdminLogMutation,
   useGetPrivacyPolicyQuery,
   useUpdatePrivacyPolicyMutation,
+  useGetAdminPoliciesQuery,
+  useCreateAdminPoliciesMutation,
+  useUpdateAdminPoliciesMutation,
+  useGetAdminFaqQuery,
+  useCreateAdminFaqMutation,
+  useUpdateAdminFaqMutation,
+  useDeleteAdminFaqMutation,
 } = adminApi;
 
 export type {
@@ -153,4 +228,10 @@ export type {
   AdminBillingResponse,
   AdminBillingRecord,
   AdminLogEntry,
+  AdminFaq,
+  AdminFaqParams,
+  CreateAdminFaqPayload,
+  UpdateAdminFaqPayload,
+  LegalPolicies,
+  LegalPoliciesPayload,
 } from "@/types/admin";

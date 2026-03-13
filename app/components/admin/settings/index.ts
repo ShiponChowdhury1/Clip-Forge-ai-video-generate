@@ -4,3 +4,4 @@ export { SubscriptionPlans } from "./SubscriptionPlans";
 export { LegalPolicy } from "./LegalPolicy";
 export { AdminRoles } from "./AdminRoles";
 export { RichTextEditor } from "./RichTextEditor";
+export { FAQQuestions } from "./FAQQuestions";

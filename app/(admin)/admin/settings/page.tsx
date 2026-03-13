@@ -12,11 +12,13 @@ import { CreditSettings } from "@/app/components/admin/settings/CreditSettings";
 import { SubscriptionPlans } from "@/app/components/admin/settings/SubscriptionPlans";
 import { LegalPolicy } from "@/app/components/admin/settings/LegalPolicy";
 import { AdminRoles } from "@/app/components/admin/settings/AdminRoles";
+import { FAQQuestions } from "@/app/components/admin/settings";
 
 const tabs = [
   { id: "credit-settings", label: "Credit Settings", icon: Settings2 },
   { id: "plan-pricing", label: "Plan & Pricing", icon: CreditCard },
   { id: "legal-policy", label: "Legal & Policy", icon: Scale },
+  { id: "frequently-asked-questions", label: "FAQ Questions", icon: CreditCard },
   { id: "admins-security", label: "Admins & Security", icon: ShieldCheck },
 ];
 
@@ -58,6 +60,7 @@ export default function AdminSettingsPage() {
           {activeTab === "credit-settings" && <CreditSettings />}
           {activeTab === "plan-pricing" && <SubscriptionPlans />}
           {activeTab === "legal-policy" && <LegalPolicy />}
+          {activeTab === "frequently-asked-questions" && <FAQQuestions />}
           {activeTab === "admins-security" && <AdminRoles />}
         </div>
       </div>

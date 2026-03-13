@@ -56,6 +56,19 @@ export interface PrivacyPolicy {
   updated_at: string;
 }
 
+// Single legal-policy payload for one API handling multiple policy sections.
+export interface LegalPoliciesPayload {
+  privacy_policy: string;
+  terms_of_service: string;
+  refund_policy?: string;
+}
+
+export interface LegalPolicies extends LegalPoliciesPayload {
+  id: number;
+  updated_at: string;
+  updated_by?: number;
+}
+
 export interface AdminBillingParams {
   skip?: number;
   limit?: number;
@@ -88,4 +101,25 @@ export interface AdminBillingResponse {
   refund_amount: number;
   net_revenue: number;
   records: AdminBillingRecord[];
+}
+
+export interface AdminFaq {
+  id: number;
+  Question: string;
+  Answer: string;
+  updated_at: string;
+}
+
+export interface AdminFaqParams {
+  skip?: number;
+  limit?: number;
+}
+
+export interface CreateAdminFaqPayload {
+  Question: string;
+  Answer: string;
+}
+
+export interface UpdateAdminFaqPayload extends CreateAdminFaqPayload {
+  id: number;
 }

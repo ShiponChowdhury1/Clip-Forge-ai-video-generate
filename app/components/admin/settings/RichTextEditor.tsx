@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import {
   Bold,
   Italic,
@@ -66,18 +66,32 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const colorPickerRef = useRef<HTMLInputElement>(null);
   const highlightPickerRef = useRef<HTMLInputElement>(null);
+  const lastAppliedValueRef = useRef("");
 
-  const exec = useCallback((command: string, value?: string) => {
-    document.execCommand(command, false, value);
+  // Sync external value into contentEditable without resetting cursor on each keystroke.
+  useEffect(() => {
+    if (!editorRef.current) return;
+    if (value !== lastAppliedValueRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value;
+      lastAppliedValueRef.current = value;
+    }
+  }, [value]);
+
+  const exec = useCallback((command: string, commandValue?: string) => {
+    document.execCommand(command, false, commandValue);
     editorRef.current?.focus();
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      const html = editorRef.current.innerHTML;
+      lastAppliedValueRef.current = html;
+      onChange(html);
     }
   }, [onChange]);
 
   const handleInput = useCallback(() => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      const html = editorRef.current.innerHTML;
+      lastAppliedValueRef.current = html;
+      onChange(html);
     }
   }, [onChange]);
 
@@ -225,7 +239,6 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         contentEditable
         suppressContentEditableWarning
         onInput={handleInput}
-        dangerouslySetInnerHTML={{ __html: value }}
         className="min-h-75 max-h-150 overflow-y-auto px-6 py-5 text-gray-700 dark:text-gray-300 text-sm leading-relaxed focus:outline-none
           [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
           [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
