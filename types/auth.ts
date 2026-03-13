@@ -1,5 +1,7 @@
 // Auth-related types
 
+export type UserRole = "user" | "admin" | "super_admin";
+
 export interface AuthState {
   token: string | null;
   user: AuthUser | null;
@@ -13,7 +15,7 @@ export interface AuthUser {
   email: string;
   credits: number;
   subscription_plan: string;
-  role: string;
+  role: UserRole;
   picture?: string;
 }
 
@@ -46,7 +48,7 @@ export interface LoginResponse {
     email: string;
     credits: number;
     subscription_plan: string;
-    role: string;
+    role: UserRole;
     created_at: string;
     picture?: string;
   };
@@ -88,7 +90,7 @@ export interface UserProfile {
   email: string;
   credits: number;
   subscription_plan: string;
-  role: string;
+  role: UserRole;
   created_at: string;
 }
 
@@ -101,6 +103,6 @@ export interface UpdateProfileResponse {
   subscription_plan: string;
   credits: number;
   status: string;
-  role: string;
+  role: UserRole;
   created_at: string;
 }

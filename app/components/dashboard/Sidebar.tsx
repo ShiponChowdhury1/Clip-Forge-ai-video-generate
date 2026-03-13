@@ -335,15 +335,15 @@ export default function Sidebar({ role = "user", onCollapsedChange }: SidebarPro
 
     {/* Logout Confirmation Modal */}
     {showLogoutModal && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-[9999] grid place-items-center p-4">
         {/* Backdrop with blur */}
         <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/45 backdrop-blur-xl"
           onClick={() => setShowLogoutModal(false)}
         />
 
         {/* Modal */}
-        <div className="relative bg-white dark:bg-[#0D1117] border border-gray-200 dark:border-[#1A3155] rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl shadow-black/10 dark:shadow-black/50 animate-in">
+        <div className="relative z-10 bg-white dark:bg-[#0D1117] border border-gray-200 dark:border-[#1A3155] rounded-2xl p-8 w-full max-w-md shadow-2xl shadow-black/10 dark:shadow-black/50 animate-in">
           {/* Warning Icon */}
           <div className="flex justify-center mb-5">
             <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">

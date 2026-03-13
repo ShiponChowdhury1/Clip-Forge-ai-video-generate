@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  Settings2,
-  CreditCard,
-  Scale,
+  Coins,
+  BadgeDollarSign,
+  FileText,
+  MessageCircleQuestion,
   ShieldCheck,
 } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
@@ -15,25 +16,68 @@ import { AdminRoles } from "@/app/components/admin/settings/AdminRoles";
 import { FAQQuestions } from "@/app/components/admin/settings";
 
 const tabs = [
-  { id: "credit-settings", label: "Credit Settings", icon: Settings2 },
-  { id: "plan-pricing", label: "Plan & Pricing", icon: CreditCard },
-  { id: "legal-policy", label: "Legal & Policy", icon: Scale },
-  { id: "frequently-asked-questions", label: "FAQ Questions", icon: CreditCard },
+  { id: "credit-settings", label: "Credit Settings", icon: Coins },
+  { id: "plan-pricing", label: "Plan & Pricing", icon: BadgeDollarSign },
+  { id: "legal-policy", label: "Legal & Policy", icon: FileText },
+  { id: "frequently-asked-questions", label: "FAQ Questions", icon: MessageCircleQuestion },
   { id: "admins-security", label: "Admins & Security", icon: ShieldCheck },
 ];
 
+const ACTIVE_TAB_STORAGE_KEY = "admin-settings-active-tab";
+const validTabIds = new Set(tabs.map((tab) => tab.id));
+
 export default function AdminSettingsPage() {
-  const [activeTab, setActiveTab] = useState("credit-settings");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window === "undefined") return "credit-settings";
+    const savedTab = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+    return savedTab && validTabIds.has(savedTab) ? savedTab : "credit-settings";
+  });
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const [tabsTopOffset, setTabsTopOffset] = useState(96);
+
+  useEffect(() => {
+    localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    const headerEl = headerRef.current;
+    if (!headerEl) return;
+
+    const updateOffset = () => {
+      const headerHeight = headerEl.getBoundingClientRect().height;
+      setTabsTopOffset(Math.round(headerHeight + 16));
+    };
+
+    updateOffset();
+    const observer = new ResizeObserver(updateOffset);
+    observer.observe(headerEl);
+    window.addEventListener("resize", updateOffset);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateOffset);
+    };
+  }, []);
 
   return (
     <div>
-      <AdminHeader />
+      <div
+        ref={headerRef}
+        className={`${
+          activeTab === "admins-security" ? "relative z-70" : "sticky top-0 z-70"
+        } bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur [&>header]:mb-0`}
+      >
+        <AdminHeader />
+      </div>
 
-    
-      <div className="flex flex-col lg:flex-row gap-6">
+
+      <div className="mt-6 flex flex-col lg:flex-row gap-6">
         {/* Left Sidebar Navigation */}
-        <div className="w-full lg:w-64 shrink-0">
-          <nav className="flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+        <div
+          className="w-full lg:w-64 shrink-0 sticky z-40 self-start"
+          style={{ top: `${tabsTopOffset}px` }}
+        >
+          <nav className="flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 bg-white/95 dark:bg-[#0A0A0A]/95 rounded-xl">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;

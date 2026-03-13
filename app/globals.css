@@ -153,3 +153,23 @@ input[type="checkbox"]:checked::before {
 .dark .react-datepicker__day--outside-month { color: #4b5563 !important; }
 .dark .react-datepicker__navigation:hover *::before { border-color: #fff !important; }
 .dark .react-datepicker__today-button { border-top: 1px solid #1A3155 !important; }
+
+/* ── Legal rich text readability fixes ──────────────────────────────── */
+.legal-rich-content,
+.legal-rich-content * {
+  color: #4b5563 !important;
+}
+
+.dark .legal-rich-content,
+.dark .legal-rich-content * {
+  color: #d1d5db !important;
+}
+
+.legal-rich-content a {
+  color: #4b5563 !important;
+  text-decoration: underline;
+}
+
+.dark .legal-rich-content a {
+  color: #d1d5db !important;
+}

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { Navbar } from "@/app/components";
 
+const isAdminRole = (role?: string | null) => role === "admin" || role === "super_admin";
+
 export default function AuthLayout({
   children,
 }: {
@@ -21,7 +23,7 @@ export default function AuthLayout({
 
   useEffect(() => {
     if (mounted && token) {
-      router.replace(user?.role === "admin" ? "/admin" : "/dashboard");
+      router.replace(isAdminRole(user?.role) ? "/admin" : "/dashboard");
     }
   }, [mounted, token, user, router]);
 

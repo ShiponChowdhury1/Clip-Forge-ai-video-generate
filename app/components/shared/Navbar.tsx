@@ -139,8 +139,9 @@ export default function Navbar() {
     router.push("/");
   };
 
-  const dashboardHref = user?.role === "admin" ? "/admin" : "/dashboard";
-  const settingsHref = user?.role === "admin" ? "/admin/settings" : "/dashboard/settings";
+    const isAdminRole = user?.role === "admin" || user?.role === "super_admin";
+    const dashboardHref = isAdminRole ? "/admin" : "/dashboard";
+    const settingsHref = isAdminRole ? "/admin/settings" : "/dashboard/settings";
 
   return (
     <>
@@ -231,7 +232,7 @@ export default function Navbar() {
                       onClick={() => setDropdownOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#1A2332] transition-colors"
                     >
-                      {user?.role === "admin" ? (
+                          {isAdminRole ? (
                         <><Shield className="w-4 h-4" /> Admin Panel</>
                       ) : (
                         <><LayoutDashboard className="w-4 h-4" /> Dashboard</>
@@ -334,7 +335,7 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
                   >
-                    {user?.role === "admin" ? (
+                    {isAdminRole ? (
                       <><Shield className="w-4 h-4" /> Admin Panel</>
                     ) : (
                       <><LayoutDashboard className="w-4 h-4" /> Dashboard</>

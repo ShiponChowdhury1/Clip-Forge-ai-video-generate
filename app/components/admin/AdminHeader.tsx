@@ -23,6 +23,7 @@ import {
   Check,
 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useLogoutMutation, useRequestChangePasswordOtpMutation, useVerifyChangePasswordOtpMutation, useChangePasswordMutation, useUpdateProfileMutation } from "@/lib/redux/features/auth/authApi";
@@ -106,7 +107,7 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-md" onClick={onClose} />
       <div className="relative bg-white dark:bg-[#111827] rounded-2xl w-full max-w-md mx-auto shadow-2xl border border-gray-200 dark:border-[#1E293B] overflow-hidden">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors z-10">
           <X className="w-5 h-5" />
@@ -322,7 +323,7 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-md" onClick={onClose} />
       <div className="relative bg-white dark:bg-[#111827] rounded-2xl w-full max-w-lg mx-auto shadow-2xl border border-gray-200 dark:border-[#1E293B] overflow-hidden">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors z-10">
           <X className="w-5 h-5" />
@@ -638,7 +639,7 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
 
             {/* Profile Dropdown */}
             {showProfileMenu && (
-              <div className="absolute right-0 top-full mt-2 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl shadow-2xl z-60 min-w-55 py-2 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl shadow-2xl z-100 min-w-55 py-2 overflow-hidden">
                 {/* User Info */}
                 <div className="px-4 py-3 border-b border-gray-200 dark:border-[#1A3155]">
                   <p className="text-gray-900 dark:text-white text-sm font-semibold truncate">{displayName}</p>
@@ -698,42 +699,45 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
       )}
 
       {/* Logout Confirmation Modal */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowLogoutModal(false)}
-          />
-          <div className="relative bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl shadow-black/20 dark:shadow-black/50">
-            <div className="flex justify-center mb-5">
-              <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-8 h-8 text-red-400" />
+      {mounted &&
+        showLogoutModal &&
+        createPortal(
+          <div className="fixed inset-0 z-9999 grid place-items-center p-4">
+            <div
+              className="absolute inset-0 bg-black/45 backdrop-blur-xl"
+              onClick={() => setShowLogoutModal(false)}
+            />
+            <div className="relative z-10 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-8 w-full max-w-md shadow-2xl shadow-black/20 dark:shadow-black/50">
+              <div className="flex justify-center mb-5">
+                <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
+                  <AlertTriangle className="w-8 h-8 text-red-400" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-2">
+                Confirm Logout
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm text-center mb-8">
+                Are you sure you want to sign out of your account?
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  className="flex-1 bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] border border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Yes, Logout
+                </button>
               </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-2">
-              Confirm Logout
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 text-sm text-center mb-8">
-              Are you sure you want to sign out of your account?
-            </p>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setShowLogoutModal(false)}
-                className="flex-1 bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] border border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition-colors text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
-              >
-                <LogOut className="w-4 h-4" />
-                Yes, Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </>
   );
 }

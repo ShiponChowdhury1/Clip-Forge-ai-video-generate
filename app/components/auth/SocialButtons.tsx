@@ -74,7 +74,7 @@ export default function SocialButtons() {
             email: googleUser.email,
             credits: 0,
             subscription_plan: "free",
-            role: "user",
+            role: "user" as const,
             picture: googleUser.picture,
           };
           localStorage.setItem("user", JSON.stringify(fallbackUser));
@@ -82,7 +82,7 @@ export default function SocialButtons() {
         }
       }
       const role = userData?.role || "user";
-      router.push(role === "admin" ? "/admin" : "/dashboard");
+      router.push(role === "admin" || role === "super_admin" ? "/admin" : "/dashboard");
     } catch (err: unknown) {
       const apiError = err as { data?: { detail?: string } };
       setError(apiError.data?.detail || "Google sign-in failed. Please try again.");

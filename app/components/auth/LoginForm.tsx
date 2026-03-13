@@ -27,7 +27,7 @@ export default function LoginForm() {
       localStorage.setItem("user", JSON.stringify(result.user));
       dispatch(setCredentials({ token: result.access_token }));
       dispatch(setUser(result.user));
-      router.push(result.user.role === "admin" ? "/admin" : "/dashboard");
+      router.push(result.user.role === "admin" || result.user.role === "super_admin" ? "/admin" : "/dashboard");
     } catch (err: unknown) {
       const apiError = err as { data?: { detail?: string | Array<{ msg: string }> } };
       const detail = apiError.data?.detail;

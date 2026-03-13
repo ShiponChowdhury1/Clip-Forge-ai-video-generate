@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
-import { faqs } from "@/app/data";
 
 interface RemoteFaqItem {
   id: number;
@@ -19,6 +18,23 @@ interface DisplayFaq {
 
 const API_ROOT = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 const REFUND_PHRASE = "Refund Policy";
+const FAQ_QUERY = "?skip=0&limit=50";
+
+function normalizeFaqItems(data: unknown): RemoteFaqItem[] {
+  const list = Array.isArray(data)
+    ? data
+    : typeof data === "object" && data !== null && Array.isArray((data as { items?: unknown }).items)
+      ? (data as { items: unknown[] }).items
+      : [];
+
+  return list.filter(
+    (item): item is RemoteFaqItem =>
+      typeof item === "object" &&
+      item !== null &&
+      typeof (item as { Question?: unknown }).Question === "string" &&
+      typeof (item as { Answer?: unknown }).Answer === "string"
+  );
+}
 
 export default function FAQ() {
   const [remoteFaqs, setRemoteFaqs] = useState<RemoteFaqItem[]>([]);
@@ -27,19 +43,38 @@ export default function FAQ() {
     let isMounted = true;
 
     const fetchFaqs = async () => {
+      const token = localStorage.getItem("token");
+      const headers: HeadersInit = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const endpoints = [
+        `${API_ROOT}/v1/faq${FAQ_QUERY}`,
+        `${API_ROOT}/v1/admin/faq${FAQ_QUERY}`,
+      ];
+
       try {
-        const res = await fetch(`${API_ROOT}/v1/admin/faq?skip=0&limit=50`, {
-          cache: "no-store",
-        });
+        for (const endpoint of endpoints) {
+          const res = await fetch(endpoint, {
+            cache: "no-store",
+            headers,
+          });
 
-        if (!res.ok) return;
-        const data = (await res.json()) as RemoteFaqItem[];
+          if (!res.ok) {
+            continue;
+          }
 
-        if (isMounted && Array.isArray(data)) {
-          setRemoteFaqs(data);
+          const data = (await res.json()) as unknown;
+          const normalized = normalizeFaqItems(data);
+
+          if (isMounted) {
+            setRemoteFaqs(normalized);
+          }
+          return;
         }
       } catch {
-        // Keep static FAQ fallback when API is unavailable.
+        // Keep current rendered state when API is unavailable.
       }
     };
 
@@ -53,16 +88,15 @@ export default function FAQ() {
   }, []);
 
   const displayFaqs = useMemo<DisplayFaq[]>(() => {
-    if (remoteFaqs.length > 0) {
-      return remoteFaqs.map((item) => ({
-        question: item.Question,
-        answer: item.Answer,
-      }));
-    }
-    return faqs;
+    return remoteFaqs.map((item) => ({
+      question: item.Question,
+      answer: item.Answer,
+    }));
   }, [remoteFaqs]);
 
   const renderAnswer = (answer: string) => {
+    if (typeof answer !== "string") return "";
+
     if (!answer.includes(REFUND_PHRASE)) {
       return answer;
     }
@@ -84,10 +118,15 @@ export default function FAQ() {
 
   return (
     <section id="faq" className="w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-10 md:mb-12">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white text-center mb-8 sm:mb-10 md:mb-12">
         Frequently Asked Questions
       </h2>
       <div className="max-w-[1320px] mx-auto space-y-2 sm:space-y-3">
+        {displayFaqs.length === 0 && (
+          <div className="rounded-xl sm:rounded-[18px] border border-gray-200 dark:border-gray-800/50 bg-gray-50 dark:bg-gray-900/30 px-4 sm:px-6 py-4 sm:py-6">
+            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">No FAQ available right now.</p>
+          </div>
+        )}
         {displayFaqs.map((faq, index) => (
           <details
             key={index}

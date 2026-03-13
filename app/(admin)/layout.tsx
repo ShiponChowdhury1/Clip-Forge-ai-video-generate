@@ -7,6 +7,8 @@ import { useGetMeQuery } from "@/lib/redux/features/auth/authApi";
 import { setUser } from "@/lib/redux/features/auth/authSlice";
 import Sidebar from "@/app/components/dashboard/Sidebar";
 
+const isAdminRole = (role?: string | null) => role === "admin" || role === "super_admin";
+
 export default function AdminLayout({
   children,
 }: {
@@ -53,13 +55,13 @@ export default function AdminLayout({
     if (mounted) {
       if (!token) {
         router.replace("/");
-      } else if (user && user.role !== "admin") {
+      } else if (user && !isAdminRole(user.role)) {
         router.replace("/dashboard");
       }
     }
   }, [mounted, token, user, router]);
 
-  if (!mounted || !token || (user && user.role !== "admin")) {
+  if (!mounted || !token || (user && !isAdminRole(user.role))) {
     return (
       <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-gray-300 dark:border-[#1A3155] border-t-[#3B82F6] rounded-full animate-spin" />

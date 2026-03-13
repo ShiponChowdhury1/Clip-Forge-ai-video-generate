@@ -298,31 +298,3 @@ export const videoCardData: VideoCardData[] = [
   },
 ];
 
-// FAQ Section Data
-export const faqs = [
-  {
-    question: "What are credits?",
-    answer:
-      "Credits are our internal currency. 1 credit = 1 video generation. Credits never expire and you can buy more whenever you need them.",
-  },
-  {
-    question: "Is the content really copyright free?",
-    answer:
-      "Yes, all our AI-generated scenes, music, and voiceovers are 100% copyright-free and royalty-free for commercial use.",
-  },
-  {
-    question: "Can I use my own voice?",
-    answer:
-      "Yes, you can upload your own voice recordings or use our premium AI voices. You have complete control over the audio.",
-  },
-  {
-    question: "What format are the videos exported in?",
-    answer:
-      "Videos are exported in MP4 format in 9:16 aspect ratio (1080x1920) resolution, perfect for TikTok, Reels, and Shorts.",
-  },
-  {
-    question: "Do you offer a free trial?",
-    answer:
-      "Yes, our Starter plan includes 50 free credits so you can test the platform before purchasing more credits.",
-  },
-];

@@ -1,5 +1,7 @@
 // Admin-related types
 
+export type AdminRole = "user" | "admin" | "super_admin";
+
 export interface AdminUsersParams {
   skip?: number;
   limit?: number;
@@ -34,7 +36,7 @@ export interface AdminUser {
   credits_used: number;
   total_videos_generated: number;
   status: "active" | "suspended";
-  role: string;
+  role: AdminRole;
   created_at: string;
 }
 

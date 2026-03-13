@@ -12,6 +12,7 @@ import type {
   AdminFaqParams,
   CreateAdminFaqPayload,
   UpdateAdminFaqPayload,
+  AdminRole,
   LegalPolicies,
   LegalPoliciesPayload,
 } from "@/types/admin";
@@ -192,6 +193,18 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ["AdminFaq"],
     }),
+
+    // 19. Update user role
+    updateUserRole: builder.mutation<
+      { message: string; user_id: number; new_role: AdminRole },
+      { userId: number; role: AdminRole }
+    >({
+      query: ({ userId, role }) => ({
+        url: `/${userId}/role`,
+        method: "PUT",
+        body: { role },
+      }),
+    }),
   }),
 });
 
@@ -216,6 +229,7 @@ export const {
   useCreateAdminFaqMutation,
   useUpdateAdminFaqMutation,
   useDeleteAdminFaqMutation,
+  useUpdateUserRoleMutation,
 } = adminApi;
 
 export type {
@@ -232,6 +246,7 @@ export type {
   AdminFaqParams,
   CreateAdminFaqPayload,
   UpdateAdminFaqPayload,
+  AdminRole,
   LegalPolicies,
   LegalPoliciesPayload,
 } from "@/types/admin";

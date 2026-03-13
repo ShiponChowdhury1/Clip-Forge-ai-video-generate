@@ -9,6 +9,7 @@ import {
   useGetAdminPoliciesQuery,
   useUpdateAdminPoliciesMutation,
 } from "@/lib/redux/features/admin/adminApi";
+import { sanitizeLegalHtml } from "@/app/helpers/sanitizeLegalHtml";
 
 const policyTabs = [
   { key: "privacy_policy", label: "Privacy Policy" },
@@ -175,7 +176,7 @@ export function LegalPolicy() {
           />
         ) : (
           <div
-            className="bg-gray-50 dark:bg-[#0A0F18] rounded-xl p-6 sm:p-8 text-gray-700 dark:text-gray-300 text-sm leading-relaxed
+            className="legal-rich-content bg-gray-50 dark:bg-[#0A0F18] rounded-xl p-6 sm:p-8 text-gray-700 dark:text-gray-300 text-sm leading-relaxed
               [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
               [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
               [&_a]:text-cyan-400 [&_a]:underline [&_a]:hover:text-cyan-300
@@ -186,7 +187,7 @@ export function LegalPolicy() {
               [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:space-y-1 [&_ol]:my-2
               [&_li]:text-gray-700 dark:[&_li]:text-gray-300
               [&_p]:my-1.5"
-            dangerouslySetInnerHTML={{ __html: displayedContent || `<p>No ${activeLabel.toLowerCase()} content yet. Click Edit to add content.</p>` }}
+            dangerouslySetInnerHTML={{ __html: sanitizeLegalHtml(displayedContent || `<p>No ${activeLabel.toLowerCase()} content yet. Click Edit to add content.</p>`) }}
           />
         )}
       </div>
