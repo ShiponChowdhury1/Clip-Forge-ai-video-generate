@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Download, ChevronLeft, ChevronRight, ChevronDown, CheckCircle, XCircle, Clock, CalendarDays } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, ChevronDown, CheckCircle, XCircle, Clock, CalendarDays } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
 import { useGetAdminBillingQuery } from "@/lib/redux/features/admin/adminApi";
 
@@ -43,8 +43,6 @@ export default function AdminBillingRefundsPage() {
       t.payment_type.toLowerCase().includes(search.toLowerCase()) ||
       t.transaction_id.toLowerCase().includes(search.toLowerCase())
   );
-
-  const totalPages = Math.ceil((data?.records.length === LIMIT ? (page + 2) * LIMIT : (page + 1) * LIMIT) / LIMIT);
 
   return (
     <div>

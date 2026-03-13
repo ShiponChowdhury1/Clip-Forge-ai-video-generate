@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthCard, AuthButton, OtpInput } from "@/app/components/auth";
 import { useVerifyOtpMutation, useForgotPasswordMutation } from "@/lib/redux/features/auth/authApi";

@@ -362,8 +362,6 @@ export default function CreateVideoPage() {
           <Step4VoiceNarration
             selectedVoice={selectedVoice}
             setSelectedVoice={setSelectedVoice}
-            script={script}
-            setScript={setScript}
           />
         );
       case 5:

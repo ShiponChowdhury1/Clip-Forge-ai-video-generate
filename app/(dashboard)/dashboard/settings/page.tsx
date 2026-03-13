@@ -25,7 +25,6 @@ export default function SettingsPage() {
               setView(v);
             }
           }}
-          onLogout={() => {}}
         />
       )}
 

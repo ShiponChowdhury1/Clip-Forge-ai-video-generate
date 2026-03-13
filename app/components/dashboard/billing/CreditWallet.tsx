@@ -1,6 +1,6 @@
 "use client";
 
-import { Wallet, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface CreditWalletProps {
   credits: number;

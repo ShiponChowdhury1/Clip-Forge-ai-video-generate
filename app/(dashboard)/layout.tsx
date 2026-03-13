@@ -13,14 +13,10 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const token = useAppSelector((state) => state.auth.token);
-  const [mounted, setMounted] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("sidebar-collapsed");
-    if (saved === "true") setSidebarCollapsed(true);
-  }, []);
+  const mounted = typeof window !== "undefined";
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => typeof window !== "undefined" && localStorage.getItem("sidebar-collapsed") === "true"
+  );
 
   useEffect(() => {
     if (mounted && !token) {

@@ -3,10 +3,25 @@
 import { useEffect, useRef } from "react";
 
 interface VideosChartProps {
-  data: { date: string; count: number }[];
+  data: { date?: string; day?: string; count: number }[];
+  timeFilter?: "all" | "7d" | "30d" | "90d";
 }
 
-export default function VideosChart({ data }: VideosChartProps) {
+function formatAxisLabel(rawDate: string | undefined, timeFilter: "all" | "7d" | "30d" | "90d"): string {
+  if (!rawDate) return "-";
+
+  const parsed = new Date(rawDate);
+  if (!Number.isNaN(parsed.getTime())) {
+    if (timeFilter === "7d") {
+      return parsed.toLocaleDateString("en-US", { weekday: "short" });
+    }
+    return parsed.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+
+  return rawDate;
+}
+
+export default function VideosChart({ data, timeFilter = "all" }: VideosChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -88,10 +103,10 @@ export default function VideosChart({ data }: VideosChartProps) {
     ctx.textAlign = "center";
     data.forEach((d, i) => {
       const x = padLeft + i * gap + gap / 2;
-      const label = new Date(d.date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const label = formatAxisLabel(d.date ?? d.day, timeFilter);
       ctx.fillText(label, x, h - 10);
     });
-  }, [data]);
+  }, [data, timeFilter]);
 
   return (
     <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 sm:p-6">

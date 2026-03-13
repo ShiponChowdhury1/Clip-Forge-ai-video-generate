@@ -92,7 +92,6 @@ export default function Sidebar({ role = "user", onCollapsedChange }: SidebarPro
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const token = useAppSelector((state) => state.auth.token);
   const user = useAppSelector((state) => state.auth.user);
   const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
 
@@ -257,10 +256,13 @@ export default function Sidebar({ role = "user", onCollapsedChange }: SidebarPro
           /* Collapsed: avatar only */
           <div className="flex justify-center px-2">
             {mounted && user?.picture ? (
-              <img
+              <Image
                 src={user.picture}
                 alt={profile.name}
                 referrerPolicy="no-referrer"
+                width={40}
+                height={40}
+                unoptimized
                 className="w-10 h-10 rounded-full shrink-0 object-cover"
               />
             ) : (
@@ -273,10 +275,13 @@ export default function Sidebar({ role = "user", onCollapsedChange }: SidebarPro
           /* Expanded: full profile */
           <div className="flex items-center gap-3 px-2">
             {mounted && user?.picture ? (
-              <img
+              <Image
                 src={user.picture}
                 alt={profile.name}
                 referrerPolicy="no-referrer"
+                width={40}
+                height={40}
+                unoptimized
                 className="w-10 h-10 rounded-full shrink-0 object-cover"
               />
             ) : (

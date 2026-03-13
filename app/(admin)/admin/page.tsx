@@ -98,8 +98,8 @@ export default function AdminOverview() {
 
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
-            <CreditsChart data={overview?.credits_used_over_time ?? []} />
-            <VideosChart data={overview?.videos_generated_over_time ?? []} />
+            <CreditsChart data={overview?.credits_used_over_time ?? []} timeFilter={selectedRange.value as "all" | "7d" | "30d" | "90d"} />
+            <VideosChart data={overview?.videos_generated_over_time ?? []} timeFilter={selectedRange.value as "all" | "7d" | "30d" | "90d"} />
           </div>
 
           {/* Bottom Row */}

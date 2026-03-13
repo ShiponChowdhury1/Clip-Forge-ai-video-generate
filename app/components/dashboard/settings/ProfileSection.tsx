@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef } from "react";
 import {
   Mail,
@@ -26,12 +27,10 @@ const ORIGIN = API_BASE.replace(/\/api$/, "");
 
 interface ProfileSectionProps {
   onNavigate: (view: "wallet" | "password" | "notifications") => void;
-  onLogout: () => void;
 }
 
 export default function ProfileSection({
   onNavigate,
-  onLogout,
 }: ProfileSectionProps) {
   const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
@@ -142,10 +141,13 @@ export default function ProfileSection({
               />
               <div className="w-26 h-26 rounded-2xl ring-[5px] ring-white dark:ring-[#0D1117] overflow-hidden shadow-xl shadow-black/10 dark:shadow-black/30">
                 {user?.picture ? (
-                  <img
+                  <Image
                     src={user.picture}
-                    alt={user.name}
+                    alt={user.name || "User"}
                     referrerPolicy="no-referrer"
+                    width={104}
+                    height={104}
+                    unoptimized
                     className="w-full h-full object-cover"
                   />
                 ) : (

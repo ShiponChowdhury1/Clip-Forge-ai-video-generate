@@ -20,8 +20,6 @@ export type VoiceId =
 interface Step4VoiceNarrationProps {
   selectedVoice: VoiceId;
   setSelectedVoice: (value: VoiceId) => void;
-  script: string;
-  setScript: (value: string) => void;
 }
 
 const voices: {
@@ -146,8 +144,6 @@ const voices: {
 export default function Step4VoiceNarration({
   selectedVoice,
   setSelectedVoice,
-  script,
-  setScript,
 }: Step4VoiceNarrationProps) {
   return (
     <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-8">

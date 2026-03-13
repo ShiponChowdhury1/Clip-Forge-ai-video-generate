@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Lock,
   Eye,
@@ -45,24 +45,27 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
     { label: "1 number", met: /\d/.test(newPassword) },
   ];
 
-  // Auto request OTP on mount
-  const handleRequestOtp = useCallback(async () => {
-    setError("");
-    try {
-      await requestOtp().unwrap();
-      setStep("otp");
-      setResendCooldown(60);
-    } catch (err) {
-      const detail =
-        (err as { data?: { detail?: string } })?.data?.detail || "Failed to send OTP";
-      setError(detail);
-      setStep("otp");
-    }
-  }, [requestOtp]);
-
   useEffect(() => {
-    handleRequestOtp();
-  }, [handleRequestOtp]);
+    let active = true;
+    const requestInitialOtp = async () => {
+      try {
+        await requestOtp().unwrap();
+        if (!active) return;
+        setStep("otp");
+        setResendCooldown(60);
+      } catch (err) {
+        if (!active) return;
+        const detail =
+          (err as { data?: { detail?: string } })?.data?.detail || "Failed to send OTP";
+        setError(detail);
+        setStep("otp");
+      }
+    };
+    requestInitialOtp();
+    return () => {
+      active = false;
+    };
+  }, [requestOtp]);
 
   // Resend cooldown timer
   useEffect(() => {

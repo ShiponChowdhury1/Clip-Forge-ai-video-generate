@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { makeStore, AppStore } from "./store";
@@ -13,30 +13,26 @@ export default function StoreProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const storeRef = useRef<AppStore | null>(null);
+  const [store] = useState<AppStore>(() => makeStore());
 
-  if (!storeRef.current) {
-    storeRef.current = makeStore();
-    // Restore token from localStorage on client
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token");
-      if (token) {
-        storeRef.current.dispatch(setCredentials({ token }));
-      }
-      const userStr = localStorage.getItem("user");
-      if (userStr) {
-        try {
-          storeRef.current.dispatch(setUser(JSON.parse(userStr)));
-        } catch {
-          localStorage.removeItem("user");
-        }
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      store.dispatch(setCredentials({ token }));
+    }
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        store.dispatch(setUser(JSON.parse(userStr)));
+      } catch {
+        localStorage.removeItem("user");
       }
     }
-  }
+  }, [store]);
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <Provider store={storeRef.current}>{children}</Provider>
+      <Provider store={store}>{children}</Provider>
     </GoogleOAuthProvider>
   );
 }

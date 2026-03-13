@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, ChevronDown, LayoutDashboard, Settings, LogOut, Shield, User, Sun, Moon } from "lucide-react";
+import { Menu, X, ChevronDown, LayoutDashboard, Settings, LogOut, Shield, Sun, Moon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
@@ -30,7 +30,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = typeof window !== "undefined";
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -43,10 +43,6 @@ export default function Navbar() {
   const [logoutApi] = useLogoutMutation();
 
   const isLoggedIn = mounted && !!token;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -200,10 +196,13 @@ export default function Navbar() {
                 className="flex items-center gap-2.5 bg-gray-100 dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] hover:border-[#3B82F6] rounded-xl px-3 py-2 transition-all"
               >
                 {user?.picture ? (
-                  <img
+                  <Image
                     src={user.picture}
-                    alt={user.name}
+                    alt={user.name || "User"}
                     referrerPolicy="no-referrer"
+                    width={32}
+                    height={32}
+                    unoptimized
                     className="w-8 h-8 rounded-full object-cover"
                   />
                 ) : (
@@ -314,10 +313,13 @@ export default function Navbar() {
                   {/* Mobile user info */}
                   <div className="flex items-center gap-3 px-3 py-3">
                     {user?.picture ? (
-                      <img
+                      <Image
                         src={user.picture}
-                        alt={user.name}
+                        alt={user.name || "User"}
                         referrerPolicy="no-referrer"
+                        width={36}
+                        height={36}
+                        unoptimized
                         className="w-9 h-9 rounded-full object-cover"
                       />
                     ) : (

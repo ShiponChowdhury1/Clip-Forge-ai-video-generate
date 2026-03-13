@@ -14,7 +14,6 @@ import {
   Shield,
   ShieldCheck,
   X,
-  CircleUserRound,
   AlertTriangle,
   AlertCircle,
   CheckCircle,
@@ -22,8 +21,9 @@ import {
   Camera,
   Check,
 } from "lucide-react";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useLogoutMutation, useRequestChangePasswordOtpMutation, useVerifyChangePasswordOtpMutation, useChangePasswordMutation, useUpdateProfileMutation } from "@/lib/redux/features/auth/authApi";
@@ -123,7 +123,7 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePictureChange} className="hidden" />
               <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-cyan-500/30 bg-cyan-500/10">
                 {user?.picture ? (
-                  <img src={user.picture} alt={user?.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                  <Image src={user.picture} alt={user?.name || "Profile"} referrerPolicy="no-referrer" width={96} height={96} unoptimized className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <span className="text-cyan-400 font-bold text-2xl">{user?.name ? getInitials(user.name) : "A"}</span>
@@ -238,22 +238,26 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
     { label: "1 number", met: /\d/.test(newPassword) },
   ];
 
-  const handleRequestOtp = useCallback(async () => {
-    setError("");
-    try {
-      await requestOtp().unwrap();
-      setStep("otp");
-      setResendCooldown(60);
-    } catch (err) {
-      const detail = (err as { data?: { detail?: string } })?.data?.detail || "Failed to send OTP";
-      setError(detail);
-      setStep("otp");
-    }
-  }, [requestOtp]);
-
   useEffect(() => {
-    handleRequestOtp();
-  }, [handleRequestOtp]);
+    let active = true;
+    const requestInitialOtp = async () => {
+      try {
+        await requestOtp().unwrap();
+        if (!active) return;
+        setStep("otp");
+        setResendCooldown(60);
+      } catch (err) {
+        if (!active) return;
+        const detail = (err as { data?: { detail?: string } })?.data?.detail || "Failed to send OTP";
+        setError(detail);
+        setStep("otp");
+      }
+    };
+    requestInitialOtp();
+    return () => {
+      active = false;
+    };
+  }, [requestOtp]);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -549,17 +553,12 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => state.auth.user);
   const [logoutApi] = useLogoutMutation();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -586,9 +585,9 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
     router.push("/");
   };
 
-  const displayName = mounted ? (user?.name || "Admin") : "Admin";
-  const displayEmail = mounted ? (user?.email || "") : "";
-  const displayPicture = mounted ? user?.picture : null;
+  const displayName = user?.name || "Admin";
+  const displayEmail = user?.email || "";
+  const displayPicture = user?.picture || null;
   const initials = displayName
     .split(" ")
     .map((w) => w[0])
@@ -620,10 +619,13 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
             className="h-10 flex items-center gap-2.5 bg-gray-50 dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] hover:border-[#2563EB] rounded-lg px-2.5 transition-all cursor-pointer"
           >
             {displayPicture ? (
-              <img
+              <Image
                 src={displayPicture}
                 alt={displayName}
                 referrerPolicy="no-referrer"
+                width={28}
+                height={28}
+                unoptimized
                 className="w-7 h-7 rounded-full object-cover"
               />
             ) : (
@@ -699,7 +701,7 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
       )}
 
       {/* Logout Confirmation Modal */}
-      {mounted &&
+      {typeof document !== "undefined" &&
         showLogoutModal &&
         createPortal(
           <div className="fixed inset-0 z-9999 grid place-items-center p-4">

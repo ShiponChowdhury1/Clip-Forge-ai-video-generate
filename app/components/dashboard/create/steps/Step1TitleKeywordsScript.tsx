@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, Wand2 } from "lucide-react";
+import { Info } from "lucide-react";
 
 interface Step1TitleKeywordsScriptProps {
   videoTitle: string;

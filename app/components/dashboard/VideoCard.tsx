@@ -23,8 +23,6 @@ interface VideoCardProps {
   status?: string;
 }
 
-const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api").replace(/\/api$/, "");
-
 function buildVideoUrl(path: string): string {
   if (path.startsWith("http")) return path;
   // Extract relative path starting from "outputs/" (handles absolute server filesystem paths)

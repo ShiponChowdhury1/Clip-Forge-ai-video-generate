@@ -1,6 +1,6 @@
 "use client";
 
-import { Send, HelpCircle, ArrowRight, Clock, Shield } from "lucide-react";
+import { Send, HelpCircle, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 
