@@ -15,13 +15,15 @@ import type {
   AdminRole,
   LegalPolicies,
   LegalPoliciesPayload,
+  CreditPackage,
+  CreateCreditPackagePayload,
 } from "@/types/admin";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 
 export const adminApi = createApi({
   reducerPath: "adminApi",
-  tagTypes: ["AdminFaq", "AdminPolicies"],
+  tagTypes: ["AdminFaq", "AdminPolicies", "CreditPackages"],
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_BASE_URL}/v1/admin`,
     prepareHeaders: (headers, { getState }) => {
@@ -95,7 +97,42 @@ export const adminApi = createApi({
       }),
     }),
 
-    // 8. Get Admin Overview
+    // 8. Get Credit Packages
+    getCreditPackages: builder.query<CreditPackage[], void>({
+      query: () => "/credit-packages",
+      providesTags: ["CreditPackages"],
+    }),
+
+    // 9. Create Credit Package
+    createCreditPackage: builder.mutation<CreditPackage, CreateCreditPackagePayload>({
+      query: (body) => ({
+        url: "/credit-packages",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["CreditPackages"],
+    }),
+
+    // 10. Update Credit Package
+    updateCreditPackage: builder.mutation<CreditPackage, { id: number; body: CreateCreditPackagePayload }>({
+      query: ({ id, body }) => ({
+        url: `/credit-packages/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["CreditPackages"],
+    }),
+
+    // 11. Delete Credit Package
+    deleteCreditPackage: builder.mutation<{ message: string }, number>({
+      query: (id) => ({
+        url: `/credit-packages/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["CreditPackages"],
+    }),
+
+    // 12. Get Admin Overview
     getAdminOverview: builder.query<AdminOverview, string>({
       query: (time_filter = "all") => `/overview?time_filter=${time_filter}`,
     }),
@@ -216,6 +253,10 @@ export const {
   useUpdateSubscriptionMutation,
   useDeleteSubscriptionMutation,
   useToggleSubscriptionStatusMutation,
+  useGetCreditPackagesQuery,
+  useCreateCreditPackageMutation,
+  useUpdateCreditPackageMutation,
+  useDeleteCreditPackageMutation,
   useGetAdminOverviewQuery,
   useGetAdminBillingQuery,
   useGetAdminLogsQuery,
@@ -249,4 +290,6 @@ export type {
   AdminRole,
   LegalPolicies,
   LegalPoliciesPayload,
+  CreditPackage,
+  CreateCreditPackagePayload,
 } from "@/types/admin";

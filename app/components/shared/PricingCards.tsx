@@ -1,7 +1,22 @@
 "use client";
 
 import { Check, X } from "lucide-react";
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { plans } from "@/app/data";
+import { useGetSubscriptionsQuery } from "@/lib/redux/features/admin/adminApi";
+import { useAppSelector } from "@/lib/redux/hooks";
+
+type DisplayPlan = {
+  name: string;
+  price: string;
+  period: string;
+  credits: string;
+  features: { text: string; included: boolean }[];
+  button: string;
+  highlighted: boolean;
+  badge?: string;
+};
 
 interface PricingCardsProps {
   /** "section" for home page full-width section, "compact" for modal/billing use */
@@ -14,7 +29,83 @@ export default function PricingCards({
   variant = "section",
   onSelectPlan,
 }: PricingCardsProps) {
+  const router = useRouter();
+  const token = useAppSelector((state) => state.auth.token);
+  const userRole = useAppSelector((state) => state.auth.user?.role);
+  const { data: subscriptions = [] } = useGetSubscriptionsQuery();
   const isSection = variant === "section";
+
+  const displayPlans = useMemo<DisplayPlan[]>(() => {
+    const activeSubscriptions = subscriptions
+      .filter((plan) => plan.plan_status?.toLowerCase() === "active")
+      .sort((a, b) => a.priority_level - b.priority_level);
+
+    if (!activeSubscriptions.length) {
+      return plans;
+    }
+
+    const highlightedIndex = activeSubscriptions.length > 1 ? 1 : 0;
+
+    return activeSubscriptions.map((plan, idx) => ({
+      name: plan.name,
+      price: `$${Number(plan.monthly_price).toFixed(0)}`,
+      period: "/month",
+      credits: `${Number(plan.monthly_credits).toLocaleString()} Credits Included`,
+      features: [
+        { text: `${plan.video_limit_per_month} videos per month`, included: true },
+        { text: `Priority level ${plan.priority_level}`, included: true },
+        { text: `${plan.max_video_duration}s max duration`, included: true },
+        {
+          text: plan.commercial_usage_allowed ? "Commercial usage allowed" : "Commercial usage not included",
+          included: plan.commercial_usage_allowed,
+        },
+      ],
+      button: "Buy Credits",
+      highlighted: idx === highlightedIndex,
+      badge: idx === highlightedIndex ? "MOST POPULAR" : undefined,
+    }));
+  }, [subscriptions]);
+
+  const handleSelectPlan = (planName: string) => {
+    if (onSelectPlan) {
+      onSelectPlan(planName);
+      return;
+    }
+
+    if (variant !== "section") return;
+
+    const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const storedRole =
+      typeof window !== "undefined"
+        ? (() => {
+            try {
+              const parsed = JSON.parse(localStorage.getItem("user") || "{}");
+              return (parsed as { role?: string }).role || null;
+            } catch {
+              return null;
+            }
+          })()
+        : null;
+    const effectiveToken = token || storedToken;
+    const effectiveRole = (userRole || storedRole || "").toLowerCase();
+
+    if (!effectiveToken) {
+      router.push("/login");
+      return;
+    }
+
+    if (effectiveRole === "admin") {
+      router.push("/admin");
+      return;
+    }
+
+    if (effectiveRole === "user" || effectiveRole === "super_admin") {
+      router.push(`/dashboard/billing?checkout=1&plan=${encodeURIComponent(planName)}`);
+      return;
+    }
+
+    router.push("/login");
+  };
 
   return (
     <div>
@@ -44,7 +135,7 @@ export default function PricingCards({
           isSection ? "gap-4 sm:gap-6" : "gap-5"
         }`}
       >
-        {plans.map((plan) => (
+        {displayPlans.map((plan) => (
           <div
             key={plan.name}
             className={`relative transition-all duration-300 flex flex-col w-full ${
@@ -56,11 +147,9 @@ export default function PricingCards({
               isSection
                 ? {
                     width: "100%",
-                    maxWidth:
-                      plan.name === "Growth" ? "420.05px" : "396.78px",
+                    maxWidth: plan.highlighted ? "420.05px" : "396.78px",
                     height: "auto",
-                    minHeight:
-                      plan.name === "Growth" ? "607.36px" : "555.26px",
+                    minHeight: plan.highlighted ? "607.36px" : "555.26px",
                     paddingTop: "44.33px",
                     paddingBottom: "44.33px",
                     paddingLeft: "44.33px",
@@ -134,7 +223,7 @@ export default function PricingCards({
 
               <div className={isSection ? "mt-auto" : "mt-6"}>
                 <button
-                  onClick={() => onSelectPlan?.(plan.name)}
+                  onClick={() => handleSelectPlan(plan.name)}
                   className={`w-full py-3 font-medium transition text-sm ${
                     plan.highlighted
                       ? "bg-cyan-500 hover:bg-cyan-400 text-white"

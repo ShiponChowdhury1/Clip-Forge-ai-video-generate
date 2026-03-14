@@ -25,6 +25,20 @@ export interface SubscriptionPlan {
   created_at: string;
 }
 
+export interface CreditPackage {
+  id: number;
+  name: string;
+  credits: number;
+  price: number;
+  created_at: string;
+}
+
+export interface CreateCreditPackagePayload {
+  name: string;
+  credits: number;
+  price: number;
+}
+
 export interface AdminUser {
   id: number;
   name: string;

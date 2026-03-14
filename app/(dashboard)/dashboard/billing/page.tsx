@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CreditCard, ArrowLeft } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import {
   CreditWallet,
@@ -13,7 +14,10 @@ import {
   PaymentSuccess,
 } from "@/app/components/dashboard/billing";
 import type { Invoice } from "@/app/components/dashboard/billing";
-import { useGetSubscriptionsQuery } from "@/lib/redux/features/admin/adminApi";
+import {
+  useGetCreditPackagesQuery,
+  useGetSubscriptionsQuery,
+} from "@/lib/redux/features/admin/adminApi";
 
 // Sample billing history data
 const sampleInvoices: Invoice[] = [
@@ -26,9 +30,13 @@ const sampleInvoices: Invoice[] = [
 
 type BillingView = "main" | "pricing" | "checkout" | "processing" | "success";
 type BillingModalType = "change" | "buy";
+type CheckoutSource = "plan" | "package";
 
 export default function BillingPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: subscriptions, isLoading: subscriptionsLoading } = useGetSubscriptionsQuery();
+  const { data: creditPackages = [], isLoading: creditPackagesLoading } = useGetCreditPackagesQuery();
 
   const activePlans = useMemo(
     () => (subscriptions ?? []).filter((plan) => plan.plan_status?.toLowerCase() === "active"),
@@ -37,9 +45,20 @@ export default function BillingPage() {
 
   const [view, setView] = useState<BillingView>("main");
   const [billingModalType, setBillingModalType] = useState<BillingModalType>("buy");
+  const [checkoutSource, setCheckoutSource] = useState<CheckoutSource>("plan");
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
+  const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
   const [currentCredits] = useState(127);
+
+  const shouldOpenCheckout = searchParams.get("checkout") === "1";
+  const requestedPlanName = searchParams.get("plan")?.trim().toLowerCase();
+
+  const querySelectedPlan = useMemo(() => {
+    if (!shouldOpenCheckout || !activePlans.length) return null;
+    if (!requestedPlanName) return activePlans[0];
+    return activePlans.find((plan) => plan.name.trim().toLowerCase() === requestedPlanName) ?? activePlans[0];
+  }, [shouldOpenCheckout, requestedPlanName, activePlans]);
 
   const selectedPlan = useMemo(() => {
     if (!activePlans.length) return null;
@@ -49,23 +68,58 @@ export default function BillingPage() {
     return activePlans[0];
   }, [activePlans, selectedPlanId]);
 
+  const selectedPackage = useMemo(() => {
+    if (!creditPackages.length) return null;
+    if (selectedPackageId !== null) {
+      return creditPackages.find((pkg) => pkg.id === selectedPackageId) ?? creditPackages[0];
+    }
+    return creditPackages[0];
+  }, [creditPackages, selectedPackageId]);
+
   const selectedPlanName = selectedPlan?.name ?? "Plan";
   const selectedCredits = selectedPlan?.monthly_credits ?? 0;
   const selectedPrice = `$${(selectedPlan?.monthly_price ?? 0).toFixed(2)}`;
 
-  const handleSelectPlan = (planId: number) => {
-    setSelectedPlanId(planId);
+  const isForcedCheckout = shouldOpenCheckout && view === "main";
+  const effectiveView: BillingView = isForcedCheckout ? "checkout" : view;
+  const effectivePlan = isForcedCheckout
+    ? querySelectedPlan
+    : checkoutSource === "package"
+      ? selectedPackage
+      : selectedPlan;
+  const effectivePlanName = effectivePlan?.name ?? selectedPlanName;
+  const effectiveCredits = effectivePlan
+    ? "monthly_credits" in effectivePlan
+      ? effectivePlan.monthly_credits
+      : effectivePlan.credits
+    : selectedCredits;
+  const effectivePrice = effectivePlan
+    ? "monthly_price" in effectivePlan
+      ? `$${effectivePlan.monthly_price.toFixed(2)}`
+      : `$${effectivePlan.price.toFixed(2)}`
+    : selectedPrice;
+
+  const handleSelectPlan = (id: number, kind: "plan" | "package") => {
+    if (kind === "plan") {
+      setSelectedPlanId(id);
+      setCheckoutSource("plan");
+    } else {
+      setSelectedPackageId(id);
+      setCheckoutSource("package");
+    }
     setShowPricingModal(false);
     setView("checkout");
   };
 
   const handleBuyCredits = () => {
     setBillingModalType("buy");
+    setCheckoutSource("package");
     setShowPricingModal(true);
   };
 
   const handleChangePlan = () => {
     setBillingModalType("change");
+    setCheckoutSource("plan");
     setShowPricingModal(true);
   };
 
@@ -78,6 +132,10 @@ export default function BillingPage() {
   };
 
   const handleBackToMain = () => {
+    if (isForcedCheckout) {
+      router.replace("/dashboard/billing");
+      return;
+    }
     setView("main");
     setShowPricingModal(false);
   };
@@ -97,7 +155,7 @@ export default function BillingPage() {
       />
 
       {/* Back button when in checkout/processing/success */}
-      {view !== "main" && (
+      {effectiveView !== "main" && (
         <button
           onClick={handleBackToMain}
           className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm mb-4 transition-colors"
@@ -108,7 +166,7 @@ export default function BillingPage() {
       )}
 
       {/* Main Billing View */}
-      {view === "main" && (
+      {effectiveView === "main" && (
         <>
           <CreditWallet
             credits={currentCredits}
@@ -127,25 +185,28 @@ export default function BillingPage() {
       )}
 
       {/* Checkout View */}
-      {view === "checkout" && (
+      {effectiveView === "checkout" && (
         <PaymentCheckout
-          selectedPlan={selectedPlanName}
-          credits={selectedCredits}
+          selectedPlan={effectivePlanName}
+          credits={effectiveCredits}
           currentBalance={currentCredits}
-          price={selectedPrice}
+          price={effectivePrice}
           onConfirmPayment={handleConfirmPayment}
-          onChangePackage={() => setShowPricingModal(true)}
+          onChangePackage={() => {
+            setBillingModalType(checkoutSource === "package" ? "buy" : "change");
+            setShowPricingModal(true);
+          }}
         />
       )}
 
       {/* Processing View */}
-      {view === "processing" && <ProcessingPayment />}
+      {effectiveView === "processing" && <ProcessingPayment />}
 
       {/* Success View */}
-      {view === "success" && (
+      {effectiveView === "success" && (
         <PaymentSuccess
-          creditsAdded={selectedCredits}
-          updatedBalance={currentCredits + selectedCredits}
+          creditsAdded={effectiveCredits}
+          updatedBalance={currentCredits + effectiveCredits}
           onViewInvoice={handleBackToMain}
         />
       )}
@@ -155,7 +216,9 @@ export default function BillingPage() {
         <PricingPlans
           modalType={billingModalType}
           plans={activePlans}
-          isLoading={subscriptionsLoading}
+          creditPackages={creditPackages}
+          isPlansLoading={subscriptionsLoading}
+          isCreditPackagesLoading={creditPackagesLoading}
           onSelectPlan={handleSelectPlan}
           onClose={() => setShowPricingModal(false)}
         />
