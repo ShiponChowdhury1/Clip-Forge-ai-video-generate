@@ -43,6 +43,11 @@ export default function BillingPage() {
     [subscriptions]
   );
 
+  const activeCreditPackages = useMemo(
+    () => (creditPackages ?? []).filter((pkg) => (pkg.status || "active").toLowerCase() === "active"),
+    [creditPackages]
+  );
+
   const [view, setView] = useState<BillingView>("main");
   const [billingModalType, setBillingModalType] = useState<BillingModalType>("buy");
   const [checkoutSource, setCheckoutSource] = useState<CheckoutSource>("plan");
@@ -69,12 +74,12 @@ export default function BillingPage() {
   }, [activePlans, selectedPlanId]);
 
   const selectedPackage = useMemo(() => {
-    if (!creditPackages.length) return null;
+    if (!activeCreditPackages.length) return null;
     if (selectedPackageId !== null) {
-      return creditPackages.find((pkg) => pkg.id === selectedPackageId) ?? creditPackages[0];
+      return activeCreditPackages.find((pkg) => pkg.id === selectedPackageId) ?? activeCreditPackages[0];
     }
-    return creditPackages[0];
-  }, [creditPackages, selectedPackageId]);
+    return activeCreditPackages[0];
+  }, [activeCreditPackages, selectedPackageId]);
 
   const selectedPlanName = selectedPlan?.name ?? "Plan";
   const selectedCredits = selectedPlan?.monthly_credits ?? 0;
@@ -216,7 +221,7 @@ export default function BillingPage() {
         <PricingPlans
           modalType={billingModalType}
           plans={activePlans}
-          creditPackages={creditPackages}
+          creditPackages={activeCreditPackages}
           isPlansLoading={subscriptionsLoading}
           isCreditPackagesLoading={creditPackagesLoading}
           onSelectPlan={handleSelectPlan}

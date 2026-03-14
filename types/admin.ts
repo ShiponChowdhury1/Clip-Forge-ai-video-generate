@@ -30,6 +30,7 @@ export interface CreditPackage {
   name: string;
   credits: number;
   price: number;
+  status?: "active" | "inactive";
   created_at: string;
 }
 
@@ -37,6 +38,7 @@ export interface CreateCreditPackagePayload {
   name: string;
   credits: number;
   price: number;
+  status?: "active" | "inactive";
 }
 
 export interface AdminUser {
