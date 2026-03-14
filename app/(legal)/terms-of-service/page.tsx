@@ -10,7 +10,7 @@ export default function TermsOfServicePage() {
   return (
     <div className="w-full bg-white dark:bg-black min-h-screen">
       <div className="max-w-330 mx-auto px-4 sm:px-6 lg:px-12 py-12 sm:py-16 md:py-20">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">
+        <h1 className="text-2xl sm:text-3xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">
           Terms of Service
         </h1>
         {policy?.updated_at && (

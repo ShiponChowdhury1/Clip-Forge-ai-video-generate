@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CreditCard, ArrowLeft } from "lucide-react";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import {
@@ -13,6 +13,7 @@ import {
   PaymentSuccess,
 } from "@/app/components/dashboard/billing";
 import type { Invoice } from "@/app/components/dashboard/billing";
+import { useGetSubscriptionsQuery } from "@/lib/redux/features/admin/adminApi";
 
 // Sample billing history data
 const sampleInvoices: Invoice[] = [
@@ -23,31 +24,48 @@ const sampleInvoices: Invoice[] = [
   { id: "INV-001", date: "Jan 15, 2024", amount: "49.00", status: "PAID" },
 ];
 
-// Plan-to-credits mapping
-const planCreditsMap: Record<string, { credits: number; price: string }> = {
-  Starter: { credits: 50, price: "$0" },
-  Growth: { credits: 200, price: "$10" },
-  Pro: { credits: 600, price: "$25" },
-};
-
 type BillingView = "main" | "pricing" | "checkout" | "processing" | "success";
+type BillingModalType = "change" | "buy";
 
 export default function BillingPage() {
+  const { data: subscriptions, isLoading: subscriptionsLoading } = useGetSubscriptionsQuery();
+
+  const activePlans = useMemo(
+    () => (subscriptions ?? []).filter((plan) => plan.plan_status?.toLowerCase() === "active"),
+    [subscriptions]
+  );
+
   const [view, setView] = useState<BillingView>("main");
+  const [billingModalType, setBillingModalType] = useState<BillingModalType>("buy");
   const [showPricingModal, setShowPricingModal] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState("Pro");
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [currentCredits] = useState(127);
 
-  const selectedCredits = planCreditsMap[selectedPlan]?.credits ?? 500;
-  const selectedPrice = planCreditsMap[selectedPlan]?.price ?? "$25";
+  const selectedPlan = useMemo(() => {
+    if (!activePlans.length) return null;
+    if (selectedPlanId !== null) {
+      return activePlans.find((plan) => plan.id === selectedPlanId) ?? activePlans[0];
+    }
+    return activePlans[0];
+  }, [activePlans, selectedPlanId]);
 
-  const handleSelectPlan = (planName: string) => {
-    setSelectedPlan(planName);
+  const selectedPlanName = selectedPlan?.name ?? "Plan";
+  const selectedCredits = selectedPlan?.monthly_credits ?? 0;
+  const selectedPrice = `$${(selectedPlan?.monthly_price ?? 0).toFixed(2)}`;
+
+  const handleSelectPlan = (planId: number) => {
+    setSelectedPlanId(planId);
     setShowPricingModal(false);
     setView("checkout");
   };
 
   const handleBuyCredits = () => {
+    setBillingModalType("buy");
+    setShowPricingModal(true);
+  };
+
+  const handleChangePlan = () => {
+    setBillingModalType("change");
     setShowPricingModal(true);
   };
 
@@ -94,7 +112,7 @@ export default function BillingPage() {
         <>
           <CreditWallet
             credits={currentCredits}
-            onChangePlan={() => setShowPricingModal(true)}
+            onChangePlan={handleChangePlan}
             onBuyCredits={handleBuyCredits}
           />
 
@@ -111,7 +129,7 @@ export default function BillingPage() {
       {/* Checkout View */}
       {view === "checkout" && (
         <PaymentCheckout
-          selectedPlan={selectedPlan}
+          selectedPlan={selectedPlanName}
           credits={selectedCredits}
           currentBalance={currentCredits}
           price={selectedPrice}
@@ -135,6 +153,9 @@ export default function BillingPage() {
       {/* Pricing Plans Modal */}
       {showPricingModal && (
         <PricingPlans
+          modalType={billingModalType}
+          plans={activePlans}
+          isLoading={subscriptionsLoading}
           onSelectPlan={handleSelectPlan}
           onClose={() => setShowPricingModal(false)}
         />

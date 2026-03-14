@@ -1,10 +1,20 @@
-import { FileText, Music, Film, Settings, Share2 } from "lucide-react";
+import {
+  Captions,
+  Clapperboard,
+  FileText,
+  Mic,
+  Music,
+  Palette,
+  Film,
+  Settings,
+  Share2,
+} from "lucide-react";
 
 // Features Section Data
 export const features = [
   {
     title: "AI Script to Video",
-    desc: "Transform any script into a polished video with AI-powered scene generation and transitions.",
+    desc: "Paste your script directly into Clip Forge — or let our AI generate (coming soon) one for you from a simple prompt. Whether you’re starting from scratch or refining existing content, we turn your words into a ready-to-produce video structure in seconds.",
     icon: FileText,
     iconBg: "bg-cyan-500/10",
     iconColor: "text-cyan-500",
@@ -29,20 +39,28 @@ export const features = [
 export const steps = [
   {
     step: 1,
-    title: "Paste your script",
-    desc: "Simply paste your content or let our AI generate a script for you from a prompt.",
+    title: "Add Your Script",
+    desc: "Paste your script directly into Clip Forge, or let our AI generate one for you from a simple prompt (coming soon). Whether you are starting from scratch or refining existing content, we turn your words into a ready-to-produce video structure in seconds.",
     icon: FileText,
   },
   {
     step: 2,
-    title: "Customize settings",
-    desc: "Choose your voice, visual style, and background music to match your brand's vibe.",
+    title: "Customize Your Video",
+    desc: "Bring your content to life by selecting:",
     icon: Settings,
+    points: [
+      { label: "AI voice narration", icon: Mic },
+      { label: "Visual style & imagery", icon: Palette },
+      { label: "Background music", icon: Music },
+      { label: "Motion effects", icon: Clapperboard },
+      { label: "Subtitle options", icon: Captions },
+    ],
+    note: "Fine-tune the settings to match your brand, audience, and platform.",
   },
   {
     step: 3,
-    title: "Export and share",
-    desc: "Download your video in 9:16 format and upload directly to your favorite platforms.",
+    title: "Generate and Share",
+    desc: "Click generate and let Clip Forge do the heavy lifting. Your video is rendered automatically in 9:16 for Shorts and Reels, 16:9 for YouTube and widescreen, or 1:1 for square social posts. Download and publish instantly on your preferred platform.",
     icon: Share2,
   },
 ];

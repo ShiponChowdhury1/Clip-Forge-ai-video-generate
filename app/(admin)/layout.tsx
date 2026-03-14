@@ -9,6 +9,18 @@ import Sidebar from "@/app/components/dashboard/Sidebar";
 
 const isAdminRole = (role?: string | null) => role === "admin" || role === "super_admin";
 
+const normalizeRole = (role?: string | null) => (role || "").toLowerCase();
+
+const getStoredRole = () => {
+  if (typeof window === "undefined") return "";
+  try {
+    const parsed = JSON.parse(localStorage.getItem("user") || "{}");
+    return normalizeRole((parsed as { role?: string }).role);
+  } catch {
+    return "";
+  }
+};
+
 export default function AdminLayout({
   children,
 }: {
@@ -18,10 +30,11 @@ export default function AdminLayout({
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
   const user = useAppSelector((state) => state.auth.user);
+  const { data: profile } = useGetMeQuery(undefined, { skip: !token });
+  const storedRole = getStoredRole();
+  const effectiveRole = normalizeRole(profile?.role || user?.role) || storedRole;
   const [mounted, setMounted] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  const { data: profile } = useGetMeQuery(undefined, { skip: !token });
 
   useEffect(() => {
     setMounted(true);
@@ -53,15 +66,16 @@ export default function AdminLayout({
 
   useEffect(() => {
     if (mounted) {
-      if (!token) {
+      const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (!token && !storedToken) {
         router.replace("/");
-      } else if (user && !isAdminRole(user.role)) {
+      } else if (effectiveRole && !isAdminRole(effectiveRole)) {
         router.replace("/dashboard");
       }
     }
-  }, [mounted, token, user, router]);
+  }, [mounted, token, effectiveRole, router]);
 
-  if (!mounted || !token || (user && !isAdminRole(user.role))) {
+  if (!mounted || !token || (effectiveRole && !isAdminRole(effectiveRole))) {
     return (
       <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-gray-300 dark:border-[#1A3155] border-t-[#3B82F6] rounded-full animate-spin" />
