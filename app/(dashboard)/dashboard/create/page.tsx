@@ -44,6 +44,14 @@ export default function CreateVideoPage() {
   const token = useSelector((state: { auth: { token: string | null } }) => state.auth.token);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const normalizeVideoId = (value: unknown): number | null => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && /^\d+$/.test(value.trim())) {
+      return Number(value);
+    }
+    return null;
+  };
+
   const resolveLatestCompletedVideoId = useCallback(async (targetTitle?: string) => {
     const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
     if (!authToken) return null;
@@ -112,12 +120,12 @@ export default function CreateVideoPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (createResponse: any) => {
       const jobId = createResponse?.job_id || createResponse?.jobId;
-      const videoId = createResponse?.id || createResponse?.video_id;
+      const videoId = normalizeVideoId(createResponse?.id ?? createResponse?.video_id);
 
       console.log("[Polling] Create response:", JSON.stringify(createResponse));
       console.log("[Polling] Extracted - jobId:", jobId, "videoId:", videoId);
 
-      if (videoId) setGeneratedVideoId(videoId);
+      if (videoId !== null) setGeneratedVideoId(videoId);
       setGenerationProgress(5);
 
       const apiBase =
@@ -145,7 +153,7 @@ export default function CreateVideoPage() {
                 const data = await resp.json();
                 console.log("[Poll] job-status:", JSON.stringify(data));
                 status = String(data?.status || data?.state || "");
-                vid = data?.video_id ?? data?.id ?? null;
+                vid = normalizeVideoId(data?.video_id ?? data?.id);
               } else {
                 console.warn("[Poll] job-status HTTP", resp.status);
               }
@@ -155,7 +163,7 @@ export default function CreateVideoPage() {
           }
 
           // Strategy 2: video get endpoint (needs auth)
-          const checkVid = vid || videoId;
+          const checkVid = vid ?? videoId;
           if (!status && checkVid && token) {
             try {
               const resp = await fetch(`${apiBase}/videos/get/${checkVid}`, {
@@ -165,14 +173,14 @@ export default function CreateVideoPage() {
                 const data = await resp.json();
                 console.log("[Poll] video-get:", JSON.stringify(data));
                 status = String(data?.status || "");
-                vid = data?.id ?? null;
+                vid = normalizeVideoId(data?.id);
               }
             } catch (e) {
               console.warn("[Poll] video-get error:", e);
             }
           }
 
-          if (vid) setGeneratedVideoId(vid);
+          if (vid !== null) setGeneratedVideoId(vid);
 
           const s = status.toLowerCase().replace(/[\s-]+/g, "_").trim();
 
