@@ -29,6 +29,16 @@ export default function PricingPlans({
   const buttonText = modalType === "change" ? "Select Plan" : "Buy Credits";
   const isLoading = modalType === "change" ? isPlansLoading : isCreditPackagesLoading;
 
+  const orderedCreditPackages = [...creditPackages].sort((a, b) => a.price - b.price);
+  const growthIndex = orderedCreditPackages.findIndex(
+    (pkg) => pkg.name.trim().toLowerCase() === "growth"
+  );
+
+  if (growthIndex > -1 && growthIndex !== 1) {
+    const [growthPackage] = orderedCreditPackages.splice(growthIndex, 1);
+    orderedCreditPackages.splice(1, 0, growthPackage);
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div className="relative w-full max-w-5xl mx-4 bg-white dark:bg-[#0A0E14] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-8 max-h-[90vh] overflow-y-auto">
@@ -59,7 +69,7 @@ export default function PricingPlans({
           </p>
         ) : (
           <div className="flex flex-col lg:flex-row justify-center items-stretch gap-5">
-            {(modalType === "change" ? plans : creditPackages).map((item, idx) => {
+            {(modalType === "change" ? plans : orderedCreditPackages).map((item, idx) => {
               if (modalType === "buy") {
                 const pkg = item as CreditPackage;
                 const features = [

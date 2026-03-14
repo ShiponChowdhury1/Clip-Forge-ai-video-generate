@@ -28,7 +28,10 @@ export const adminApi = createApi({
     baseUrl: `${API_BASE_URL}/v1/admin`,
     prepareHeaders: (headers, { getState }) => {
       const state = getState() as { auth: { token: string | null } };
-      const token = state.auth.token;
+      const tokenFromState = state.auth.token;
+      const tokenFromStorage =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const token = tokenFromState || tokenFromStorage;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }

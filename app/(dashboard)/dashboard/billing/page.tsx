@@ -50,7 +50,9 @@ export default function BillingPage() {
 
   const [view, setView] = useState<BillingView>("main");
   const [billingModalType, setBillingModalType] = useState<BillingModalType>("buy");
-  const [checkoutSource, setCheckoutSource] = useState<CheckoutSource>("plan");
+  const [checkoutSource, setCheckoutSource] = useState<CheckoutSource>(
+    searchParams.get("package") ? "package" : "plan"
+  );
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
@@ -58,12 +60,23 @@ export default function BillingPage() {
 
   const shouldOpenCheckout = searchParams.get("checkout") === "1";
   const requestedPlanName = searchParams.get("plan")?.trim().toLowerCase();
+  const requestedPackageName = searchParams.get("package")?.trim().toLowerCase();
+  const forcedCheckoutSource: CheckoutSource = requestedPackageName ? "package" : "plan";
 
   const querySelectedPlan = useMemo(() => {
     if (!shouldOpenCheckout || !activePlans.length) return null;
     if (!requestedPlanName) return activePlans[0];
     return activePlans.find((plan) => plan.name.trim().toLowerCase() === requestedPlanName) ?? activePlans[0];
   }, [shouldOpenCheckout, requestedPlanName, activePlans]);
+
+  const querySelectedPackage = useMemo(() => {
+    if (!shouldOpenCheckout || !activeCreditPackages.length) return null;
+    if (!requestedPackageName) return activeCreditPackages[0];
+    return (
+      activeCreditPackages.find((pkg) => pkg.name.trim().toLowerCase() === requestedPackageName) ??
+      activeCreditPackages[0]
+    );
+  }, [shouldOpenCheckout, requestedPackageName, activeCreditPackages]);
 
   const selectedPlan = useMemo(() => {
     if (!activePlans.length) return null;
@@ -88,7 +101,9 @@ export default function BillingPage() {
   const isForcedCheckout = shouldOpenCheckout && view === "main";
   const effectiveView: BillingView = isForcedCheckout ? "checkout" : view;
   const effectivePlan = isForcedCheckout
-    ? querySelectedPlan
+    ? forcedCheckoutSource === "package"
+      ? querySelectedPackage
+      : querySelectedPlan
     : checkoutSource === "package"
       ? selectedPackage
       : selectedPlan;
