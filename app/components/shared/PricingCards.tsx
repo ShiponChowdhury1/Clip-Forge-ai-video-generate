@@ -47,7 +47,7 @@ export default function PricingCards({
 
     return activePackages.map((pkg, idx) => ({
       name: pkg.name,
-      price: `$${Number(pkg.price).toFixed(0)}`,
+      price: `$${Number(pkg.price).toFixed(2)}`,
       period: "/one-time",
       credits: `${Number(pkg.credits).toLocaleString()} Credits Included`,
       features: [

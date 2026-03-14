@@ -44,7 +44,10 @@ export default function BillingPage() {
   );
 
   const activeCreditPackages = useMemo(
-    () => (creditPackages ?? []).filter((pkg) => (pkg.status || "active").toLowerCase() === "active"),
+    () =>
+      (creditPackages ?? [])
+        .filter((pkg) => (pkg.status || "active").toLowerCase() === "active")
+        .sort((a, b) => a.price - b.price),
     [creditPackages]
   );
 

@@ -302,7 +302,7 @@ export function CreditSettings() {
                   </div>
                   <div className="flex items-center gap-2 sm:gap-5">
                     <p className="text-cyan-500 text-sm font-semibold">{pkg.credits.toLocaleString()} credits</p>
-                    <p className="text-gray-900 dark:text-white text-sm font-semibold">${pkg.price}</p>
+                    <p className="text-gray-900 dark:text-white text-sm font-semibold">${pkg.price.toFixed(2)}</p>
                     <div className="flex items-center gap-1.5 sm:ml-1 shrink-0">
                       <div className="relative">
                         <button

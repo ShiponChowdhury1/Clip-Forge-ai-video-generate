@@ -44,6 +44,63 @@ export default function CreateVideoPage() {
   const token = useSelector((state: { auth: { token: string | null } }) => state.auth.token);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const resolveLatestCompletedVideoId = useCallback(async (targetTitle?: string) => {
+    const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+    if (!authToken) return null;
+
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
+
+    try {
+      const resp = await fetch(`${apiBase}/v1/videos/get-all?skip=0&limit=20`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      if (!resp.ok) return null;
+
+      const data = (await resp.json()) as Array<{
+        id: number;
+        title?: string;
+        status?: string;
+        created_at?: string;
+      }>;
+
+      const completed = data
+        .filter((video) => String(video.status || "").toLowerCase() === "completed")
+        .sort(
+          (a, b) =>
+            new Date(String(b.created_at || "1970-01-01T00:00:00Z")).getTime() -
+            new Date(String(a.created_at || "1970-01-01T00:00:00Z")).getTime()
+        );
+
+      const normalizedTargetTitle = String(targetTitle || "").trim().toLowerCase();
+      const titleMatched = normalizedTargetTitle
+        ? completed.find(
+            (video) => String(video.title || "").trim().toLowerCase() === normalizedTargetTitle
+          )
+        : undefined;
+
+      return titleMatched?.id ?? completed[0]?.id ?? null;
+    } catch {
+      return null;
+    }
+  }, [token]);
+
+  const handleViewGeneratedVideo = useCallback(async (targetTitle?: string) => {
+    if (!generationComplete) return;
+
+    if (generatedVideoId) {
+      router.push(`/dashboard/videos/${generatedVideoId}`);
+      return;
+    }
+
+    const resolvedId = await resolveLatestCompletedVideoId(targetTitle);
+    if (resolvedId) {
+      router.push(`/dashboard/videos/${resolvedId}`);
+      return;
+    }
+
+    router.push("/dashboard/videos");
+  }, [generationComplete, generatedVideoId, resolveLatestCompletedVideoId, router]);
+
   // Cleanup polling on unmount
   useEffect(() => {
     return () => {
@@ -313,11 +370,7 @@ export default function CreateVideoPage() {
             ]);
           }}
           onNext={() => {
-            if (generationComplete && generatedVideoId) {
-              router.push(`/dashboard/videos/${generatedVideoId}`);
-            } else if (generationComplete) {
-              router.push("/dashboard/videos");
-            }
+            void handleViewGeneratedVideo(videoTitle);
           }}
         />
       </div>
