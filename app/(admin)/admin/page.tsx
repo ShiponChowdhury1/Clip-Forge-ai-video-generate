@@ -40,9 +40,35 @@ export default function AdminOverview() {
       ]
     : [];
 
+  const adminOverviewExportPayload = overview
+    ? {
+        time_range: selectedRange.value,
+        total_users: overview.total_users,
+        active_users: overview.active_users,
+        credits_consumed: overview.credits_consumed,
+        videos_generated: overview.total_videos_generated,
+        revenue: overview.total_revenue,
+        refunds_issued: overview.refunds_issued,
+        credits_used_over_time: overview.credits_used_over_time,
+        videos_generated_over_time: overview.videos_generated_over_time,
+        plan_distribution: overview.plan_distribution,
+      }
+    : {
+        time_range: selectedRange.value,
+        total_users: 0,
+        active_users: 0,
+        credits_consumed: 0,
+        videos_generated: 0,
+        revenue: 0,
+        refunds_issued: 0,
+        credits_used_over_time: [],
+        videos_generated_over_time: [],
+        plan_distribution: [],
+      };
+
   return (
     <div>
-      <AdminHeader />
+      <AdminHeader exportPayload={adminOverviewExportPayload} exportFilePrefix="clipforge-admin-overview" />
 
       {/* Page Title + Dropdown */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">

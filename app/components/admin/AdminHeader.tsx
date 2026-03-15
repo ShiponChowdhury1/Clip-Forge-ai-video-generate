@@ -2,6 +2,7 @@
 
 import {
   Download,
+  FileText,
   Bell,
   ChevronDown,
   User,
@@ -25,16 +26,71 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import { toast } from "react-toastify";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useLogoutMutation, useRequestChangePasswordOtpMutation, useVerifyChangePasswordOtpMutation, useChangePasswordMutation, useUpdateProfileMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction, setUser } from "@/lib/redux/features/auth/authSlice";
+import { features, steps, plans, videos, videoCardData } from "@/app/data";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
 
 interface AdminHeaderProps {
-  onExport?: () => void;
+  exportPayload?: Record<string, unknown>;
+  exportFilePrefix?: string;
+}
+
+interface UserNotification {
+  id: number;
+  user_id: number;
+  title: string;
+  message: string;
+  type: string;
+  is_read: boolean;
+  video_id: number | null;
+  job_id: string | null;
+  created_at: string;
+}
+
+function NotificationDetailsModal({
+  notification,
+  onClose,
+}: {
+  notification: UserNotification;
+  onClose: () => void;
+}) {
+  const createdAt = new Date(notification.created_at).toLocaleString();
+
+  return (
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-md" onClick={onClose} />
+      <div className="relative bg-white dark:bg-[#111827] rounded-2xl w-full max-w-lg mx-auto shadow-2xl border border-gray-200 dark:border-[#1E293B] overflow-hidden">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors z-10">
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="p-6 sm:p-8">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{notification.title}</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">{createdAt}</p>
+
+          <div className="bg-gray-50 dark:bg-[#0D1117] border border-gray-200 dark:border-[#1A3155] rounded-xl p-4">
+            <p className="text-sm leading-6 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{notification.message}</p>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={onClose}
+              className="bg-[#3B82F6] hover:bg-[#2563EB] text-white font-medium px-5 py-2.5 rounded-lg transition-colors text-sm"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── My Profile Modal ────────────────────────────────────────────
@@ -564,21 +620,308 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 }
 
 // ─── Admin Header ────────────────────────────────────────────────
-export default function AdminHeader({ onExport }: AdminHeaderProps) {
+export default function AdminHeader({ exportPayload, exportFilePrefix = "clipforge-home-data" }: AdminHeaderProps) {
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showNotificationMenu, setShowNotificationMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<UserNotification | null>(null);
+  const [notifications, setNotifications] = useState<UserNotification[]>([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [notificationsError, setNotificationsError] = useState<string | null>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => state.auth.user);
+  const authToken = useAppSelector((state) => state.auth.token);
   const [logoutApi] = useLogoutMutation();
+
+  const serializeExportValue = (value: unknown): unknown => {
+    if (typeof value === "function") {
+      return value.name || "[function]";
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => serializeExportValue(item));
+    }
+    if (value && typeof value === "object") {
+      return Object.entries(value as Record<string, unknown>).reduce<Record<string, unknown>>((acc, [key, item]) => {
+        acc[key] = serializeExportValue(item);
+        return acc;
+      }, {});
+    }
+    return value;
+  };
+
+  const buildExportPayload = () => ({
+    ...(exportPayload || {
+      features,
+      steps,
+      plans,
+      videos,
+      videoCardData,
+    }),
+  });
+
+  const flattenExportRows = (value: unknown, path = "", rows: Array<{ path: string; value: string }> = []) => {
+    if (value === null || value === undefined) {
+      rows.push({ path, value: "" });
+      return rows;
+    }
+
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+      rows.push({ path, value: String(value) });
+      return rows;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        flattenExportRows(item, `${path}[${index}]`, rows);
+      });
+      return rows;
+    }
+
+    if (typeof value === "object") {
+      Object.entries(value as Record<string, unknown>).forEach(([key, item]) => {
+        const nextPath = path ? `${path}.${key}` : key;
+        flattenExportRows(item, nextPath, rows);
+      });
+      return rows;
+    }
+
+    rows.push({ path, value: String(value) });
+    return rows;
+  };
+
+  const formatPathLabel = (path: string) => {
+    return path
+      .replace(/\[(\d+)\]/g, " $1")
+      .replace(/\./g, " ")
+      .replace(/_/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\b\w/g, (ch) => ch.toUpperCase());
+  };
+
+  const handleExportCsv = () => {
+    setShowExportMenu(false);
+
+    try {
+      const payload = buildExportPayload();
+      const rows = flattenExportRows(serializeExportValue(payload), "");
+
+      const escapeCsv = (value: string) => `"${value.replace(/"/g, '""')}"`;
+      const csvHeader = "path,value";
+      const csvBody = rows
+        .filter((row) => row.path)
+        .map((row) => `${escapeCsv(row.path)},${escapeCsv(row.value)}`)
+        .join("\n");
+
+      const blob = new Blob([`${csvHeader}\n${csvBody}`], {
+        type: "text/csv;charset=utf-8",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `${exportFilePrefix}.csv`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+
+      toast.success("Home data exported as CSV.");
+    } catch {
+      toast.error("Failed to export CSV data.");
+    }
+  };
+
+  const handleExportPdf = () => {
+    setShowExportMenu(false);
+
+    try {
+      const payload = buildExportPayload();
+      const rows = flattenExportRows(serializeExportValue(payload), "").filter((row) => row.path);
+      const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const generatedAt = new Date().toLocaleString();
+
+      doc.setFillColor(6, 182, 212);
+      doc.roundedRect(28, 24, pageWidth - 56, 64, 8, 8, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.text("Clip Forge Data Export", 42, 50);
+      doc.setFontSize(10);
+      doc.text(`Generated: ${generatedAt}`, 42, 68);
+      doc.text(`Total Records: ${rows.length}`, 42, 82);
+      doc.setTextColor(17, 24, 39);
+
+      const summaryRows = [
+        ["Time Range", String((payload as { time_range?: unknown }).time_range ?? "all")],
+        ["Total Users", String((payload as { total_users?: unknown }).total_users ?? "-")],
+        ["Active Users", String((payload as { active_users?: unknown }).active_users ?? "-")],
+        ["Credits Consumed", String((payload as { credits_consumed?: unknown }).credits_consumed ?? "-")],
+        ["Videos Generated", String((payload as { videos_generated?: unknown }).videos_generated ?? "-")],
+        ["Revenue", String((payload as { revenue?: unknown }).revenue ?? "-")],
+        ["Refunds Issued", String((payload as { refunds_issued?: unknown }).refunds_issued ?? "-")],
+      ];
+
+      autoTable(doc, {
+        startY: 102,
+        theme: "grid",
+        head: [["Metric", "Value"]],
+        body: summaryRows,
+        styles: {
+          fontSize: 9,
+          cellPadding: 5,
+          textColor: [31, 41, 55],
+        },
+        columnStyles: {
+          0: { cellWidth: 190, fontStyle: "bold" },
+          1: { cellWidth: 330 },
+        },
+        headStyles: {
+          fillColor: [15, 23, 42],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+        },
+      });
+
+      const detailsStartY = (doc as jsPDF & { lastAutoTable?: { finalY?: number } }).lastAutoTable?.finalY ?? 220;
+      doc.setFontSize(12);
+      doc.setTextColor(17, 24, 39);
+      doc.text("Detailed Data", 40, detailsStartY + 18);
+
+      autoTable(doc, {
+        startY: detailsStartY + 28,
+        theme: "grid",
+        head: [["Field", "Value"]],
+        body: rows.map((row) => [formatPathLabel(row.path), row.value]),
+        alternateRowStyles: {
+          fillColor: [248, 250, 252],
+        },
+        styles: {
+          fontSize: 8.5,
+          cellPadding: 5,
+          overflow: "linebreak",
+          valign: "top",
+          textColor: [31, 41, 55],
+        },
+        columnStyles: {
+          0: { cellWidth: 190, fontStyle: "bold" },
+          1: { cellWidth: 330 },
+        },
+        headStyles: {
+          fillColor: [15, 23, 42],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+        },
+        didDrawPage: () => {
+          const pageNumber = doc.getNumberOfPages();
+          const pageHeight = doc.internal.pageSize.getHeight();
+          doc.setFontSize(9);
+          doc.setTextColor(107, 114, 128);
+          doc.text(`Page ${pageNumber}`, pageWidth - 70, pageHeight - 16);
+        },
+      });
+
+      doc.save(`${exportFilePrefix}.pdf`);
+      toast.success("Home data exported as PDF.");
+    } catch {
+      toast.error("Failed to export PDF data.");
+    }
+  };
+
+  const fetchNotifications = async () => {
+    setNotificationsLoading(true);
+    setNotificationsError(null);
+
+    const token = authToken || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/v1/users/notifications?unread_only=true&limit=50`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load notifications");
+      }
+
+      const data = (await response.json()) as UserNotification[];
+      setNotifications(Array.isArray(data) ? data : []);
+    } catch {
+      setNotificationsError("Failed to load notifications");
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+
+  const markNotificationAsRead = async (notificationId: number) => {
+    const token = authToken || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+
+    const response = await fetch(`${API_BASE_URL}/v1/users/notifications/${notificationId}/read`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to mark notification as read");
+    }
+  };
+
+  const handleNotificationClick = async (notification: UserNotification) => {
+    setShowNotificationMenu(false);
+    setSelectedNotification(notification);
+
+    if (notification.is_read) {
+      return;
+    }
+
+    try {
+      await markNotificationAsRead(notification.id);
+      setNotifications((prev) => prev.filter((item) => item.id !== notification.id));
+    } catch {
+      // Keep modal open even if read status update fails.
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const timer = setInterval(() => {
+      fetchNotifications();
+    }, 60000);
+
+    return () => clearInterval(timer);
+    // authToken change should refresh notifications for the new session.
+  }, [authToken]);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
+      if (
+        exportRef.current &&
+        !exportRef.current.contains(e.target as Node)
+      ) {
+        setShowExportMenu(false);
+      }
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target as Node)
+      ) {
+        setShowNotificationMenu(false);
+      }
       if (
         profileRef.current &&
         !profileRef.current.contains(e.target as Node)
@@ -615,18 +958,101 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
     <>
       <header className="flex items-center justify-end gap-3 mb-6 bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-xl px-4 py-3">
         {/* Export button */}
-        <button
-          onClick={onExport}
-          className="h-10 flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-4 rounded-lg text-sm transition-colors whitespace-nowrap"
-        >
-          <Download className="w-4 h-4" />
-          <span className="hidden sm:inline">Export Data</span>
-        </button>
+        <div className="relative" ref={exportRef}>
+          <button
+            onClick={() => setShowExportMenu((prev) => !prev)}
+            className="h-10 flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-4 rounded-lg text-sm transition-colors whitespace-nowrap"
+          >
+            <Download className="w-4 h-4" />
+            <span className="hidden sm:inline">Export Data</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${showExportMenu ? "rotate-180" : ""}`} />
+          </button>
+
+          {showExportMenu && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl shadow-2xl z-100 py-2 overflow-hidden">
+              <button
+                onClick={handleExportPdf}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1A2332] hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                <FileText className="w-4 h-4" />
+                <span className="truncate">Export as PDF</span>
+                <span className="ml-auto rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-500/15 dark:text-cyan-300 px-2 py-0.5 text-[10px] font-semibold leading-none">
+                  Best
+                </span>
+              </button>
+              <button
+                onClick={handleExportCsv}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1A2332] hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                <FileText className="w-4 h-4" />
+                Export as CSV
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Notification bell */}
-        <button className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors relative shrink-0">
-          <Bell className="w-5 h-5" />
-        </button>
+        <div className="relative" ref={notificationRef}>
+          <button
+            onClick={() => {
+              const nextValue = !showNotificationMenu;
+              setShowNotificationMenu(nextValue);
+              if (nextValue && !notificationsLoading) {
+                fetchNotifications();
+              }
+            }}
+            className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors relative shrink-0"
+            aria-label="Open notifications"
+          >
+            <Bell className="w-5 h-5" />
+            {notifications.length > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none border border-white dark:border-[#0D1117]">
+                {notifications.length > 9 ? "9+" : notifications.length}
+              </span>
+            )}
+          </button>
+
+          {showNotificationMenu && (
+            <div className="absolute right-0 top-full mt-2 w-84 max-w-[90vw] bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl shadow-2xl z-100 overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-200 dark:border-[#1A3155] flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</h4>
+                <button
+                  onClick={fetchNotifications}
+                  className="text-xs text-[#3B82F6] hover:text-[#2563EB] font-medium"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              <div className="max-h-90 overflow-y-auto">
+                {notificationsLoading ? (
+                  <div className="py-8 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Loading...
+                  </div>
+                ) : notificationsError ? (
+                  <p className="text-sm text-red-500 px-4 py-6">{notificationsError}</p>
+                ) : notifications.length === 0 ? (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 px-4 py-6">No unread notifications.</p>
+                ) : (
+                  notifications.map((notification) => (
+                    <button
+                      key={notification.id}
+                      onClick={() => {
+                        handleNotificationClick(notification);
+                      }}
+                      className="w-full text-left px-4 py-3 border-b border-gray-100 dark:border-[#1A3155] last:border-b-0 hover:bg-gray-50 dark:hover:bg-[#1A2332] transition-colors"
+                    >
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{notification.title}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{notification.message}</p>
+                      <p className="text-[11px] text-gray-400 mt-1.5">{new Date(notification.created_at).toLocaleString()}</p>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* User avatar + dropdown */}
         <div className="relative" ref={profileRef}>
@@ -714,6 +1140,12 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
       )}
       {showPasswordModal && (
         <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
+      )}
+      {selectedNotification && (
+        <NotificationDetailsModal
+          notification={selectedNotification}
+          onClose={() => setSelectedNotification(null)}
+        />
       )}
 
       {/* Logout Confirmation Modal */}
