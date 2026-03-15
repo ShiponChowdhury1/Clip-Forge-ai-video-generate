@@ -16,6 +16,7 @@ import {
 const defaultPlanForm = {
   name: "",
   monthly_price: "",
+  product_id: "",
   monthly_credits: "",
   video_limit_per_month: "",
   priority_level: "",
@@ -52,6 +53,7 @@ export function SubscriptionPlans() {
     setPlanForm({
       name: plan.name,
       monthly_price: String(plan.monthly_price),
+      product_id: plan.product_id || "",
       monthly_credits: String(plan.monthly_credits),
       video_limit_per_month: String(plan.video_limit_per_month),
       priority_level: String(plan.priority_level),
@@ -79,6 +81,7 @@ export function SubscriptionPlans() {
     const payload = {
       name: planForm.name,
       monthly_price: Number(planForm.monthly_price) || 0,
+      product_id: planForm.product_id.trim() || null,
       monthly_credits: Number(planForm.monthly_credits) || 0,
       video_limit_per_month: Number(planForm.video_limit_per_month) || 0,
       priority_level: Number(planForm.priority_level) || 1,
@@ -139,7 +142,7 @@ export function SubscriptionPlans() {
     <>
       {/* Add/Edit Plan Modal */}
       {showPlanModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-[#1A3155]">
@@ -171,6 +174,18 @@ export function SubscriptionPlans() {
                   <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Monthly Credits</label>
                   <input type="number" min="0" value={planForm.monthly_credits} onChange={(e) => setPlanForm((f) => ({ ...f, monthly_credits: e.target.value }))} placeholder="0" className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors" />
                 </div>
+              </div>
+
+              {/* Stripe Product ID */}
+              <div>
+                <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Product ID</label>
+                <input
+                  type="text"
+                  value={planForm.product_id}
+                  onChange={(e) => setPlanForm((f) => ({ ...f, product_id: e.target.value }))}
+                  placeholder="e.g. prod_U9NqMLLByGUd2c"
+                  className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors"
+                />
               </div>
 
               {/* Video Limit & Priority */}
@@ -209,24 +224,12 @@ export function SubscriptionPlans() {
                 </div>
               </div>
 
-              {/* Plan Status & Commercial Usage */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Plan Status</label>
-                  <div className="relative">
-                    <select value={planForm.plan_status} onChange={(e) => setPlanForm((f) => ({ ...f, plan_status: e.target.value }))} className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors appearance-none cursor-pointer">
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                  </div>
-                </div>
-                <div className="flex flex-col justify-center">
-                  <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Commercial Usage</label>
-                  <div className="flex items-center gap-3 mt-1">
-                    <Toggle enabled={planForm.commercial_usage_allowed} onChange={(val) => setPlanForm((f) => ({ ...f, commercial_usage_allowed: val }))} />
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{planForm.commercial_usage_allowed ? "Allowed" : "Not Allowed"}</span>
-                  </div>
+              {/* Commercial Usage */}
+              <div className="flex flex-col justify-center">
+                <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Commercial Usage</label>
+                <div className="flex items-center gap-3 mt-1">
+                  <Toggle enabled={planForm.commercial_usage_allowed} onChange={(val) => setPlanForm((f) => ({ ...f, commercial_usage_allowed: val }))} />
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{planForm.commercial_usage_allowed ? "Allowed" : "Not Allowed"}</span>
                 </div>
               </div>
             </div>
@@ -289,7 +292,7 @@ export function SubscriptionPlans() {
                         <ChevronDown className="w-3 h-3" />
                       </button>
                       {statusDropdownId === plan.id && (
-                        <div className="absolute right-0 top-full mt-1 z-20 bg-white dark:bg-[#0D1117] border border-gray-200 dark:border-[#1A3155] rounded-lg shadow-xl overflow-hidden min-w-[120px]">
+                        <div className="absolute right-0 top-full mt-1 z-20 bg-white dark:bg-[#0D1117] border border-gray-200 dark:border-[#1A3155] rounded-lg shadow-xl overflow-hidden min-w-30">
                           <button
                             onClick={() => { if (plan.plan_status !== "active") handleToggleStatus(plan.id); setStatusDropdownId(null); }}
                             className={`w-full text-left px-4 py-2 text-xs transition-colors ${

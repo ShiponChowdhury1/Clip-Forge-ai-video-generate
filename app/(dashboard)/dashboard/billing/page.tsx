@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { CreditCard, ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import {
   CreditWallet,
@@ -18,6 +20,7 @@ import {
   useGetCreditPackagesQuery,
   useGetSubscriptionsQuery,
 } from "@/lib/redux/features/admin/adminApi";
+import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi";
 
 // Sample billing history data
 const sampleInvoices: Invoice[] = [
@@ -35,6 +38,13 @@ type CheckoutSource = "plan" | "package";
 export default function BillingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const authUser = useSelector((state: { auth: { user: { id: number; credits: number } | null } }) => state.auth.user);
+  const userId = authUser?.id ?? null;
+  const { data: creditBalance } = useGetUserCreditBalanceQuery(userId ?? skipToken, {
+    refetchOnMountOrArgChange: true,
+    pollingInterval: 30000,
+    skipPollingIfUnfocused: true,
+  });
   const { data: subscriptions, isLoading: subscriptionsLoading } = useGetSubscriptionsQuery();
   const { data: creditPackages = [], isLoading: creditPackagesLoading } = useGetCreditPackagesQuery();
 
@@ -59,7 +69,7 @@ export default function BillingPage() {
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
-  const [currentCredits] = useState(127);
+  const currentCredits = typeof creditBalance === "number" ? creditBalance : (authUser?.credits ?? 0);
 
   const shouldOpenCheckout = searchParams.get("checkout") === "1";
   const requestedPlanName = searchParams.get("plan")?.trim().toLowerCase();
@@ -168,7 +178,7 @@ export default function BillingPage() {
       {/* Header */}
       <DashboardHeader
         icon={
-          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+          <div className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
             <CreditCard className="w-6 h-6 text-white" />
           </div>
         }

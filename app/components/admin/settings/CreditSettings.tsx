@@ -20,6 +20,7 @@ export function CreditSettings() {
   const [name, setName] = useState("");
   const [credits, setCredits] = useState("");
   const [price, setPrice] = useState("");
+  const [productId, setProductId] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [formError, setFormError] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -31,6 +32,7 @@ export function CreditSettings() {
     setName("");
     setCredits("");
     setPrice("");
+    setProductId("");
     setStatus("active");
     setFormError("");
     setShowModal(true);
@@ -41,13 +43,15 @@ export function CreditSettings() {
     packageName: string,
     packageCredits: number,
     packagePrice: number,
+    packageProductId?: string | null,
     packageStatus?: "active" | "inactive"
   ) => {
     setEditingId(id);
     setName(packageName);
     setCredits(String(packageCredits));
     setPrice(String(packagePrice));
-    setStatus(packageStatus === "inactive" ? "inactive" : "active");
+    setProductId(packageProductId || "");
+    setStatus(packageStatus?.trim() === "inactive" ? "inactive" : "active");
     setFormError("");
     setShowModal(true);
   };
@@ -87,6 +91,7 @@ export function CreditSettings() {
             name: name.trim(),
             credits: parsedCredits,
             price: parsedPrice,
+            product_id: productId.trim() || null,
             status,
           },
         }).unwrap();
@@ -96,7 +101,8 @@ export function CreditSettings() {
           name: name.trim(),
           credits: parsedCredits,
           price: parsedPrice,
-          status,
+          product_id: productId.trim() || null,
+          status: "active",
         }).unwrap();
         toast.success("New credit package added successfully.");
       }
@@ -130,7 +136,7 @@ export function CreditSettings() {
     const existing = packages.find((pkg) => pkg.id === id);
     if (!existing) return;
 
-    if ((existing.status || "active") === nextStatus) return;
+    if ((existing.status?.trim() || "active") === nextStatus) return;
 
     try {
       await updateCreditPackage({
@@ -139,6 +145,7 @@ export function CreditSettings() {
           name: existing.name,
           credits: existing.credits,
           price: existing.price,
+          product_id: existing.product_id || null,
           status: nextStatus,
         },
       }).unwrap();
@@ -228,17 +235,17 @@ export function CreditSettings() {
 
               <div>
                 <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">
-                  Status
+                  Stripe Product ID
                 </label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as "active" | "inactive")}
+                <input
+                  type="text"
+                  value={productId}
+                  onChange={(e) => setProductId(e.target.value)}
+                  placeholder="e.g. prod_ABC123XYZ"
                   className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
+                />
               </div>
+
             </div>
 
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-[#1A3155]">
@@ -308,13 +315,13 @@ export function CreditSettings() {
                         <button
                           onClick={() => setStatusMenuId(statusMenuId === pkg.id ? null : pkg.id)}
                           className={`text-xs font-medium px-2.5 py-1 rounded-full border inline-flex items-center gap-1.5 ${
-                            (pkg.status || "active") === "active"
+                            (pkg.status?.trim() || "active") === "active"
                               ? "bg-emerald-100 dark:bg-emerald-500/15 border-emerald-300 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
                               : "bg-gray-100 dark:bg-gray-500/15 border-gray-300 dark:border-gray-500/40 text-gray-700 dark:text-gray-300"
                           }`}
                           title="Change package status"
                         >
-                          {(pkg.status || "active").charAt(0).toUpperCase() + (pkg.status || "active").slice(1)}
+                          {(pkg.status?.trim() || "active").charAt(0).toUpperCase() + (pkg.status?.trim() || "active").slice(1)}
                           <ChevronDown className="w-3.5 h-3.5" />
                         </button>
 
@@ -342,7 +349,7 @@ export function CreditSettings() {
                         )}
                       </div>
                       <button
-                        onClick={() => openEditModal(pkg.id, pkg.name, pkg.credits, pkg.price, pkg.status)}
+                        onClick={() => openEditModal(pkg.id, pkg.name, pkg.credits, pkg.price, pkg.product_id, pkg.status)}
                         className="text-gray-400 hover:text-cyan-400 transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#1A2332]"
                         title="Edit credit package"
                       >

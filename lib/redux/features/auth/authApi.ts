@@ -23,7 +23,10 @@ export const authApi = createApi({
     baseUrl: `${API_BASE_URL}/v1/auth`,
     prepareHeaders: (headers, { getState }) => {
       const state = getState() as { auth: { token: string | null } };
-      const token = state.auth.token;
+      const tokenFromState = state.auth.token;
+      const tokenFromStorage =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const token = tokenFromState || tokenFromStorage;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -164,6 +167,14 @@ export const authApi = createApi({
         body: formData,
       }),
     }),
+
+    // 15. Get user credit balance
+    getUserCreditBalance: builder.query<number, number>({
+      query: (userId) => ({
+        url: `${API_BASE_URL}/v1/users/${userId}/credit-balance`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -198,4 +209,5 @@ export const {
   useVerifyRegisterOtpMutation,
   useResendOtpMutation,
   useUpdateProfileMutation,
+  useGetUserCreditBalanceQuery,
 } = authApi;

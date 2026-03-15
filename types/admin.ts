@@ -13,6 +13,7 @@ export interface SubscriptionPlan {
   id: number;
   name: string;
   monthly_price: number;
+  product_id?: string | null;
   monthly_credits: number;
   video_limit_per_month: number;
   priority_level: number;
@@ -30,6 +31,7 @@ export interface CreditPackage {
   name: string;
   credits: number;
   price: number;
+  product_id?: string | null;
   status?: "active" | "inactive";
   created_at: string;
 }
@@ -38,6 +40,7 @@ export interface CreateCreditPackagePayload {
   name: string;
   credits: number;
   price: number;
+  product_id?: string | null;
   status?: "active" | "inactive";
 }
 

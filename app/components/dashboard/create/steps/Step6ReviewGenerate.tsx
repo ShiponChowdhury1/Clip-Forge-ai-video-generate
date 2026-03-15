@@ -13,6 +13,7 @@ interface Step6ReviewGenerateProps {
   backgroundMusic: MusicOption;
   subtitleStyle: SubtitleStyle;
   subtitlesEnabled: boolean;
+  currentCredits?: number;
   onGenerate: () => void;
   isGenerating: boolean;
 }
@@ -30,16 +31,24 @@ export default function Step6ReviewGenerate({
   backgroundMusic,
   subtitleStyle,
   subtitlesEnabled,
+  currentCredits = 0,
   onGenerate,
   isGenerating,
 }: Step6ReviewGenerateProps) {
+  // Mirror backend billing rules for transparent UX (backend remains source of truth)
+  const COSTS = {
+    BASE_PER_MINUTE: 200,
+    SUBTITLE: 100,
+    MUSIC: 25,
+  } as const;
+
   // Word count & estimated duration
   const wordCount = script.trim() ? script.trim().split(/\s+/).length : 0;
   const estimatedMinutes = Math.max(1, Math.ceil(wordCount / 150));
-
+    
   // Credit calculation
-  const baseCredits = 1;
-  const subtitleCredits = subtitlesEnabled && subtitleStyle !== "none" ? 1 : 0;
+  const baseCredits = estimatedMinutes * COSTS.BASE_PER_MINUTE;
+  const subtitleCredits = subtitlesEnabled && subtitleStyle !== "none" ? COSTS.SUBTITLE : 0;
   const sceneCredits =
     sceneMedia === "all-images"
       ? 0
@@ -48,7 +57,11 @@ export default function Step6ReviewGenerate({
       : sceneMedia === "first-scene-video" || sceneMedia === "last-scene-video"
       ? 2
       : 0;
-  const totalCredits = baseCredits + subtitleCredits + sceneCredits;
+  const musicCredits = backgroundMusic !== "no-music" ? COSTS.MUSIC : 0;
+  const totalCredits = baseCredits + subtitleCredits + sceneCredits + musicCredits;
+  const remainingCredits = Math.max(currentCredits - totalCredits, 0);
+  const hasEnoughCredits = currentCredits >= totalCredits;
+  const creditsShortage = Math.max(totalCredits - currentCredits, 0);
 
   // Format scene media for display
   const sceneMediaLabel =
@@ -148,7 +161,7 @@ export default function Step6ReviewGenerate({
           <h4 className="text-gray-900 dark:text-white text-sm font-bold">Credit Usage</h4>
           <div className="flex items-center gap-1.5">
             <span className="text-gray-600 dark:text-gray-400 text-sm">Balance:</span>
-            <span className="text-emerald-400 text-lg font-bold">127</span>
+            <span className="text-emerald-400 text-lg font-bold">{currentCredits}</span>
           </div>
         </div>
 
@@ -158,13 +171,13 @@ export default function Step6ReviewGenerate({
               Base video ({estimatedMinutes} min)
             </span>
             <span className="text-gray-900 dark:text-white text-sm font-medium">
-              +{baseCredits} credit
+              +{baseCredits} credits
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-gray-600 dark:text-gray-400 text-sm">Subtitles</span>
             <span className="text-gray-900 dark:text-white text-sm font-medium">
-              +{subtitleCredits} credit
+              +{subtitleCredits} credits
             </span>
           </div>
           <div className="flex items-center justify-between">
@@ -174,7 +187,22 @@ export default function Step6ReviewGenerate({
             </span>
           </div>
 
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Background Music</span>
+            <span className="text-gray-900 dark:text-white text-sm font-medium">
+              +{musicCredits} credits
+            </span>
+          </div>
+
           <div className="border-t border-gray-200 dark:border-[#1A3155] pt-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">Will Deduct</span>
+              <span className="text-red-500 text-sm font-bold">-{totalCredits} credits</span>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">After Generation</span>
+              <span className="text-emerald-400 text-sm font-bold">{remainingCredits} credits</span>
+            </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-900 dark:text-white text-sm font-bold">Total</span>
               <span className="text-[#3B82F6] text-sm font-bold">
@@ -182,16 +210,24 @@ export default function Step6ReviewGenerate({
               </span>
             </div>
           </div>
+
+          {!hasEnoughCredits && (
+            <div className="bg-red-500/10 border border-red-500/25 rounded-xl px-3 py-2">
+              <p className="text-red-500 text-xs font-medium">
+                Insufficient balance. You need {creditsShortage} more credits to generate this video.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Generate Button */}
       <button
         onClick={onGenerate}
-        disabled={isGenerating}
+        disabled={isGenerating || !hasEnoughCredits}
         className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-base py-4 rounded-xl transition-colors"
       >
-        {isGenerating ? "Generating..." : "Generate Video"}
+        {isGenerating ? "Generating..." : hasEnoughCredits ? "Generate Video" : `Need ${creditsShortage} More Credits`}
       </button>
     </div>
   );

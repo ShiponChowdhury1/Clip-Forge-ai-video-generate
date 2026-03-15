@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
+import { skipToken } from "@reduxjs/toolkit/query";
 import {
   CreateVideoHeader,
   StepProgress,
@@ -15,6 +16,7 @@ const Step4VoiceNarration = lazy(() => import("@/app/components/dashboard/create
 const Step5SubtitleSettings = lazy(() => import("@/app/components/dashboard/create/steps/Step5SubtitleSettings"));
 const Step6ReviewGenerate = lazy(() => import("@/app/components/dashboard/create/steps/Step6ReviewGenerate"));
 import { useCreateVideoMutation } from "@/lib/redux/features/videos/videosApi";
+import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi";
 import { useSelector } from "react-redux";
 
 import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2FormatStyleMedia";
@@ -42,7 +44,16 @@ export default function CreateVideoPage() {
 
   const [createVideo] = useCreateVideoMutation();
   const token = useSelector((state: { auth: { token: string | null } }) => state.auth.token);
+  const authUser = useSelector((state: { auth: { user: { id: number; credits: number } | null } }) => state.auth.user);
+  const userId = authUser?.id ?? null;
+  const { data: creditBalance } = useGetUserCreditBalanceQuery(userId ?? skipToken, {
+    refetchOnMountOrArgChange: true,
+    pollingInterval: 30000,
+    skipPollingIfUnfocused: true,
+  });
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const displayCredits = typeof creditBalance === "number" ? creditBalance : (authUser?.credits ?? 0);
 
   const normalizeVideoId = (value: unknown): number | null => {
     if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -443,6 +454,7 @@ export default function CreateVideoPage() {
             backgroundMusic={backgroundMusic}
             subtitleStyle={subtitleStyle}
             subtitlesEnabled={subtitlesEnabled}
+            currentCredits={displayCredits}
             onGenerate={handleGenerate}
             isGenerating={isGenerating}
           />
@@ -455,7 +467,7 @@ export default function CreateVideoPage() {
   return (
     <div className="w-full" style={{ minHeight: "844px" }}>
       {/* Header - full width */}
-      <CreateVideoHeader credits={450} />
+      <CreateVideoHeader credits={displayCredits} />
 
       {/* Rest of content - constrained width */}
       <div className="w-full max-w-[1108px] mx-auto">

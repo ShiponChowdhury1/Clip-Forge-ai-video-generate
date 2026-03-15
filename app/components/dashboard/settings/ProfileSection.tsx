@@ -42,6 +42,30 @@ export default function ProfileSection({
   const [pictureLoading, setPictureLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const resolveProfileImageUrl = (url?: string | null) => {
+    if (!url) return user?.picture;
+    const absolute = url.startsWith("http") ? url : `${ORIGIN}${url}`;
+    return `${absolute}${absolute.includes("?") ? "&" : "?"}t=${Date.now()}`;
+  };
+
+  const buildUpdatedUser = (res: {
+    id: number;
+    name: string;
+    email: string;
+    credits: number;
+    subscription_plan?: string;
+    role: "user" | "admin" | "super_admin";
+    profile_image_url?: string | null;
+  }) => ({
+    id: res.id,
+    name: res.name,
+    email: res.email,
+    credits: res.credits,
+    subscription_plan: res.subscription_plan || user?.subscription_plan || "Free",
+    role: res.role,
+    picture: resolveProfileImageUrl(res.profile_image_url),
+  });
+
   const handleSaveName = async () => {
     const trimmed = editName.trim();
     if (!trimmed || trimmed === user?.name) {
@@ -54,15 +78,7 @@ export default function ProfileSection({
       const formData = new FormData();
       formData.append("name", trimmed);
       const res = await updateProfile(formData).unwrap();
-      const updatedUser = {
-        id: res.id,
-        name: res.name,
-        email: res.email,
-        credits: res.credits,
-        subscription_plan: res.subscription_plan,
-        role: res.role,
-        picture: res.profile_image_url ? `${ORIGIN}${res.profile_image_url}` : user?.picture,
-      };
+      const updatedUser = buildUpdatedUser(res);
       dispatch(setUser(updatedUser));
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -86,15 +102,7 @@ export default function ProfileSection({
       formData.append("name", user?.name || "");
       formData.append("profile_image", file);
       const res = await updateProfile(formData).unwrap();
-      const updatedUser = {
-        id: res.id,
-        name: res.name,
-        email: res.email,
-        credits: res.credits,
-        subscription_plan: res.subscription_plan,
-        role: res.role,
-        picture: res.profile_image_url ? `${ORIGIN}${res.profile_image_url}` : user?.picture,
-      };
+      const updatedUser = buildUpdatedUser(res);
       dispatch(setUser(updatedUser));
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(updatedUser));
