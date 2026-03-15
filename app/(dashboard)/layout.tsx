@@ -2,11 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/lib/redux/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
+import { useGetMeQuery } from "@/lib/redux/features/auth/authApi";
+import { setUser } from "@/lib/redux/features/auth/authSlice";
 import Sidebar from "@/app/components/dashboard/Sidebar";
 import { MuteProvider } from "@/app/components/dashboard/MuteContext";
 
 const normalizeRole = (role?: string | null) => (role || "").toLowerCase();
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
+const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
+
+const resolveProfileImageUrl = (url?: string | null, fallback?: string) => {
+  if (!url) return fallback;
+  return url.startsWith("http") ? url : `${ORIGIN}${url}`;
+};
 
 const getStoredRole = () => {
   if (typeof window === "undefined") return "";
@@ -24,13 +34,34 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
   const user = useAppSelector((state) => state.auth.user);
+  const { data: profile } = useGetMeQuery(undefined, { skip: !token });
   const storedRole = getStoredRole();
-  const effectiveRole = normalizeRole(user?.role) || storedRole;
+  const effectiveRole = normalizeRole(profile?.role || user?.role) || storedRole;
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     () => typeof window !== "undefined" && localStorage.getItem("sidebar-collapsed") === "true"
   );
+
+  useEffect(() => {
+    if (!profile) return;
+
+    const freshUser = {
+      id: profile.id,
+      name: profile.name,
+      email: profile.email,
+      credits: profile.credits,
+      subscription_plan: profile.subscription_plan,
+      role: profile.role,
+      picture: resolveProfileImageUrl(profile.profile_image_url, user?.picture),
+    };
+
+    dispatch(setUser(freshUser));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(freshUser));
+    }
+  }, [profile, user?.picture, dispatch]);
 
   useEffect(() => {
     if (!token) {
@@ -61,7 +92,7 @@ export default function DashboardLayout({
     <MuteProvider>
       <div className="min-h-screen bg-white dark:bg-black">
         <Sidebar onCollapsedChange={setSidebarCollapsed} />
-        <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[104px]" : "lg:ml-[308px]"}`}>{children}</main>
+        <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-26" : "lg:ml-77"}`}>{children}</main>
       </div>
     </MuteProvider>
   );

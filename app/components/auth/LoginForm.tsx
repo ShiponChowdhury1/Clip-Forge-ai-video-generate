@@ -8,6 +8,14 @@ import { useLoginMutation } from "@/lib/redux/features/auth/authApi";
 import { setCredentials, setUser } from "@/lib/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
+const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
+
+const resolveProfileImageUrl = (url?: string | null) => {
+  if (!url) return undefined;
+  return url.startsWith("http") ? url : `${ORIGIN}${url}`;
+};
+
 export default function LoginForm() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -23,11 +31,15 @@ export default function LoginForm() {
 
     try {
       const result = await login({ email, password }).unwrap();
+      const normalizedUser = {
+        ...result.user,
+        picture: result.user.picture || resolveProfileImageUrl(result.user.profile_image_url),
+      };
       localStorage.setItem("token", result.access_token);
-      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("user", JSON.stringify(normalizedUser));
       dispatch(setCredentials({ token: result.access_token }));
-      dispatch(setUser(result.user));
-      router.push(result.user.role === "admin" || result.user.role === "super_admin" ? "/admin" : "/dashboard");
+      dispatch(setUser(normalizedUser));
+      router.push(normalizedUser.role === "admin" || normalizedUser.role === "super_admin" ? "/admin" : "/dashboard");
     } catch (err: unknown) {
       const apiError = err as { data?: { detail?: string | Array<{ msg: string }> } };
       const detail = apiError.data?.detail;

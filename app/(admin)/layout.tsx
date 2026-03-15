@@ -11,6 +11,14 @@ const isAdminRole = (role?: string | null) => role === "admin" || role === "supe
 
 const normalizeRole = (role?: string | null) => (role || "").toLowerCase();
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
+const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
+
+const resolveProfileImageUrl = (url?: string | null, fallback?: string) => {
+  if (!url) return fallback;
+  return url.startsWith("http") ? url : `${ORIGIN}${url}`;
+};
+
 const getStoredRole = () => {
   if (typeof window === "undefined") return "";
   try {
@@ -44,25 +52,23 @@ export default function AdminLayout({
 
   // Sync fresh profile data into Redux + localStorage
   useEffect(() => {
-    if (profile && user) {
-      if (profile.name !== user.name || profile.email !== user.email) {
-        const freshUser = {
-          ...user,
-          id: profile.id,
-          name: profile.name,
-          email: profile.email,
-          credits: profile.credits,
-          subscription_plan: profile.subscription_plan,
-          role: profile.role || user.role,
-        };
-        dispatch(setUser(freshUser));
-        if (typeof window !== "undefined") {
-          localStorage.setItem("user", JSON.stringify(freshUser));
-        }
+    if (profile) {
+      const freshUser = {
+        id: profile.id,
+        name: profile.name,
+        email: profile.email,
+        credits: profile.credits,
+        subscription_plan: profile.subscription_plan,
+        role: profile.role || user?.role || "admin",
+        picture: resolveProfileImageUrl(profile.profile_image_url, user?.picture),
+      };
+      dispatch(setUser(freshUser));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(freshUser));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile]);
+  }, [profile, user?.picture]);
 
   useEffect(() => {
     if (mounted) {
@@ -86,7 +92,7 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <Sidebar role="admin" onCollapsedChange={setSidebarCollapsed} />
-      <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[104px]" : "lg:ml-[308px]"}`}>{children}</main>
+      <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-26" : "lg:ml-77"}`}>{children}</main>
     </div>
   );
 }

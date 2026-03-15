@@ -8,6 +8,14 @@ import { setCredentials, setUser } from "@/lib/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { useRouter } from "next/navigation";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
+const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
+
+const resolveProfileImageUrl = (url?: string | null) => {
+  if (!url) return undefined;
+  return url.startsWith("http") ? url : `${ORIGIN}${url}`;
+};
+
 export default function SocialButtons() {
   const [googleAuth] = useGoogleAuthMutation();
   const dispatch = useAppDispatch();
@@ -60,7 +68,7 @@ export default function SocialButtons() {
       if (userData) {
         const mergedUser = {
           ...userData,
-          picture: userData.picture || googleUser?.picture,
+          picture: userData.picture || resolveProfileImageUrl(userData.profile_image_url) || googleUser?.picture,
         };
         console.log("Using merged user data:", mergedUser);
         localStorage.setItem("user", JSON.stringify(mergedUser));

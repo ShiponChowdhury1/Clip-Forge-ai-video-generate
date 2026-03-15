@@ -51,6 +51,7 @@ export interface LoginResponse {
     role: UserRole;
     created_at: string;
     picture?: string;
+    profile_image_url?: string | null;
   };
 }
 
@@ -91,6 +92,7 @@ export interface UserProfile {
   credits: number;
   subscription_plan: string;
   role: UserRole;
+  profile_image_url?: string | null;
   created_at: string;
 }
 

@@ -25,6 +25,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useLogoutMutation, useRequestChangePasswordOtpMutation, useVerifyChangePasswordOtpMutation, useChangePasswordMutation, useUpdateProfileMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction, setUser } from "@/lib/redux/features/auth/authSlice";
@@ -111,8 +112,9 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
       const updatedUser = buildUpdatedUser(res);
       dispatch(setUser(updatedUser));
       if (typeof window !== "undefined") localStorage.setItem("user", JSON.stringify(updatedUser));
+      toast.success("Profile picture changed successfully.");
     } catch {
-      // silently fail
+      toast.error("Failed to update profile picture.");
     } finally {
       setPictureLoading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -647,7 +649,7 @@ export default function AdminHeader({ onExport }: AdminHeaderProps) {
                 {initials}
               </div>
             )}
-            <span className="text-gray-900 dark:text-white text-sm font-medium max-w-[120px] truncate hidden sm:inline">
+            <span className="text-gray-900 dark:text-white text-sm font-medium max-w-30 truncate hidden sm:inline">
               {displayName}
             </span>
             <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showProfileMenu ? "rotate-180" : ""}`} />

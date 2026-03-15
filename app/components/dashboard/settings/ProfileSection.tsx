@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   ChevronRight,
 } from "lucide-react";
+import { toast } from "react-toastify";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useUpdateProfileMutation } from "@/lib/redux/features/auth/authApi";
 import { setUser } from "@/lib/redux/features/auth/authSlice";
@@ -107,8 +108,9 @@ export default function ProfileSection({
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(updatedUser));
       }
+      toast.success("Profile picture changed successfully.");
     } catch {
-      // silently fail
+      toast.error("Failed to update profile picture.");
     } finally {
       setPictureLoading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
