@@ -12,12 +12,13 @@ export default function Hero() {
       
       {/* Main Heading */}
       <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-center max-w-4xl px-2">
-        Create Faceless Short-Form Videos with One Click
+       Create High-Quality Faceless Videos in Minutes
       </h1>
       
       {/* Description */}
-      <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base md:text-lg text-center max-w-2xl leading-relaxed px-2">
-        Scale your social media presence without ever showing your face. Automated generation for TikTok, Reels, and Shorts.
+      <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base md:text-lg text-center max-w-3xl leading-relaxed px-2">
+      Turn scripts or simple prompts into fully rendered short-form videos — complete with visuals, narration, music, motion, and subtitles.
+Built for TikTok, Reels, and YouTube Shorts.
       </p>
 
       {/* CTA Buttons */}
@@ -38,15 +39,15 @@ export default function Hero() {
       <div className="flex flex-wrap gap-3 sm:gap-4 md:gap-6 justify-center text-[10px] sm:text-xs text-gray-500 mt-2 px-4">
         <span className="flex items-center gap-1.5 sm:gap-2">
           <ShieldCheck className="w-[18px] h-[18px] text-[#00A6F4]" />
-          No Credit Card Required
+         No Credit Card Required
         </span>
         <span className="flex items-center gap-2">
           <Zap className="w-[18px] h-[18px] text-[#00A6F4]" />
-          60s Generation Time
+          Fast AI Rendering
         </span>
         <span className="flex items-center gap-2">
           <Users className="w-[18px] h-[18px] text-[#00A6F4]" />
-          50K+ Creators
+           Commercial Use Included
         </span>
       </div>
     </section>
