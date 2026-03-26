@@ -15,19 +15,19 @@ export default function AuthCard({
 }: AuthCardProps) {
   const cardStyles = {
     register: {
-      maxWidth: "548px",
+      maxWidth: "520px",
       minHeight: "auto",
-      padding: "34px",
+      padding: "24px",
     },
     login: {
-      maxWidth: "564px",
+      maxWidth: "540px",
       minHeight: "auto",
-      padding: "42px",
+      padding: "30px",
     },
     small: {
       maxWidth: "530px",
       minHeight: "auto",
-      padding: "42px",
+      padding: "30px",
     },
   };
 
@@ -40,13 +40,13 @@ export default function AuthCard({
         maxWidth: style.maxWidth,
         minHeight: style.minHeight,
         padding: style.padding,
-        borderRadius: "32px",
+        borderRadius: "24px",
         borderWidth: "1px",
       }}
     >
       {/* Logo Icon */}
-      <div className="w-14 h-14 bg-cyan-500 rounded-2xl flex items-center justify-center mb-2">
-        <Video className="w-7 h-7 text-white" />
+      <div className="w-12 h-12 bg-cyan-500 rounded-xl flex items-center justify-center mb-2">
+        <Video className="w-6 h-6 text-white" />
       </div>
 
       {/* Title */}
@@ -60,7 +60,7 @@ export default function AuthCard({
       )}
 
       {/* Form Content */}
-      <div className="w-full mt-4 flex flex-col gap-5">{children}</div>
+      <div className="w-full mt-3 flex flex-col gap-4">{children}</div>
     </div>
   );
 }

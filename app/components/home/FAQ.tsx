@@ -16,45 +16,9 @@ interface DisplayFaq {
   answer: string;
 }
 
-const DEFAULT_FAQS: DisplayFaq[] = [
-  {
-    question: "What are credits?",
-    answer: "Credits are used to generate videos. Each generation consumes credits based on the selected options.",
-  },
-  {
-    question: "Is the content really copyright-free?",
-    answer: "Yes, generated videos are designed for social content use, but always review output before publishing.",
-  },
-  {
-    question: "Who owns the videos I create?",
-    answer: "You can use the generated videos for your channels and campaigns according to the platform policy.",
-  },
-  {
-    question: "How many credits does one video cost?",
-    answer: "By default, one standard generation uses one credit unless your package rules specify otherwise.",
-  },
-  {
-    question: "Can I use my own voice?",
-    answer: "You can choose from available voice options in the app. Custom voice support may depend on your plan and feature availability.",
-  },
-  {
-    question: "What format are the videos exported in?",
-    answer: "You can export videos in platform-friendly formats such as 9:16, 16:9, and 1:1 depending on your selected settings.",
-  },
-  {
-    question: "Do unused monthly credits roll over?",
-    answer: "Credit rollover depends on your active package policy. Please check your billing details for the exact rollover rules.",
-  },
-  {
-    question: "Do you offer refunds?",
-    answer: "Refund terms are described in our Refund Policy. You can review it from the footer or policy section.",
-  },
-];
-
 const API_ROOT = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 const REFUND_PHRASE = "Refund Policy";
 const FAQ_QUERY = "?skip=0&limit=50";
-const FAQ_CACHE_KEY = "home_faq_cache_v1";
 
 function normalizeFaqItems(data: unknown): RemoteFaqItem[] {
   const list = Array.isArray(data)
@@ -77,18 +41,6 @@ export default function FAQ() {
 
   useEffect(() => {
     let isMounted = true;
-
-    const loadCachedFaqs = () => {
-      if (typeof window === "undefined") return [] as RemoteFaqItem[];
-      try {
-        const raw = localStorage.getItem(FAQ_CACHE_KEY);
-        if (!raw) return [] as RemoteFaqItem[];
-        const parsed = JSON.parse(raw) as unknown;
-        return normalizeFaqItems(parsed);
-      } catch {
-        return [] as RemoteFaqItem[];
-      }
-    };
 
     const fetchFaqs = async () => {
       const token = localStorage.getItem("token");
@@ -123,18 +75,14 @@ export default function FAQ() {
           if (isMounted) {
             setRemoteFaqs(normalized);
           }
-          localStorage.setItem(FAQ_CACHE_KEY, JSON.stringify(normalized));
           return;
         }
-
-        const cachedFaqs = loadCachedFaqs();
-        if (cachedFaqs.length && isMounted) {
-          setRemoteFaqs(cachedFaqs);
+        if (isMounted) {
+          setRemoteFaqs([]);
         }
       } catch {
-        const cachedFaqs = loadCachedFaqs();
-        if (cachedFaqs.length && isMounted) {
-          setRemoteFaqs(cachedFaqs);
+        if (isMounted) {
+          setRemoteFaqs([]);
         }
       }
     };
@@ -149,10 +97,6 @@ export default function FAQ() {
   }, []);
 
   const displayFaqs = useMemo<DisplayFaq[]>(() => {
-    if (!remoteFaqs.length) {
-      return DEFAULT_FAQS;
-    }
-
     return remoteFaqs.map((item) => ({
       question: item.Question,
       answer: item.Answer,

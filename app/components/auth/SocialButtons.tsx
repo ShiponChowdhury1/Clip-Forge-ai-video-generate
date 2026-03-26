@@ -116,7 +116,7 @@ export default function SocialButtons() {
 
       {/* Buttons */}
       <div className="w-full flex gap-4">
-        <div className="w-full relative" style={{ height: "58px" }}>
+        <div className="w-full relative h-12">
           {/* Custom styled button underneath */}
           <div
             className="w-full h-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#1e2a30] border border-gray-300 dark:border-gray-700/50 text-gray-900 dark:text-white font-semibold text-sm"

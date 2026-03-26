@@ -20,7 +20,7 @@ export default function AuthButton({
       type={type}
       onClick={onClick}
       disabled={loading || disabled}
-      className="w-full py-4 bg-[#00A6F4] hover:bg-[#00bfff] text-white font-bold text-base rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+      className="w-full h-12 bg-[#00A6F4] hover:bg-[#00bfff] text-white font-bold text-base rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {loading ? (
         <Loader2 className="w-5 h-5 animate-spin" />

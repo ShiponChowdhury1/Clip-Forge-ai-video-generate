@@ -33,10 +33,7 @@ export default function PricingCards({
   const token = useAppSelector((state) => state.auth.token);
   const userRole = useAppSelector((state) => state.auth.user?.role);
   const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const effectiveToken = token || storedToken;
-  const { data: creditPackages = [] } = useGetCreditPackagesQuery(undefined, {
-    skip: !effectiveToken,
-  });
+  const { data: creditPackages = [] } = useGetCreditPackagesQuery();
   const isSection = variant === "section";
 
   const displayPlans = useMemo<DisplayPlan[]>(() => {

@@ -45,13 +45,13 @@ export default function AuthInput({
       {/* Label Row */}
       <div className="flex items-center justify-between mb-2">
         <label
-          className="font-bold text-sm tracking-[1.4px] capitalize"
+          className="text-sm capitalize"
           style={{
             fontFamily: "Arimo, sans-serif",
-            fontWeight: 700,
-            fontSize: "18px",
-            lineHeight: "20px",
-            letterSpacing: "1.4px",
+            fontWeight: 400,
+            fontSize: "14px",
+            lineHeight: "18px",
+            letterSpacing: "0.2px",
             color: "#99A1AF",
           }}
         >
@@ -61,7 +61,7 @@ export default function AuthInput({
           <button
             type="button"
             onClick={onRightLabelClick}
-            className="text-[#00A6F4] text-sm font-semibold underline hover:text-[#0096d9] transition"
+            className="text-[#00A6F4] text-sm font-medium underline hover:text-[#0096d9] transition"
           >
             {rightLabel}
           </button>
@@ -69,7 +69,7 @@ export default function AuthInput({
       </div>
 
       {/* Input Field */}
-      <div className="relative flex items-center w-full bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl overflow-hidden focus-within:border-[#00A6F4]/50 transition">
+      <div className="relative flex items-center w-full h-12 bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl overflow-hidden focus-within:border-[#00A6F4]/50 transition">
         <div className="pl-4 flex items-center">
           <Icon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         </div>
@@ -79,7 +79,7 @@ export default function AuthInput({
           onChange={(e) => handleChange(e.target.value)}
           placeholder={placeholder}
           autoComplete="off"
-          className="w-full bg-transparent px-3 py-4 text-sm outline-none text-gray-900 dark:text-white/50 placeholder-gray-400 dark:placeholder-gray-500"
+          className="w-full h-full bg-transparent px-3 py-0 text-sm outline-none text-gray-900 dark:text-white/50 placeholder-gray-400 dark:placeholder-gray-500"
         />
         {type === "password" && (
           <button

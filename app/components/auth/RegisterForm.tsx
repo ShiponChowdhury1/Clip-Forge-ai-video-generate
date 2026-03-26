@@ -90,8 +90,8 @@ export default function RegisterForm() {
 
   return (
     <>
-      <AuthCard title="Create Account" variant="register">
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
+      <AuthCard title="Create your account" variant="register">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
               {error}

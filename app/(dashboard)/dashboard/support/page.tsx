@@ -5,6 +5,9 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function ContactSupportPage() {
+  const buttonBaseClass =
+    "inline-flex items-center justify-center gap-2 rounded-xl bg-[#3B82F6] hover:bg-[#2563EB] text-white font-semibold transition-colors text-sm";
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -55,7 +58,7 @@ export default function ContactSupportPage() {
             </p>
             <Link
               href="/#faq"
-              className="inline-flex items-center gap-2 text-[#3B82F6] hover:text-[#60A5FA] text-sm font-medium transition-colors"
+              className={`${buttonBaseClass} px-4 py-2.5`}
             >
               Visit Help Center
               <ArrowRight className="w-4 h-4" />
@@ -98,7 +101,7 @@ export default function ContactSupportPage() {
                 />
               </div>
               <div>
-                <label className="block text-gray-900 dark:text-white text-sm font-semibold mb-2">
+                <label className="block text-gray-900 dark:text-white text-sm  mb-2">
                   Email Address
                 </label>
                 <input
@@ -164,7 +167,7 @@ export default function ContactSupportPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-[#3B82F6] hover:bg-[#2563EB] text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm"
+              className={`w-full ${buttonBaseClass} py-3.5`}
             >
               <Send className="w-4 h-4" />
               Send Message
