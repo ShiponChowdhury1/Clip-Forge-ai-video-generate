@@ -16,9 +16,29 @@ interface DisplayFaq {
   answer: string;
 }
 
+const DEFAULT_FAQS: DisplayFaq[] = [
+  {
+    question: "What are credits?",
+    answer: "Credits are used to generate videos. Each generation consumes credits based on the selected options.",
+  },
+  {
+    question: "Is the content really copyright-free?",
+    answer: "Yes, generated videos are designed for social content use, but always review output before publishing.",
+  },
+  {
+    question: "Who owns the videos I create?",
+    answer: "You can use the generated videos for your channels and campaigns according to the platform policy.",
+  },
+  {
+    question: "How many credits does one video cost?",
+    answer: "By default, one standard generation uses one credit unless your package rules specify otherwise.",
+  },
+];
+
 const API_ROOT = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 const REFUND_PHRASE = "Refund Policy";
 const FAQ_QUERY = "?skip=0&limit=50";
+const FAQ_CACHE_KEY = "home_faq_cache_v1";
 
 function normalizeFaqItems(data: unknown): RemoteFaqItem[] {
   const list = Array.isArray(data)
@@ -41,6 +61,18 @@ export default function FAQ() {
 
   useEffect(() => {
     let isMounted = true;
+
+    const loadCachedFaqs = () => {
+      if (typeof window === "undefined") return [] as RemoteFaqItem[];
+      try {
+        const raw = localStorage.getItem(FAQ_CACHE_KEY);
+        if (!raw) return [] as RemoteFaqItem[];
+        const parsed = JSON.parse(raw) as unknown;
+        return normalizeFaqItems(parsed);
+      } catch {
+        return [] as RemoteFaqItem[];
+      }
+    };
 
     const fetchFaqs = async () => {
       const token = localStorage.getItem("token");
@@ -68,13 +100,26 @@ export default function FAQ() {
           const data = (await res.json()) as unknown;
           const normalized = normalizeFaqItems(data);
 
+          if (!normalized.length) {
+            continue;
+          }
+
           if (isMounted) {
             setRemoteFaqs(normalized);
           }
+          localStorage.setItem(FAQ_CACHE_KEY, JSON.stringify(normalized));
           return;
         }
+
+        const cachedFaqs = loadCachedFaqs();
+        if (cachedFaqs.length && isMounted) {
+          setRemoteFaqs(cachedFaqs);
+        }
       } catch {
-        // Keep current rendered state when API is unavailable.
+        const cachedFaqs = loadCachedFaqs();
+        if (cachedFaqs.length && isMounted) {
+          setRemoteFaqs(cachedFaqs);
+        }
       }
     };
 
@@ -88,6 +133,10 @@ export default function FAQ() {
   }, []);
 
   const displayFaqs = useMemo<DisplayFaq[]>(() => {
+    if (!remoteFaqs.length) {
+      return DEFAULT_FAQS;
+    }
+
     return remoteFaqs.map((item) => ({
       question: item.Question,
       answer: item.Answer,

@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useGetCreditPackagesQuery } from "@/lib/redux/features/admin/adminApi";
 import { useAppSelector } from "@/lib/redux/hooks";
+import { plans } from "@/app/data";
 
 type DisplayPlan = {
   name: string;
@@ -31,7 +32,11 @@ export default function PricingCards({
   const router = useRouter();
   const token = useAppSelector((state) => state.auth.token);
   const userRole = useAppSelector((state) => state.auth.user?.role);
-  const { data: creditPackages = [] } = useGetCreditPackagesQuery();
+  const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const effectiveToken = token || storedToken;
+  const { data: creditPackages = [] } = useGetCreditPackagesQuery(undefined, {
+    skip: !effectiveToken,
+  });
   const isSection = variant === "section";
 
   const displayPlans = useMemo<DisplayPlan[]>(() => {
@@ -40,7 +45,16 @@ export default function PricingCards({
       .sort((a, b) => a.price - b.price);
 
     if (!activePackages.length) {
-      return [];
+      return plans.map((plan, idx) => ({
+        name: plan.name,
+        price: plan.price.startsWith("$") ? plan.price : `$${plan.price}`,
+        period: plan.period.startsWith("/") ? plan.period : `/${plan.period.toLowerCase()}`,
+        credits: plan.credits,
+        features: plan.features,
+        button: "Buy Credits",
+        highlighted: !!plan.highlighted,
+        badge: idx === 1 ? "MOST POPULAR" : undefined,
+      }));
     }
 
     const highlightedIndex = activePackages.length > 1 ? 1 : 0;
@@ -69,7 +83,6 @@ export default function PricingCards({
 
     if (variant !== "section") return;
 
-    const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
     const storedRole =
       typeof window !== "undefined"
         ? (() => {
