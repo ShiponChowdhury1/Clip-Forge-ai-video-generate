@@ -33,6 +33,22 @@ const DEFAULT_FAQS: DisplayFaq[] = [
     question: "How many credits does one video cost?",
     answer: "By default, one standard generation uses one credit unless your package rules specify otherwise.",
   },
+  {
+    question: "Can I use my own voice?",
+    answer: "You can choose from available voice options in the app. Custom voice support may depend on your plan and feature availability.",
+  },
+  {
+    question: "What format are the videos exported in?",
+    answer: "You can export videos in platform-friendly formats such as 9:16, 16:9, and 1:1 depending on your selected settings.",
+  },
+  {
+    question: "Do unused monthly credits roll over?",
+    answer: "Credit rollover depends on your active package policy. Please check your billing details for the exact rollover rules.",
+  },
+  {
+    question: "Do you offer refunds?",
+    answer: "Refund terms are described in our Refund Policy. You can review it from the footer or policy section.",
+  },
 ];
 
 const API_ROOT = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";

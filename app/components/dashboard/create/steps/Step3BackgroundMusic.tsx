@@ -56,7 +56,7 @@ export default function Step3BackgroundMusic({
   backgroundMusic,
   setBackgroundMusic,
 }: Step3BackgroundMusicProps) {
-  const { data: musicList = [], isLoading } = useGetMusicQuery({});
+  const { data: musicList = [], isLoading, isError } = useGetMusicQuery({});
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingId, setPlayingId] = useState<string | null>(null);
 
@@ -131,6 +131,8 @@ export default function Step3BackgroundMusic({
         </h3>
         {isLoading ? (
           <div className="text-gray-600 dark:text-gray-400 text-sm py-4 text-center">Loading music...</div>
+        ) : isError ? (
+          <div className="text-red-500 text-sm py-4 text-center">Failed to load music options. Please try again.</div>
         ) : (
         <div className="space-y-2">
           {musicOptions.map((option) => (
@@ -178,6 +180,11 @@ export default function Step3BackgroundMusic({
               ) : null}
             </button>
           ))}
+          {musicList.length === 0 && (
+            <p className="text-gray-500 dark:text-gray-400 text-xs text-center pt-2">
+              Music library is empty on backend right now. You can continue with &quot;No Music&quot;.
+            </p>
+          )}
         </div>
         )}
       </div>

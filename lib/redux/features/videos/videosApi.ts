@@ -34,6 +34,25 @@ export const videosApi = createApi({
         url: "/music/get",
         params: { skip, limit },
       }),
+      transformResponse: (response: unknown): MusicItem[] => {
+        const list = Array.isArray(response)
+          ? response
+          : typeof response === "object" && response !== null && Array.isArray((response as { items?: unknown[] }).items)
+            ? (response as { items: unknown[] }).items
+            : typeof response === "object" && response !== null && Array.isArray((response as { data?: unknown[] }).data)
+              ? (response as { data: unknown[] }).data
+              : [];
+
+        return list.filter(
+          (item): item is MusicItem =>
+            typeof item === "object" &&
+            item !== null &&
+            typeof (item as { id?: unknown }).id === "number" &&
+            typeof (item as { name?: unknown }).name === "string" &&
+            typeof (item as { category?: unknown }).category === "string" &&
+            typeof (item as { file_path?: unknown }).file_path === "string"
+        );
+      },
       keepUnusedDataFor: 600,
     }),
 
