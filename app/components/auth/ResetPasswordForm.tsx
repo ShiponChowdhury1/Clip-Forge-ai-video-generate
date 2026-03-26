@@ -68,8 +68,8 @@ export default function ResetPasswordForm() {
           </div>
         )}
 
-        <AuthInput label="New Password" type="password" placeholder="••••••••" value={newPassword} onChange={setNewPassword} />
-        <AuthInput label="Confirm Password" type="password" placeholder="••••••••" value={confirmPassword} onChange={setConfirmPassword} />
+        <AuthInput label="New Password" type="password" placeholder="********" value={newPassword} onChange={setNewPassword} />
+        <AuthInput label="Confirm Password" type="password" placeholder="********" value={confirmPassword} onChange={setConfirmPassword} />
 
         <AuthButton text="Reset Password" loading={isLoading} />
       </form>

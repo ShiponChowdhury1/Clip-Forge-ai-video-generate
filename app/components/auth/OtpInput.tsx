@@ -49,13 +49,14 @@ export default function OtpInput({ length = 6, onChange }: OtpInputProps) {
   return (
     <div className="w-full">
       <label
-        className="text-white font-bold text-sm tracking-[1.4px] capitalize block mb-3"
+        className="text-sm capitalize block mb-2"
         style={{
           fontFamily: "Arimo, sans-serif",
-          fontWeight: 700,
-          fontSize: "18px",
-          lineHeight: "20px",
-          letterSpacing: "1.4px",
+          fontWeight: 400,
+          fontSize: "14px",
+          lineHeight: "18px",
+          letterSpacing: "0.2px",
+          color: "#99A1AF",
         }}
       >
         Verification Code
@@ -74,7 +75,7 @@ export default function OtpInput({ length = 6, onChange }: OtpInputProps) {
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
-            className="w-12 h-14 sm:w-14 sm:h-16 bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl text-center text-lg font-semibold outline-none focus:border-[#00A6F4]/50 transition"
+            className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl text-center text-base font-medium outline-none focus:border-[#00A6F4]/50 transition text-gray-900 dark:text-white"
           />
         ))}
       </div>

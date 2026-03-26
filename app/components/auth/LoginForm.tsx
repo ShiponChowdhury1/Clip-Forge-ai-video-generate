@@ -66,7 +66,7 @@ export default function LoginForm() {
         <AuthInput
           label="Password"
           type="password"
-          placeholder="••••••••"
+          placeholder="********"
           rightLabel="Forgot Password?"
           onRightLabelClick={() => router.push("/forgot-password")}
           value={password}

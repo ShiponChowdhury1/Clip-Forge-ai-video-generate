@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { AuthCard, AuthButton } from "@/app/components/auth";
+import { AuthCard, AuthButton, AuthInput } from "@/app/components/auth";
 import { useForgotPasswordMutation } from "@/lib/redux/features/auth/authApi";
 import { setResetEmail } from "@/lib/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
@@ -53,28 +53,13 @@ export default function ForgotPasswordForm() {
           </div>
         )}
 
-        <div className="w-full">
-          <label
-            className="text-white font-bold text-sm tracking-[1.4px] capitalize block mb-2"
-            style={{
-              fontFamily: "Arimo, sans-serif",
-              fontWeight: 700,
-              fontSize: "18px",
-              lineHeight: "20px",
-              letterSpacing: "1.4px",
-            }}
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            autoComplete="off"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl px-4 py-4 text-sm outline-none focus:border-[#00A6F4]/50 transition text-gray-900 dark:text-white/50 placeholder-gray-400 dark:placeholder-gray-500"
-          />
-        </div>
+        <AuthInput
+          label="Email Address"
+          type="email"
+          placeholder="name@example.com"
+          value={email}
+          onChange={setEmail}
+        />
 
         <AuthButton text="Send OTP" loading={isLoading} />
 

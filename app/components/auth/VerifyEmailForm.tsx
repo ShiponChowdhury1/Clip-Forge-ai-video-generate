@@ -83,7 +83,7 @@ export default function VerifyEmailForm() {
             type="button"
             onClick={handleResend}
             disabled={isResending}
-            className="text-[#00A6F4] font-bold hover:underline disabled:opacity-50"
+            className="text-[#00A6F4] font-medium hover:underline disabled:opacity-50"
           >
             {isResending ? "Sending..." : "Resend"}
           </button>

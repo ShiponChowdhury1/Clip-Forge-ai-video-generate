@@ -100,7 +100,7 @@ export default function RegisterForm() {
 
           <AuthInput label="Full Name" type="text" placeholder="John Doe" value={name} onChange={setName} />
           <AuthInput label="Email Address" type="email" placeholder="name@example.com" value={email} onChange={setEmail} />
-          <AuthInput label="Password" type="password" placeholder="••••••••" value={password} onChange={setPassword} />
+          <AuthInput label="Password" type="password" placeholder="********" value={password} onChange={setPassword} />
 
           <AuthButton text="Create Account" loading={isLoading} />
 
