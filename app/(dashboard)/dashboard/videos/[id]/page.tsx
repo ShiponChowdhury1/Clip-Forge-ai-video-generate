@@ -37,6 +37,7 @@ export default function VideoDetailsPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [playbackError, setPlaybackError] = useState<string | null>(null);
 
   const handleCopyScript = async () => {
     if (!video?.script) return;
@@ -105,14 +106,20 @@ export default function VideoDetailsPage() {
     );
   }
 
-  const hasVideo = video.path && video.status.toLowerCase() === "completed";
-  const videoUrl = hasVideo ? buildVideoUrl(video.path) : "";
+  const hasVideo = typeof video.path === "string" && video.path.trim().length > 0 && video.status.toLowerCase() === "completed";
+  const videoUrl = hasVideo ? buildVideoUrl(video.path.trim()) : "";
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     if (!videoRef.current || !hasVideo) return;
     if (videoRef.current.paused) {
-      videoRef.current.play();
-      setIsPlaying(true);
+      try {
+        await videoRef.current.play();
+        setPlaybackError(null);
+        setIsPlaying(true);
+      } catch {
+        setPlaybackError("This video source is unsupported or unavailable.");
+        setIsPlaying(false);
+      }
     } else {
       videoRef.current.pause();
       setIsPlaying(false);
@@ -205,9 +212,14 @@ export default function VideoDetailsPage() {
                       onClick={togglePlay}
                       onPlay={() => setIsPlaying(true)}
                       onPause={() => setIsPlaying(false)}
+                      onLoadedData={() => setPlaybackError(null)}
+                      onError={() => {
+                        setPlaybackError("This video source is unsupported or unavailable.");
+                        setIsPlaying(false);
+                      }}
                     />
 
-                    {!isPlaying && (
+                    {!isPlaying && !playbackError && (
                       <div
                         onClick={togglePlay}
                         className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-all hover:bg-black/40"
@@ -219,6 +231,12 @@ export default function VideoDetailsPage() {
                         >
                           <Play className="w-5 h-5 text-white fill-white ml-0.5" />
                         </motion.div>
+                      </div>
+                    )}
+
+                    {playbackError && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/70 px-4 text-center">
+                        <p className="text-white text-xs">{playbackError}</p>
                       </div>
                     )}
                   </>

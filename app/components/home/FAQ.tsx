@@ -51,7 +51,7 @@ export default function FAQ() {
 
       const endpoints = [
         `${API_ROOT}/v1/faq${FAQ_QUERY}`,
-        `${API_ROOT}/v1/admin/faq${FAQ_QUERY}`,
+        ...(token ? [`${API_ROOT}/v1/admin/faq${FAQ_QUERY}`] : []),
       ];
 
       try {

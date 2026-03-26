@@ -12,11 +12,16 @@ export async function GET(request: NextRequest) {
 
   const backendUrl = `${API_ROOT}${path}`;
   const rangeHeader = request.headers.get("range");
+  const authHeader = request.headers.get("authorization");
 
   let response: Response;
   try {
+    const fetchHeaders: Record<string, string> = rangeHeader ? { Range: rangeHeader } : {};
+    if (authHeader) {
+      fetchHeaders.Authorization = authHeader;
+    }
     response = await fetch(backendUrl, {
-      headers: rangeHeader ? { Range: rangeHeader } : {},
+      headers: fetchHeaders,
     });
   } catch {
     return new NextResponse("Failed to fetch video from backend", { status: 502 });
