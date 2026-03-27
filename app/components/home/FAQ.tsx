@@ -44,15 +44,18 @@ export default function FAQ() {
 
     const fetchFaqs = async () => {
       const token = localStorage.getItem("token");
-      const headers: HeadersInit = {};
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
+      if (!token) {
+        if (isMounted) {
+          setRemoteFaqs([]);
+        }
+        return;
       }
 
-      const endpoints = [
-        `${API_ROOT}/v1/faq${FAQ_QUERY}`,
-        ...(token ? [`${API_ROOT}/v1/admin/faq${FAQ_QUERY}`] : []),
-      ];
+      const headers: HeadersInit = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const endpoints = [`${API_ROOT}/v1/admin/faq${FAQ_QUERY}`];
 
       try {
         for (const endpoint of endpoints) {

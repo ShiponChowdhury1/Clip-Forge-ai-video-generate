@@ -110,7 +110,7 @@ export const authApi = createApi({
     // 8. Get current user profile
     getMe: builder.query<UserProfile, void>({
       query: () => ({
-        url: "/update-profile",
+        url: `${API_BASE_URL}/v1/users/update-profile`,
         method: "GET",
       }),
     }),
