@@ -636,6 +636,7 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
   const profileRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [mounted, setMounted] = useState(false);
 
   const user = useAppSelector((state) => state.auth.user);
   const authToken = useAppSelector((state) => state.auth.token);
@@ -909,6 +910,43 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || typeof document === "undefined" || typeof window === "undefined") return;
+
+    const hasModalOpen =
+      showProfileModal ||
+      showPasswordModal ||
+      showLogoutModal ||
+      selectedNotification !== null;
+
+    if (!hasModalOpen) return;
+
+    const scrollY = window.scrollY;
+    const originalBodyStyle = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overflowY: document.body.style.overflowY,
+    };
+
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.body.style.overflowY = "scroll";
+
+    return () => {
+      document.body.style.position = originalBodyStyle.position;
+      document.body.style.top = originalBodyStyle.top;
+      document.body.style.width = originalBodyStyle.width;
+      document.body.style.overflowY = originalBodyStyle.overflowY;
+      window.scrollTo(0, scrollY);
+    };
+  }, [mounted, selectedNotification, showLogoutModal, showPasswordModal, showProfileModal]);
+
+  useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
         exportRef.current &&
@@ -1135,21 +1173,21 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
       </header>
 
       {/* Modals */}
-      {showProfileModal && (
-        <ProfileModal onClose={() => setShowProfileModal(false)} />
-      )}
-      {showPasswordModal && (
-        <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
-      )}
-      {selectedNotification && (
-        <NotificationDetailsModal
-          notification={selectedNotification}
-          onClose={() => setSelectedNotification(null)}
-        />
-      )}
+      {mounted && typeof document !== "undefined" && showProfileModal &&
+        createPortal(<ProfileModal onClose={() => setShowProfileModal(false)} />, document.body)}
+      {mounted && typeof document !== "undefined" && showPasswordModal &&
+        createPortal(<ChangePasswordModal onClose={() => setShowPasswordModal(false)} />, document.body)}
+      {mounted && typeof document !== "undefined" && selectedNotification &&
+        createPortal(
+          <NotificationDetailsModal
+            notification={selectedNotification}
+            onClose={() => setSelectedNotification(null)}
+          />,
+          document.body
+        )}
 
       {/* Logout Confirmation Modal */}
-      {typeof document !== "undefined" &&
+      {mounted && typeof document !== "undefined" &&
         showLogoutModal &&
         createPortal(
           <div className="fixed inset-0 z-9999 grid place-items-center p-4">

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type {
+  AuthUser,
   RegisterRequest,
   RegisterResponse,
   LoginRequest,
@@ -109,10 +110,68 @@ export const authApi = createApi({
 
     // 8. Get current user profile
     getMe: builder.query<UserProfile, void>({
-      query: () => ({
-        url: `${API_BASE_URL}/v1/users/update-profile`,
-        method: "GET",
-      }),
+      queryFn: () => {
+        const readStoredUser = (): AuthUser | null => {
+          if (typeof window === "undefined") return null;
+          try {
+            const raw = localStorage.getItem("user");
+            if (!raw) return null;
+            const parsed = JSON.parse(raw) as Partial<AuthUser>;
+            if (
+              typeof parsed.id !== "number" ||
+              typeof parsed.name !== "string" ||
+              typeof parsed.email !== "string"
+            ) {
+              return null;
+            }
+
+            return {
+              id: parsed.id,
+              name: parsed.name,
+              email: parsed.email,
+              credits: typeof parsed.credits === "number" ? parsed.credits : 0,
+              subscription_plan:
+                typeof parsed.subscription_plan === "string"
+                  ? parsed.subscription_plan
+                  : "",
+              role:
+                parsed.role === "admin" ||
+                parsed.role === "super_admin" ||
+                parsed.role === "user"
+                  ? parsed.role
+                  : "user",
+              picture:
+                typeof parsed.picture === "string" ? parsed.picture : undefined,
+            };
+          } catch {
+            return null;
+          }
+        };
+
+        const user = readStoredUser();
+
+        if (!user) {
+          return {
+            error: {
+              status: 404,
+              data: "User not found in local auth state",
+            },
+          };
+        }
+
+        return {
+          data: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            credits: user.credits,
+            subscription_plan: user.subscription_plan,
+            role: user.role,
+            profile_image_url: user.picture ?? null,
+            created_at: "",
+          },
+        };
+      },
     }),
 
     // 9. Request OTP for Change Password (Authenticated)
