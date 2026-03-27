@@ -34,11 +34,17 @@ export interface UpdateVideoRequest {
   media_option: string;
 }
 
-export interface CreateVideoResponse {
+export interface VideoGenerationResponse {
   job_id: string;
   status: string;
-  queue_position: number;
+  queue_position?: number;
+  video_id?: number;
+  id?: number;
+  message?: string;
+  user_id?: number;
 }
+
+export type CreateVideoResponse = VideoGenerationResponse;
 
 export interface Video {
   id: number;

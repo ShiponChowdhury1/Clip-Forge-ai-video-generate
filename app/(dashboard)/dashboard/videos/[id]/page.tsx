@@ -52,6 +52,7 @@ export default function VideoDetailsPage() {
     sessionStorage.setItem(
       "editVideoData",
       JSON.stringify({
+        source_video_id: video.id,
         title: video.title,
         script: video.script || "",
         format: video.format || "9:16",

@@ -3,6 +3,7 @@ import type {
   MusicItem,
   CreateVideoRequest,
   CreateVideoResponse,
+  VideoGenerationResponse,
   UpdateVideoRequest,
   Video,
   JobStatus,
@@ -125,7 +126,7 @@ export const videosApi = createApi({
     }),
 
     // PUT /api/v1/videos/update/{id}
-    updateVideo: builder.mutation<Video, { id: number; body: UpdateVideoRequest }>({
+    updateVideo: builder.mutation<VideoGenerationResponse, { id: number; body: UpdateVideoRequest }>({
       query: ({ id, body }) => ({
         url: `/videos/update/${id}`,
         method: "PUT",
@@ -133,10 +134,8 @@ export const videosApi = createApi({
       }),
       onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
         try {
-          const { data } = await queryFulfilled;
-          dispatch(
-            videosApi.util.updateQueryData("getVideo", id, () => data)
-          );
+          await queryFulfilled;
+          dispatch(videosApi.util.invalidateTags([{ type: "Videos", id }, { type: "Videos", id: "LIST" }]));
         } catch {}
       },
     }),
@@ -152,6 +151,7 @@ export type {
   MusicItem,
   CreateVideoRequest,
   CreateVideoResponse,
+  VideoGenerationResponse,
   UpdateVideoRequest,
   Video,
   JobStatus,

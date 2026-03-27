@@ -15,7 +15,7 @@ const Step3BackgroundMusic = lazy(() => import("@/app/components/dashboard/creat
 const Step4VoiceNarration = lazy(() => import("@/app/components/dashboard/create/steps/Step4VoiceNarration"));
 const Step5SubtitleSettings = lazy(() => import("@/app/components/dashboard/create/steps/Step5SubtitleSettings"));
 const Step6ReviewGenerate = lazy(() => import("@/app/components/dashboard/create/steps/Step6ReviewGenerate"));
-import { useCreateVideoMutation } from "@/lib/redux/features/videos/videosApi";
+import { useCreateVideoMutation, useUpdateVideoMutation } from "@/lib/redux/features/videos/videosApi";
 import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi";
 import { useSelector } from "react-redux";
 
@@ -44,6 +44,7 @@ export default function CreateVideoPage() {
   ]);
 
   const [createVideo] = useCreateVideoMutation();
+  const [updateVideo] = useUpdateVideoMutation();
   const token = useSelector((state: { auth: { token: string | null } }) => state.auth.token);
   const authUser = useSelector((state: { auth: { user: { id: number; credits: number } | null } }) => state.auth.user);
   const userId = authUser?.id ?? null;
@@ -326,32 +327,51 @@ export default function CreateVideoPage() {
   };
 
   const handleGenerate = async () => {
-    const requestBody = {
+    const mediaOption =
+      sceneMedia === "all-images" ? "all_images"
+      : sceneMedia === "first-scene-video" ? "first_scene"
+      : sceneMedia === "last-scene-video" ? "last_scene"
+      : "first_and_last_scene";
+
+    const subtitleId = subtitleStyles.find((s) => s.value === subtitleStyle)?.id ?? 1;
+    const musicId = backgroundMusic === "no-music" ? 0 : Number(backgroundMusic);
+
+    const createRequestBody = {
       title: videoTitle,
       script,
       format: videoFormat,
       style: videoStyle,
       voice: selectedVoice,
       category: videoStyle,
-      media_option:
-        sceneMedia === "all-images" ? "all_images"
-        : sceneMedia === "first-scene-video" ? "first_scene"
-        : sceneMedia === "last-scene-video" ? "last_scene"
-        : "first_and_last_scene",
-      subtitle_id: subtitleStyles.find((s) => s.value === subtitleStyle)?.id ?? 1,
+      media_option: mediaOption,
+      subtitle_id: subtitleId,
       keywords,
       negative_keywords: negativeKeywords,
-      music_id: backgroundMusic === "no-music" ? 0 : Number(backgroundMusic),
-      ...(editSourceVideoId ? { source_video_id: editSourceVideoId } : {}),
+      music_id: musicId,
     };
 
-    console.log("[Create Video] Request body:", requestBody);
+    const updateRequestBody = {
+      title: videoTitle,
+      script,
+      format: videoFormat,
+      style: videoStyle,
+      voice: selectedVoice,
+      media_option: mediaOption,
+      subtitle_id: subtitleId,
+      keywords,
+      negative_keywords: negativeKeywords,
+      music_id: musicId,
+    };
+
+    console.log("[Create Video] Request body:", editSourceVideoId ? updateRequestBody : createRequestBody);
 
     setIsGenerating(true);
     setGenerationProgress(0);
 
     try {
-      const response = await createVideo(requestBody).unwrap();
+      const response = editSourceVideoId
+        ? await updateVideo({ id: editSourceVideoId, body: updateRequestBody }).unwrap()
+        : await createVideo(createRequestBody).unwrap();
       console.log("[Create Video] API success:", JSON.stringify(response));
 
       // Start polling with full response (handles job_id, id, video_id)
@@ -364,7 +384,7 @@ export default function CreateVideoPage() {
         alert("Session expired. Please login again.");
         return;
       }
-      alert(err.data?.detail || "Failed to create video");
+      alert(err.data?.detail || (editSourceVideoId ? "Failed to regenerate video" : "Failed to create video"));
       return;
     }
   };

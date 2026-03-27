@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Play,
@@ -32,10 +32,21 @@ function buildVideoUrl(path: string): string {
   return `/api/video-proxy?path=${encodeURIComponent(relativePath)}`;
 }
 
-function formatDate(dateStr: string) {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
+function parseBackendDate(dateStr: string): Date {
+  const normalized = dateStr.trim().replace(" ", "T");
+  const hasTimezone = /[zZ]$|[+-]\d{2}:?\d{2}$/.test(normalized);
+  const safeIso = hasTimezone ? normalized : `${normalized}Z`;
+  return new Date(safeIso);
+}
+
+function formatRelativeDate(dateStr: string, nowMs: number) {
+  const date = parseBackendDate(dateStr);
+  const diffMs = nowMs - date.getTime();
+
+  if (!Number.isFinite(diffMs) || diffMs < 0) {
+    return "Just now";
+  }
+
   const diffMin = Math.floor(diffMs / 60000);
   if (diffMin < 1) return "Just now";
   if (diffMin < 60) return `${diffMin}min ago`;
@@ -56,7 +67,8 @@ export default function VideoCard({
   const router = useRouter();
   const videoUrl = buildVideoUrl(path);
   const category = style;
-  const createdAt = formatDate(created_at);
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const createdAt = formatRelativeDate(created_at, nowMs);
   const { isMuted, toggleMute } = useMute();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -64,6 +76,14 @@ export default function VideoCard({
   const [duration, setDuration] = useState<number | null>(null);
   const previewVideoRef = useRef<HTMLVideoElement>(null);
   const [deleteVideo, { isLoading: isDeleting }] = useDeleteVideoMutation();
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 60000);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   const handleDelete = async () => {
     try {

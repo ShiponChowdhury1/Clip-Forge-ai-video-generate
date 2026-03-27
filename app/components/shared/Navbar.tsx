@@ -30,7 +30,6 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -42,11 +41,7 @@ export default function Navbar() {
   const user = useAppSelector((state) => state.auth.user);
   const [logoutApi] = useLogoutMutation();
 
-  const isLoggedIn = isMounted && !!token;
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const isLoggedIn = !!token;
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -191,7 +186,7 @@ export default function Navbar() {
             className="w-9 h-9 rounded-lg border border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#0D1117] flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-[#3B82F6] transition-all"
             aria-label="Toggle theme"
           >
-            {isMounted && theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           {isLoggedIn ? (
             <div ref={dropdownRef} className="relative">
@@ -294,8 +289,8 @@ export default function Navbar() {
               onClick={toggleTheme}
               className="flex items-center gap-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
             >
-              {isMounted && theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              {isMounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </button>
             {navLinks.map((link) => (
               <a
