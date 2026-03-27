@@ -35,6 +35,7 @@ export default function CreateVideoPage() {
   const [generationComplete, setGenerationComplete] = useState(false);
   const [generatedVideoId, setGeneratedVideoId] = useState<number | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
+  const [editSourceVideoId, setEditSourceVideoId] = useState<number | null>(null);
   const [generationSteps, setGenerationSteps] = useState([
     { label: "Generating Prompts", completed: false, active: true },
     { label: "Creating Image", completed: false, active: false },
@@ -274,6 +275,9 @@ export default function CreateVideoPage() {
     sessionStorage.removeItem("editVideoData");
     try {
       const d = JSON.parse(raw);
+      if (typeof d.source_video_id === "number" && Number.isFinite(d.source_video_id)) {
+        setEditSourceVideoId(d.source_video_id);
+      }
       if (d.title) setVideoTitle(d.title);
       if (d.script) setScript(d.script);
       if (d.keywords) setKeywords(d.keywords);
@@ -338,6 +342,7 @@ export default function CreateVideoPage() {
       keywords,
       negative_keywords: negativeKeywords,
       music_id: backgroundMusic === "no-music" ? 0 : Number(backgroundMusic),
+      ...(editSourceVideoId ? { source_video_id: editSourceVideoId } : {}),
     };
 
     console.log("[Create Video] Request body:", requestBody);

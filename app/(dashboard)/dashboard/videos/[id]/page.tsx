@@ -38,6 +38,7 @@ export default function VideoDetailsPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
   const [playbackError, setPlaybackError] = useState<string | null>(null);
+  const [previewAspectRatio, setPreviewAspectRatio] = useState<number | null>(null);
 
   const handleCopyScript = async () => {
     if (!video?.script) return;
@@ -108,6 +109,16 @@ export default function VideoDetailsPage() {
 
   const hasVideo = typeof video.path === "string" && video.path.trim().length > 0 && video.status.toLowerCase() === "completed";
   const videoUrl = hasVideo ? buildVideoUrl(video.path.trim()) : "";
+  const normalizedFormat = (video.format || "9:16").replace(/\s+/g, "").toLowerCase();
+  const fallbackAspectRatio =
+    normalizedFormat.includes("1:1") || normalizedFormat.includes("square")
+      ? 1
+      : normalizedFormat.includes("16:9") || normalizedFormat.includes("landscape")
+        ? 16 / 9
+        : normalizedFormat.includes("9:16") || normalizedFormat.includes("portrait")
+          ? 9 / 16
+          : 16 / 9;
+  const effectiveAspectRatio = previewAspectRatio ?? fallbackAspectRatio;
 
   const togglePlay = async () => {
     if (!videoRef.current || !hasVideo) return;
@@ -156,62 +167,75 @@ export default function VideoDetailsPage() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full space-y-5"
+      className="w-full space-y-6"
     >
       {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-start gap-3 min-w-0">
-          <button
-            onClick={() => router.back()}
-            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-[#1A1A1A] transition-colors mt-0.5"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-white" />
-          </button>
-          <div className="min-w-0">
-            <h1 className="text-gray-900 dark:text-white text-lg font-bold leading-snug">{video.title}</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <Clock className="w-3 h-3 text-gray-500 shrink-0" />
-              <span className="text-gray-500 text-xs">{createdDate}</span>
+      <div className="relative overflow-hidden rounded-2xl border border-gray-300 dark:border-[#1A3155] bg-linear-to-br from-white via-gray-50 to-blue-50/70 dark:from-[#0D1117] dark:via-[#0B1220] dark:to-[#0A1A2E] p-4 sm:p-5">
+        <div className="pointer-events-none absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.22),_transparent_45%)]" />
+        <div className="relative flex flex-wrap items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <button
+              onClick={() => router.back()}
+              className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-gray-300 dark:border-[#1A3155] bg-white/70 dark:bg-[#0D1117]/70 hover:bg-white dark:hover:bg-[#111a2c] transition-colors mt-0.5"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-white" />
+            </button>
+            <div className="min-w-0">
+              <h1 className="text-gray-900 dark:text-white text-lg sm:text-2xl font-bold leading-snug truncate">{video.title}</h1>
+              <div className="flex items-center gap-2 mt-1.5">
+                <Clock className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                <span className="text-gray-500 text-xs sm:text-sm">{createdDate}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Status Badge */}
-        <div
-          className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold capitalize whitespace-nowrap ${
-            video.status.toLowerCase() === "completed"
-              ? "bg-[#009927]/15 text-[#22C55E] border border-[#009927]/30"
-              : video.status.toLowerCase() === "processing"
-                ? "bg-[#F59E0B]/15 text-[#F59E0B] border border-[#F59E0B]/30"
-                : "bg-[#E33629]/15 text-[#E33629] border border-[#E33629]/30"
-          }`}
-        >
-          {video.status}
+          {/* Status Badge */}
+          <div
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold capitalize whitespace-nowrap ${
+              video.status.toLowerCase() === "completed"
+                ? "bg-[#009927]/15 text-[#22C55E] border border-[#009927]/30"
+                : video.status.toLowerCase() === "processing"
+                  ? "bg-[#F59E0B]/15 text-[#F59E0B] border border-[#F59E0B]/30"
+                  : "bg-[#E33629]/15 text-[#E33629] border border-[#E33629]/30"
+            }`}
+          >
+            {video.status}
+          </div>
         </div>
       </div>
 
       {/* Main Content - 60/40 Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[60%_1fr] gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-[60%_1fr] gap-6">
         {/* Left: Video Player */}
         <div>
-          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full flex flex-col">
-            <div className="p-4 pb-2">
-              <h2 className="text-gray-900 dark:text-white text-sm font-semibold">Preview</h2>
+          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full flex flex-col shadow-[0_20px_50px_-30px_rgba(37,99,235,0.55)] dark:shadow-[0_20px_60px_-35px_rgba(59,130,246,0.45)]">
+            <div className="px-4 sm:px-5 pt-4 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0B1320]/55">
+              <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide">Video Preview</h2>
+              <p className="text-[11px] text-gray-500 mt-0.5">Tap to play, inspect output quality, then download</p>
             </div>
 
-            <div className="px-4 pb-4 flex-1 flex items-center justify-center">
-              <div className="relative aspect-[9/16] max-h-[400px] w-full bg-black rounded-xl overflow-hidden">
+            <div className="px-4 sm:px-5 py-4 flex-1 flex items-center justify-center bg-linear-to-b from-transparent to-gray-50/60 dark:to-[#091121]/35">
+              <div
+                className="relative max-h-[470px] w-full bg-black rounded-2xl overflow-hidden ring-1 ring-black/10 dark:ring-white/10 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.9)]"
+                style={{ aspectRatio: String(effectiveAspectRatio) }}
+              >
                 {hasVideo ? (
                   <>
                     <video
                       ref={videoRef}
                       src={videoUrl}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover"
                       preload="metadata"
                       controls={isPlaying}
                       onClick={togglePlay}
                       onPlay={() => setIsPlaying(true)}
                       onPause={() => setIsPlaying(false)}
+                      onLoadedMetadata={(e) => {
+                        const target = e.currentTarget;
+                        if (target.videoWidth > 0 && target.videoHeight > 0) {
+                          setPreviewAspectRatio(target.videoWidth / target.videoHeight);
+                        }
+                      }}
                       onLoadedData={() => setPlaybackError(null)}
                       onError={() => {
                         setPlaybackError("This video source is unsupported or unavailable.");
@@ -254,30 +278,34 @@ export default function VideoDetailsPage() {
             </div>
 
             {/* Action Buttons inside video card */}
-            <div className="px-4 pb-4 grid grid-cols-3 gap-2">
+            <div className="px-4 sm:px-5 pb-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
               <button
                 onClick={() => router.push("/dashboard/create")}
-                className="flex flex-col items-center justify-center gap-1.5 bg-gray-100 dark:bg-[#1A2332] hover:bg-gray-200 dark:hover:bg-[#243044] border border-gray-300 dark:border-[#1A3155] text-gray-900 dark:text-white rounded-xl py-3 text-xs font-medium transition-colors"
+                className="group relative overflow-hidden flex items-center justify-center gap-2.5 bg-white dark:bg-[#142238] border border-gray-300 dark:border-[#27456f] text-gray-900 dark:text-white rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-12px_rgba(59,130,246,0.55)] hover:bg-blue-50 dark:hover:bg-[#1b304e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0D1117]"
+                aria-label="Create a new video"
               >
-                <PlusCircle className="w-4 h-4" />
+                <PlusCircle className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
                 Create New
               </button>
-              <button className="flex flex-col items-center justify-center gap-1.5 bg-gray-100 dark:bg-[#1A2332] hover:bg-gray-200 dark:hover:bg-[#243044] border border-gray-300 dark:border-[#1A3155] text-gray-900 dark:text-white rounded-xl py-3 text-xs font-medium transition-colors"
+              <button
+                className="group relative overflow-hidden flex items-center justify-center gap-2.5 bg-white dark:bg-[#142238] border border-gray-300 dark:border-[#27456f] text-gray-900 dark:text-white rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-12px_rgba(59,130,246,0.55)] hover:bg-blue-50 dark:hover:bg-[#1b304e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0D1117]"
                 onClick={handleEditRegenerate}
+                aria-label="Edit current video and regenerate"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" />
                 Edit & Regenerate
               </button>
               <button
                 onClick={handleDownload}
                 disabled={!hasVideo}
-                className={`flex flex-col items-center justify-center gap-1.5 rounded-xl py-3 text-xs font-medium transition-colors ${
+                className={`group relative overflow-hidden flex items-center justify-center gap-2.5 rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0D1117] ${
                   hasVideo
-                    ? "bg-[#009927] hover:bg-[#007a1f] text-white"
+                    ? "bg-linear-to-r from-[#00A63E] to-[#009927] hover:from-[#00B144] hover:to-[#008a22] text-white hover:-translate-y-0.5 hover:shadow-[0_12px_22px_-12px_rgba(0,166,62,0.65)]"
                     : "bg-gray-100 dark:bg-[#1A2332] text-gray-500 cursor-not-allowed border border-gray-300 dark:border-[#1A3155]"
                 }`}
+                aria-label="Download video"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-4 h-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
                 Download
               </button>
             </div>
@@ -286,9 +314,9 @@ export default function VideoDetailsPage() {
 
         {/* Right: Details */}
         <div>
-          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full">
-            <div className="p-4 pb-2">
-              <h2 className="text-gray-900 dark:text-white text-sm font-semibold">Details</h2>
+          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full shadow-[0_18px_48px_-34px_rgba(2,132,199,0.55)] dark:shadow-[0_18px_52px_-34px_rgba(59,130,246,0.35)]">
+            <div className="p-4 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0B1320]/55">
+              <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide">Generation Details</h2>
             </div>
 
             <div className="px-4 pb-4">

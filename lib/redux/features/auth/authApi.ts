@@ -20,6 +20,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/
 
 export const authApi = createApi({
   reducerPath: "authApi",
+  tagTypes: ["AuthProfile"],
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_BASE_URL}/v1/auth`,
     prepareHeaders: (headers, { getState }) => {
@@ -172,6 +173,7 @@ export const authApi = createApi({
           },
         };
       },
+      providesTags: ["AuthProfile"],
     }),
 
     // 9. Request OTP for Change Password (Authenticated)
@@ -225,6 +227,7 @@ export const authApi = createApi({
         method: "PUT",
         body: formData,
       }),
+      invalidatesTags: ["AuthProfile"],
     }),
 
     // 15. Get user credit balance
