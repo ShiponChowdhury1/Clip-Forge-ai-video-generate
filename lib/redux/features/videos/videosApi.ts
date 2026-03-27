@@ -43,15 +43,21 @@ export const videosApi = createApi({
               ? (response as { data: unknown[] }).data
               : [];
 
-        return list.filter(
-          (item): item is MusicItem =>
-            typeof item === "object" &&
-            item !== null &&
-            typeof (item as { id?: unknown }).id === "number" &&
-            typeof (item as { name?: unknown }).name === "string" &&
-            typeof (item as { category?: unknown }).category === "string" &&
-            typeof (item as { file_path?: unknown }).file_path === "string"
-        );
+        return list
+          .filter(
+            (item): item is { id: number; name: string; category?: unknown; file_path: string } =>
+              typeof item === "object" &&
+              item !== null &&
+              typeof (item as { id?: unknown }).id === "number" &&
+              typeof (item as { name?: unknown }).name === "string" &&
+              typeof (item as { file_path?: unknown }).file_path === "string"
+          )
+          .map((item) => ({
+            id: item.id,
+            name: item.name,
+            category: typeof item.category === "string" && item.category.trim().length > 0 ? item.category : "General",
+            file_path: item.file_path,
+          }));
       },
       keepUnusedDataFor: 600,
     }),

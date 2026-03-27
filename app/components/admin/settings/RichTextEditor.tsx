@@ -68,14 +68,66 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const highlightPickerRef = useRef<HTMLInputElement>(null);
   const lastAppliedValueRef = useRef("");
 
+  const stripUnsafeInlineStyles = useCallback((html: string) => {
+    const container = document.createElement("div");
+    container.innerHTML = html;
+
+    // Legacy HTML often uses <font color="...">; unwrap it to keep text but drop forced color.
+    container.querySelectorAll("font").forEach((fontEl) => {
+      const parent = fontEl.parentNode;
+      while (fontEl.firstChild) {
+        parent?.insertBefore(fontEl.firstChild, fontEl);
+      }
+      parent?.removeChild(fontEl);
+    });
+
+    const removeStyleRules = (el: HTMLElement) => {
+      const styleAttr = el.getAttribute("style");
+      if (!styleAttr) return;
+
+      const safeParts = styleAttr
+        .split(";")
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .filter((part) => {
+          const lower = part.toLowerCase();
+          return !(
+            lower.startsWith("color:") ||
+            lower.startsWith("background:") ||
+            lower.startsWith("background-color:")
+          );
+        });
+
+      if (safeParts.length === 0) {
+        el.removeAttribute("style");
+      } else {
+        el.setAttribute("style", safeParts.join("; "));
+      }
+    };
+
+    const nodes = container.querySelectorAll<HTMLElement>("*");
+    nodes.forEach((node) => {
+      removeStyleRules(node);
+      node.removeAttribute("color");
+      node.removeAttribute("bgcolor");
+    });
+
+    return container.innerHTML;
+  }, []);
+
   // Sync external value into contentEditable without resetting cursor on each keystroke.
   useEffect(() => {
     if (!editorRef.current) return;
     if (value !== lastAppliedValueRef.current && editorRef.current.innerHTML !== value) {
-      editorRef.current.innerHTML = value;
-      lastAppliedValueRef.current = value;
+      const cleaned = stripUnsafeInlineStyles(value);
+      editorRef.current.innerHTML = cleaned;
+      lastAppliedValueRef.current = cleaned;
+
+      if (cleaned !== value) {
+        onChange(cleaned);
+      }
     }
-  }, [value]);
+  }, [onChange, stripUnsafeInlineStyles, value]);
 
   const exec = useCallback((command: string, commandValue?: string) => {
     document.execCommand(command, false, commandValue);
@@ -94,6 +146,28 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       onChange(html);
     }
   }, [onChange]);
+
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const clipboardHtml = e.clipboardData.getData("text/html");
+    const clipboardText = e.clipboardData.getData("text/plain");
+
+    if (clipboardHtml) {
+      const cleanedHtml = stripUnsafeInlineStyles(clipboardHtml);
+      exec("insertHTML", cleanedHtml);
+      return;
+    }
+
+    if (clipboardText) {
+      const escaped = clipboardText
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\n/g, "<br>");
+      exec("insertHTML", escaped);
+    }
+  }, [exec, stripUnsafeInlineStyles]);
 
   const insertLink = useCallback(() => {
     const url = prompt("Enter URL:");
@@ -239,6 +313,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         contentEditable
         suppressContentEditableWarning
         onInput={handleInput}
+        onPaste={handlePaste}
         className="min-h-75 max-h-150 overflow-y-auto px-6 py-5 text-gray-700 dark:text-gray-300 text-sm leading-relaxed focus:outline-none
           [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-3 [&_h1]:mt-4
           [&_h2]:text-gray-900 dark:[&_h2]:text-white [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-2 [&_h2]:mt-3
