@@ -15,8 +15,10 @@ import type {
   UserProfile,
   UpdateProfileResponse,
 } from "@/types/auth";
+import { setUser } from "@/lib/redux/features/auth/authSlice";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
+const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -227,6 +229,37 @@ export const authApi = createApi({
         method: "PUT",
         body: formData,
       }),
+      onQueryStarted: async (_arg, { dispatch, getState, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          const state = getState() as unknown as { auth: { user: AuthUser | null } };
+          const existing = state.auth.user;
+
+          const resolveProfileImageUrl = (url?: string | null) => {
+            if (!url) return existing?.picture;
+            const absolute = url.startsWith("http") ? url : `${ORIGIN}${url}`;
+            return `${absolute}${absolute.includes("?") ? "&" : "?"}t=${Date.now()}`;
+          };
+
+          const updatedUser: AuthUser = {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            credits: data.credits,
+            subscription_plan:
+              data.subscription_plan || existing?.subscription_plan || "Free",
+            role: data.role,
+            picture: resolveProfileImageUrl(data.profile_image_url),
+          };
+
+          dispatch(setUser(updatedUser));
+          if (typeof window !== "undefined") {
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+          }
+        } catch {
+          // Ignore update propagation errors
+        }
+      },
       invalidatesTags: ["AuthProfile"],
     }),
 
