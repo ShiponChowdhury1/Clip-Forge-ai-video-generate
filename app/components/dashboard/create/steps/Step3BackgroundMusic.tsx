@@ -60,6 +60,19 @@ export default function Step3BackgroundMusic({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingId, setPlayingId] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (backgroundMusic === "no-music") return;
+    const selectedId = Number(backgroundMusic);
+    if (!Number.isFinite(selectedId)) {
+      setBackgroundMusic("no-music");
+      return;
+    }
+    const exists = musicList.some((item) => item.id === selectedId);
+    if (!exists) {
+      setBackgroundMusic("no-music");
+    }
+  }, [backgroundMusic, musicList, setBackgroundMusic]);
+
   // Cleanup audio on unmount
   useEffect(() => {
     return () => {

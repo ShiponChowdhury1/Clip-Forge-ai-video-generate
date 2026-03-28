@@ -15,7 +15,7 @@ const Step3BackgroundMusic = lazy(() => import("@/app/components/dashboard/creat
 const Step4VoiceNarration = lazy(() => import("@/app/components/dashboard/create/steps/Step4VoiceNarration"));
 const Step5SubtitleSettings = lazy(() => import("@/app/components/dashboard/create/steps/Step5SubtitleSettings"));
 const Step6ReviewGenerate = lazy(() => import("@/app/components/dashboard/create/steps/Step6ReviewGenerate"));
-import { useCreateVideoMutation, useUpdateVideoMutation } from "@/lib/redux/features/videos/videosApi";
+import { useCreateVideoMutation, useGetMusicQuery, useUpdateVideoMutation } from "@/lib/redux/features/videos/videosApi";
 import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi";
 import { useSelector } from "react-redux";
 
@@ -45,6 +45,7 @@ export default function CreateVideoPage() {
 
   const [createVideo] = useCreateVideoMutation();
   const [updateVideo] = useUpdateVideoMutation();
+  const { data: musicList = [] } = useGetMusicQuery({ skip: 0, limit: 100 });
   const token = useSelector((state: { auth: { token: string | null } }) => state.auth.token);
   const authUser = useSelector((state: { auth: { user: { id: number; credits: number } | null } }) => state.auth.user);
   const userId = authUser?.id ?? null;
@@ -334,7 +335,11 @@ export default function CreateVideoPage() {
       : "first_and_last_scene";
 
     const subtitleId = subtitleStyles.find((s) => s.value === subtitleStyle)?.id ?? 1;
-    const musicId = backgroundMusic === "no-music" ? 0 : Number(backgroundMusic);
+    const parsedMusicId = backgroundMusic === "no-music" ? 0 : Number(backgroundMusic);
+    const validMusicIds = new Set(musicList.map((item) => item.id));
+    const musicId = Number.isFinite(parsedMusicId) && validMusicIds.has(parsedMusicId)
+      ? parsedMusicId
+      : 0;
 
     const createRequestBody = {
       title: videoTitle,
