@@ -68,7 +68,7 @@ export default function AdminLayout({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile, user?.picture]);
+  }, [profile]);
 
   useEffect(() => {
     if (mounted) {

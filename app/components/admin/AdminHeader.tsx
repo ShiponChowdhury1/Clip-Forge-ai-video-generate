@@ -106,9 +106,22 @@ function ProfileModal({ onClose }: { onClose: () => void }) {
   const [pictureLoading, setPictureLoading] = useState(false);
 
   const resolveProfileImageUrl = (url?: string | null) => {
-    if (!url) return user?.picture;
-    const absolute = url.startsWith("http") ? url : `${ORIGIN}${url}`;
-    return `${absolute}${absolute.includes("?") ? "&" : "?"}t=${Date.now()}`;
+    const candidate = url
+      ? url.startsWith("http")
+        ? url
+        : `${ORIGIN}${url}`
+      : user?.picture;
+
+    if (!candidate) return user?.picture;
+
+    try {
+      const parsed = new URL(candidate, ORIGIN);
+      parsed.searchParams.set("t", Date.now().toString());
+      return parsed.toString();
+    } catch {
+      const separator = candidate.includes("?") ? "&" : "?";
+      return `${candidate}${separator}t=${Date.now()}`;
+    }
   };
 
   const buildUpdatedUser = (res: {

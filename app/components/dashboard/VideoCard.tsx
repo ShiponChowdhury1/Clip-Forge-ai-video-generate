@@ -23,7 +23,8 @@ interface VideoCardProps {
   status?: string;
 }
 
-function buildVideoUrl(path: string): string {
+function buildVideoUrl(path: string | null | undefined): string {
+  if (!path || typeof path !== "string" || path.trim() === "") return "";
   if (path.startsWith("http")) return path;
   // Extract relative path starting from "outputs/" (handles absolute server filesystem paths)
   const match = path.match(/outputs\/.+$/);
@@ -65,7 +66,8 @@ export default function VideoCard({
   created_at,
 }: VideoCardProps) {
   const router = useRouter();
-  const videoUrl = buildVideoUrl(path);
+  const hasVideo = typeof path === "string" && path.trim().length > 0;
+  const videoUrl = hasVideo ? buildVideoUrl(path) : "";
   const category = style;
   const [nowMs, setNowMs] = useState(() => Date.now());
   const createdAt = formatRelativeDate(created_at, nowMs);
@@ -102,6 +104,7 @@ export default function VideoCard({
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!videoUrl) return;
     const link = document.createElement("a");
     link.href = videoUrl;
     link.download = `${title}.mp4`;
@@ -162,7 +165,7 @@ export default function VideoCard({
         <div className="relative aspect-video bg-gray-100 dark:bg-[#0A0A0A] overflow-hidden">
           <video
             ref={previewVideoRef}
-            src={videoLoaded ? videoUrl : undefined}
+            src={videoLoaded && videoUrl ? videoUrl : undefined}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             preload="none"
             muted

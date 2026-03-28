@@ -61,7 +61,7 @@ export default function DashboardLayout({
     if (typeof window !== "undefined") {
       localStorage.setItem("user", JSON.stringify(freshUser));
     }
-  }, [profile, user?.picture, dispatch]);
+  }, [profile, dispatch]);
 
   useEffect(() => {
     if (!token) {

@@ -22,7 +22,8 @@ import {
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-function buildVideoUrl(path: string): string {
+function buildVideoUrl(path: string | null | undefined): string {
+  if (!path || typeof path !== "string" || path.trim() === "") return "";
   if (path.startsWith("http")) return path;
   const match = path.match(/outputs\/.+$/);
   const relativePath = match ? `/${match[0]}` : path;
