@@ -62,7 +62,7 @@ export default function VideoDetailsPage() {
         keywords: video.keywords || "",
         negative_keywords: video.negative_keywords || "",
         music_id: video.music_id || 0,
-        subtitle_id: video.subtitle_id || 1,
+        subtitle_id: video.subtitle_id ?? null,
         media_option: video.media_option || "all_images",
       })
     );

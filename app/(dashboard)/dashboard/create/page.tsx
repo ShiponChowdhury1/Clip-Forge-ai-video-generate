@@ -297,9 +297,14 @@ export default function CreateVideoPage() {
       };
       if (d.media_option && mediaMap[d.media_option]) setSceneMedia(mediaMap[d.media_option]);
 
-      // Map subtitle_id back to SubtitleStyle
-      if (d.subtitle_id) {
-        const found = subtitleStyles.find((s) => s.id === d.subtitle_id);
+      // Map backend subtitle_id to UI selection. Null/0 means subtitles disabled.
+      const incomingSubtitleId =
+        typeof d.subtitle_id === "number" ? d.subtitle_id : null;
+      if (incomingSubtitleId === null || incomingSubtitleId === 0) {
+        setSubtitleStyle("none");
+        setSubtitlesEnabled(false);
+      } else {
+        const found = subtitleStyles.find((s) => s.id === incomingSubtitleId);
         if (found) {
           setSubtitleStyle(found.value);
           setSubtitlesEnabled(found.value !== "none");
@@ -334,7 +339,10 @@ export default function CreateVideoPage() {
       : sceneMedia === "last-scene-video" ? "last_scene"
       : "first_and_last_scene";
 
-    const subtitleId = subtitleStyles.find((s) => s.value === subtitleStyle)?.id ?? 1;
+    const selectedSubtitle = subtitleStyles.find((s) => s.value === subtitleStyle);
+    const subtitleId = subtitlesEnabled && subtitleStyle !== "none"
+      ? (selectedSubtitle?.id ?? null)
+      : null;
     const parsedMusicId = backgroundMusic === "no-music" ? 0 : Number(backgroundMusic);
     const validMusicIds = new Set(musicList.map((item) => item.id));
     const musicId = Number.isFinite(parsedMusicId) && validMusicIds.has(parsedMusicId)

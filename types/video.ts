@@ -15,7 +15,7 @@ export interface CreateVideoRequest {
   voice: string;
   category: string;
   media_option: string;
-  subtitle_id: number;
+  subtitle_id: number | null;
   keywords: string;
   negative_keywords: string;
   music_id: number;
@@ -30,7 +30,7 @@ export interface UpdateVideoRequest {
   keywords: string;
   negative_keywords: string;
   music_id: number;
-  subtitle_id: number;
+  subtitle_id: number | null;
   media_option: string;
 }
 
@@ -59,7 +59,7 @@ export interface Video {
   path: string;
   duration: number;
   music_id: number;
-  subtitle_id: number;
+  subtitle_id: number | null;
   media_option: string;
   status: string;
   created_at: string;
@@ -83,7 +83,7 @@ export interface QueueVideoData {
   keywords: string;
   negative_keywords: string;
   music_id: number;
-  subtitle_id: number;
+  subtitle_id: number | null;
   media_option: string;
   user_id: number;
 }
