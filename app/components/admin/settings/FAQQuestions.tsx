@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { MessageCircleQuestion, Plus, Send, Pencil, Trash2, Save, X } from "lucide-react";
 import { toast } from "react-toastify";
+import { useAppSelector } from "@/lib/redux/hooks";
 import {
   useCreateAdminFaqMutation,
   useDeleteAdminFaqMutation,
@@ -11,7 +12,8 @@ import {
 } from "@/lib/redux/features/admin/adminApi";
 
 export function FAQQuestions() {
-  const { data: faqItems = [], isLoading } = useGetAdminFaqQuery({ skip: 0, limit: 50 });
+  const token = useAppSelector((state) => state.auth.token);
+  const { data: faqItems = [], isLoading } = useGetAdminFaqQuery({ skip: 0, limit: 50 }, { skip: !token });
   const [createFaq, { isLoading: isSaving }] = useCreateAdminFaqMutation();
   const [updateFaq, { isLoading: isUpdating }] = useUpdateAdminFaqMutation();
   const [deleteFaq, { isLoading: isDeleting }] = useDeleteAdminFaqMutation();

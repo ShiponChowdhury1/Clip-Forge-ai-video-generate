@@ -4,11 +4,13 @@ import Image from "next/image";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import VideoCard from "@/app/components/dashboard/VideoCard";
 import { useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
+import { useAppSelector } from "@/lib/redux/hooks";
 
 export default function DashboardPage() {
+  const token = useAppSelector((state) => state.auth.token);
   const { data: videos = [], isLoading } = useGetAllVideosQuery(
     { skip: 0, limit: 9 },
-    { refetchOnMountOrArgChange: true, pollingInterval: 60000, skipPollingIfUnfocused: true }
+    { refetchOnMountOrArgChange: true, pollingInterval: 60000, skipPollingIfUnfocused: true, skip: !token }
   );
 
   return (

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, MoreVertical, UserX, UserCheck } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
+import { useAppSelector } from "@/lib/redux/hooks";
 import {
   useGetAdminUsersQuery,
   useUpdateUserStatusMutation,
@@ -42,6 +43,7 @@ function getInitials(name: string): string {
 const perPage = 10;
 
 export default function AdminUsersPage() {
+  const token = useAppSelector((state) => state.auth.token);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [optimisticStatuses, setOptimisticStatuses] = useState<Record<number, "active" | "suspended">>({});
@@ -63,7 +65,7 @@ export default function AdminUsersPage() {
     limit: perPage,
     time_filter: "all",
     search: search || undefined,
-  });
+  }, { skip: !token });
 
   const [updateUserStatus] = useUpdateUserStatusMutation();
 

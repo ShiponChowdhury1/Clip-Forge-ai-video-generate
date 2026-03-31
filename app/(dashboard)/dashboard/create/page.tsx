@@ -45,8 +45,8 @@ export default function CreateVideoPage() {
 
   const [createVideo] = useCreateVideoMutation();
   const [updateVideo] = useUpdateVideoMutation();
-  const { data: musicList = [] } = useGetMusicQuery({ skip: 0, limit: 100 });
   const token = useSelector((state: { auth: { token: string | null } }) => state.auth.token);
+  const { data: musicList = [] } = useGetMusicQuery({ skip: 0, limit: 100 }, { skip: !token });
   const authUser = useSelector((state: { auth: { user: { id: number; credits: number } | null } }) => state.auth.user);
   const userId = authUser?.id ?? null;
   const { data: creditBalance } = useGetUserCreditBalanceQuery(userId ?? skipToken, {

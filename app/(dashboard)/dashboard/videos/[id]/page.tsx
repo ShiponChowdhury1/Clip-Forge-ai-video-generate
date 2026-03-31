@@ -172,8 +172,7 @@ export default function VideoDetailsPage() {
       className="w-full space-y-6"
     >
       {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl border border-gray-300 dark:border-[#1A3155] bg-linear-to-br from-white via-gray-50 to-blue-50/70 dark:from-[#0D1117] dark:via-[#0B1220] dark:to-[#0A1A2E] p-4 sm:p-5">
-        <div className="pointer-events-none absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.22),_transparent_45%)]" />
+      <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-[#1F1F1F] bg-white dark:bg-[#0A0A0A] p-4 sm:p-5">
         <div className="relative flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
             <button

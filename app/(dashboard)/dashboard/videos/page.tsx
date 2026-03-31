@@ -6,6 +6,7 @@ import VideoCard from "@/app/components/dashboard/VideoCard";
 import QueueCard from "@/app/components/dashboard/QueueCard";
 import { useState, forwardRef, useMemo } from "react";
 import { useGetAllVideosQuery, useGetQueueQuery } from "@/lib/redux/features/videos/videosApi";
+import { useAppSelector } from "@/lib/redux/hooks";
 import { Calendar, X, ChevronLeft, ChevronRight } from "lucide-react";
 import DatePicker from "react-datepicker";
 import { format, isSameDay } from "date-fns";
@@ -47,14 +48,15 @@ const CustomDateInput = forwardRef<
 CustomDateInput.displayName = "CustomDateInput";
 
 export default function AllVideosPage() {
+  const token = useAppSelector((state) => state.auth.token);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const { data: videos = [], isLoading } = useGetAllVideosQuery(
     { skip: 0, limit: 100 },
-    { refetchOnMountOrArgChange: true, pollingInterval: 60000, skipPollingIfUnfocused: true }
+    { refetchOnMountOrArgChange: true, pollingInterval: 60000, skipPollingIfUnfocused: true, skip: !token }
   );
-  const { data: queue } = useGetQueueQuery(undefined, { pollingInterval: 10000, skipPollingIfUnfocused: true });
+  const { data: queue } = useGetQueueQuery(undefined, { pollingInterval: 10000, skipPollingIfUnfocused: true, skip: !token });
 
   const processingItems = queue?.processing ?? [];
   const queuedItems = queue?.queued ?? [];

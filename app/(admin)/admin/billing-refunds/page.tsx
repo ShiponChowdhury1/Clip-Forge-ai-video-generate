@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Search, ChevronLeft, ChevronRight, ChevronDown, CheckCircle, XCircle, Clock, CalendarDays } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
+import { useAppSelector } from "@/lib/redux/hooks";
 import { useGetAdminBillingQuery } from "@/lib/redux/features/admin/adminApi";
 
 const LIMIT = 10;
@@ -18,6 +19,7 @@ function formatAmount(n: number) {
 }
 
 export default function AdminBillingRefundsPage() {
+  const token = useAppSelector((state) => state.auth.token);
   const [search, setSearch]     = useState("");
   const [page, setPage]         = useState(0);
   const [timeFilter, setTimeFilter] = useState<"all" | "7d" | "30d" | "90d">("all");
@@ -34,7 +36,7 @@ export default function AdminBillingRefundsPage() {
     skip: page * LIMIT,
     limit: LIMIT,
     time_filter: timeFilter,
-  });
+  }, { skip: !token });
 
   const records = data?.records ?? [];
   const filtered = records.filter(

@@ -4,11 +4,13 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, Trash2, User, X, AlertTriangle } from "lucide-react";
 import { toast } from "react-toastify";
 import { AdminHeader } from "@/app/components/admin";
+import { useAppSelector } from "@/lib/redux/hooks";
 import { useGetAdminLogsQuery, useDeleteAdminLogMutation } from "@/lib/redux/features/admin/adminApi";
 
 const LIMIT = 10;
 
 export default function AdminUsageHistoryPage() {
+  const token = useAppSelector((state) => state.auth.token);
   const [page, setPage] = useState(0);
   const [deleteLog] = useDeleteAdminLogMutation();
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
@@ -16,7 +18,7 @@ export default function AdminUsageHistoryPage() {
   const { data: logs, isLoading, refetch } = useGetAdminLogsQuery({
     skip: page * LIMIT,
     limit: LIMIT,
-  });
+  }, { skip: !token });
 
   const entries = logs ?? [];
 
