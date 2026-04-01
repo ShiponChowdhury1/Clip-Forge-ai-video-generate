@@ -98,23 +98,23 @@ const formatOptions: {
   {
     value: "9:16",
     label: "9:16",
-    cardHeight: "h-[250px]",
-    innerWidth: "w-[100px]",
-    innerHeight: "h-[120px]",
+    cardHeight: "h-[190px] sm:h-[250px]",
+    innerWidth: "w-[72px] sm:w-[100px]",
+    innerHeight: "h-[95px] sm:h-[120px]",
   },
   {
     value: "1:1",
     label: "1:1",
-    cardHeight: "h-[194px]",
-    innerWidth: "w-[100px]",
-    innerHeight: "h-[120px]",
+    cardHeight: "h-[160px] sm:h-[194px]",
+    innerWidth: "w-[72px] sm:w-[100px]",
+    innerHeight: "h-[95px] sm:h-[120px]",
   },
   {
     value: "16:9",
     label: "16:9",
-    cardHeight: "h-[134px]",
-    innerWidth: "w-[110px]",
-    innerHeight: "h-[60px]",
+    cardHeight: "h-[126px] sm:h-[134px]",
+    innerWidth: "w-[78px] sm:w-[110px]",
+    innerHeight: "h-[44px] sm:h-[60px]",
   },
 ];
 
@@ -148,12 +148,14 @@ export default function Step2FormatStyleMedia({
         <h3 className="text-gray-900 dark:text-white text-base font-semibold mb-4">
           Video Format
         </h3>
-        <div className="flex items-end gap-3">
+        <div className="grid grid-cols-2 items-end gap-3 sm:flex">
           {formatOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => setVideoFormat(option.value)}
-              className={`flex flex-col items-center gap-3 w-[150px] ${option.cardHeight} p-5 rounded-xl border transition-all ${
+              className={`flex w-full min-w-0 flex-col items-center gap-2 sm:gap-3 sm:w-37.5 ${option.cardHeight} p-3 sm:p-5 rounded-xl border transition-all ${
+                option.value === "16:9" ? "col-span-2 sm:col-span-1" : ""
+              } ${
                 videoFormat === option.value
                   ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
                   : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
@@ -170,7 +172,7 @@ export default function Step2FormatStyleMedia({
                 />
               </div>
               <span
-                className={`text-sm font-medium ${
+                className={`text-xs sm:text-sm font-medium ${
                   videoFormat === option.value
                     ? "text-gray-900 dark:text-white"
                     : "text-gray-600 dark:text-gray-400"
