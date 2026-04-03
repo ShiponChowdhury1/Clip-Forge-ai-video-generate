@@ -24,6 +24,7 @@ import {
   X,
   ChevronsLeft,
   ChevronsRight,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -100,6 +101,8 @@ export default function Sidebar({ role = "user", onCollapsedChange }: SidebarPro
   const [mounted, setMounted] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const sections = menusByRole[role];
+  const canAccessAdmin = user?.role === "admin" || user?.role === "super_admin";
+  const visibleSections = sections;
 
   useEffect(() => {
     setMounted(true);
@@ -212,7 +215,7 @@ export default function Sidebar({ role = "user", onCollapsedChange }: SidebarPro
 
       {/* Navigation */}
       <nav className="flex-1 py-4 space-y-2 overflow-y-auto">
-        {sections.map((section, sIdx) => (
+        {visibleSections.map((section, sIdx) => (
           <div key={sIdx} className={section.label ? "pt-6 space-y-2" : "space-y-2"}>
             {section.label && !collapsed && (
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-3">
@@ -295,12 +298,41 @@ export default function Sidebar({ role = "user", onCollapsedChange }: SidebarPro
             </div>
           </div>
         )}
+
+        {role === "user" && canAccessAdmin && (
+          <button
+            onClick={() => router.push("/admin")}
+            title={collapsed ? "Switch to Admin" : undefined}
+            className={`flex items-center ${collapsed ? "justify-center" : "gap-3"} ${collapsed ? "px-0" : "px-4"} py-3 rounded-lg text-sm font-medium text-cyan-500 hover:text-cyan-400 hover:bg-cyan-500/10 w-full transition-all duration-200 border border-gray-200 dark:border-[#1F1F1F] hover:border-cyan-500/30`}
+          >
+            <span className={`w-9 h-9 rounded-lg bg-cyan-500/10 text-cyan-500 flex items-center justify-center ${collapsed ? "mx-auto" : ""}`}>
+              <ShieldCheck className="w-5 h-5 shrink-0" />
+            </span>
+            {!collapsed && "Switch to Admin"}
+          </button>
+        )}
+
+        {role === "admin" && canAccessAdmin && (
+          <button
+            onClick={() => router.push("/dashboard")}
+            title={collapsed ? "Switch to User" : undefined}
+            className={`flex items-center ${collapsed ? "justify-center" : "gap-3"} ${collapsed ? "px-0" : "px-4"} py-3 rounded-lg text-sm font-medium text-cyan-500 hover:text-cyan-400 hover:bg-cyan-500/10 w-full transition-all duration-200 border border-gray-200 dark:border-[#1F1F1F] hover:border-cyan-500/30`}
+          >
+            <span className={`w-9 h-9 rounded-lg bg-cyan-500/10 text-cyan-500 flex items-center justify-center ${collapsed ? "mx-auto" : ""}`}>
+              <LayoutDashboard className="w-5 h-5 shrink-0" />
+            </span>
+            {!collapsed && "Switch to User"}
+          </button>
+        )}
+
         <button
           onClick={() => setShowLogoutModal(true)}
           title={collapsed ? "Logout" : undefined}
           className={`flex items-center ${collapsed ? "justify-center" : "gap-3"} ${collapsed ? "px-0" : "px-4"} py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 w-full transition-all duration-200 border border-gray-200 dark:border-[#1F1F1F] hover:border-red-500/30`}
         >
-          <LogOut className="w-5 h-5 shrink-0" />
+          <span className={`w-9 h-9 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center ${collapsed ? "mx-auto" : ""}`}>
+            <LogOut className="w-5 h-5 shrink-0" />
+          </span>
           {!collapsed && "Logout"}
         </button>
       </div>

@@ -70,17 +70,12 @@ export default function DashboardLayout({
       return;
     }
 
-    if (effectiveRole === "admin") {
-      router.replace("/admin");
-      return;
-    }
-
-    if (effectiveRole && !["user", "super_admin"].includes(effectiveRole)) {
+    if (effectiveRole && !["user", "admin", "super_admin"].includes(effectiveRole)) {
       router.replace("/");
     }
   }, [token, effectiveRole, router]);
 
-  if (!token || effectiveRole === "admin") {
+  if (!token) {
     return (
       <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-gray-300 dark:border-[#1A3155] border-t-[#3B82F6] rounded-full animate-spin" />

@@ -1148,18 +1148,6 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
                   <button
                     onClick={() => {
                       setShowProfileMenu(false);
-                      router.push("/dashboard");
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-cyan-600 dark:text-cyan-300 hover:bg-cyan-500/10 dark:hover:bg-cyan-500/15 transition-colors"
-                  >
-                    <span className="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-500 dark:text-cyan-300 flex items-center justify-center">
-                      <Eye className="w-4 h-4" />
-                    </span>
-                    Switch to User View
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowProfileMenu(false);
                       setShowProfileModal(true);
                     }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1A2332] hover:text-gray-900 dark:hover:text-white transition-colors"

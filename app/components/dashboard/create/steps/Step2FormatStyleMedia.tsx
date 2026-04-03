@@ -100,7 +100,7 @@ const formatOptions: {
     label: "9:16",
     cardHeight: "h-[190px] sm:h-[250px]",
     innerWidth: "w-[72px] sm:w-[100px]",
-    innerHeight: "h-[95px] sm:h-[120px]",
+    innerHeight: "h-[95px] sm:h-[160px]",
   },
   {
     value: "1:1",
