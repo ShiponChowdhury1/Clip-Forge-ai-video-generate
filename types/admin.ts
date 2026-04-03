@@ -59,6 +59,19 @@ export interface AdminUser {
   created_at: string;
 }
 
+export interface GiveUserCreditsPayload {
+  userId: number;
+  amount: number;
+}
+
+export interface GiveUserCreditsResponse {
+  message: string;
+  user_id: number;
+  credits_granted: number;
+  new_balance: number;
+  transaction_id: number;
+}
+
 export interface AdminOverview {
   total_users: number;
   active_users: number;

@@ -17,13 +17,15 @@ import type {
   LegalPoliciesPayload,
   CreditPackage,
   CreateCreditPackagePayload,
+  GiveUserCreditsPayload,
+  GiveUserCreditsResponse,
 } from "@/types/admin";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 
 export const adminApi = createApi({
   reducerPath: "adminApi",
-  tagTypes: ["AdminFaq", "AdminPolicies", "CreditPackages"],
+  tagTypes: ["AdminFaq", "AdminPolicies", "CreditPackages", "AdminUsers"],
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_BASE_URL}/v1/admin`,
     prepareHeaders: (headers, { getState }) => {
@@ -50,6 +52,7 @@ export const adminApi = createApi({
         if (search) params.set("search", search);
         return `/users?${params.toString()}`;
       },
+      providesTags: ["AdminUsers"],
     }),
 
     // 2. Suspend / Activate User
@@ -58,6 +61,16 @@ export const adminApi = createApi({
         url: `${API_BASE_URL}/v1/users/${userId}/status`,
         method: "PUT",
         body: { status },
+      }),
+      invalidatesTags: ["AdminUsers"],
+    }),
+
+    // 3. Give Credits to User
+    giveUserCredits: builder.mutation<GiveUserCreditsResponse, GiveUserCreditsPayload>({
+      query: ({ userId, amount }) => ({
+        url: `/users/${userId}/give-credit`,
+        method: "POST",
+        body: { amount },
       }),
     }),
 
@@ -251,6 +264,7 @@ export const adminApi = createApi({
 export const {
   useGetAdminUsersQuery,
   useUpdateUserStatusMutation,
+  useGiveUserCreditsMutation,
   useGetSubscriptionsQuery,
   useCreateSubscriptionMutation,
   useUpdateSubscriptionMutation,
@@ -295,4 +309,6 @@ export type {
   LegalPoliciesPayload,
   CreditPackage,
   CreateCreditPackagePayload,
+  GiveUserCreditsPayload,
+  GiveUserCreditsResponse,
 } from "@/types/admin";

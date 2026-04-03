@@ -2,10 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Search, MoreVertical, UserX, UserCheck } from "lucide-react";
+import { Plus, X } from "lucide-react";
+import { toast } from "react-toastify";
 import { AdminHeader } from "@/app/components/admin";
 import { useAppSelector } from "@/lib/redux/hooks";
 import {
   useGetAdminUsersQuery,
+  useGiveUserCreditsMutation,
   useUpdateUserStatusMutation,
 } from "@/lib/redux/features/admin/adminApi";
 import type { AdminUser } from "@/lib/redux/features/admin/adminApi";
@@ -48,6 +51,15 @@ export default function AdminUsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [optimisticStatuses, setOptimisticStatuses] = useState<Record<number, "active" | "suspended">>({});
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [creditModalUser, setCreditModalUser] = useState<AdminUser | null>(null);
+  const [creditAmount, setCreditAmount] = useState("");
+  const [creditError, setCreditError] = useState("");
+  const [creditSuccess, setCreditSuccess] = useState<{
+    userName: string;
+    creditsGranted: number;
+    newBalance: number;
+    transactionId: number;
+  } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,14 +72,68 @@ export default function AdminUsersPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   const skip = (currentPage - 1) * perPage;
-  const { data: users, isLoading, isFetching } = useGetAdminUsersQuery({
+  const { data: users, isLoading, isFetching, refetch } = useGetAdminUsersQuery({
     skip,
     limit: perPage,
     time_filter: "all",
     search: search || undefined,
   }, { skip: !token });
 
+  const [giveUserCredits, { isLoading: isGrantingCredits }] = useGiveUserCreditsMutation();
   const [updateUserStatus] = useUpdateUserStatusMutation();
+
+  const openCreditModal = (user: AdminUser) => {
+    setOpenMenuId(null);
+    setCreditModalUser(user);
+    setCreditAmount("");
+    setCreditError("");
+    setCreditSuccess(null);
+  };
+
+  const closeCreditModal = () => {
+    setCreditModalUser(null);
+    setCreditAmount("");
+    setCreditError("");
+  };
+
+  const handleGrantCredits = async () => {
+    if (!creditModalUser) return;
+
+    const parsedAmount = Number(creditAmount);
+    if (!Number.isInteger(parsedAmount) || parsedAmount <= 0) {
+      setCreditError("Please enter a valid positive amount.");
+      return;
+    }
+
+    setCreditError("");
+
+    try {
+      const result = await giveUserCredits({ userId: creditModalUser.id, amount: parsedAmount }).unwrap();
+      setCreditSuccess({
+        userName: creditModalUser.name,
+        creditsGranted: result.credits_granted,
+        newBalance: result.new_balance,
+        transactionId: result.transaction_id,
+      });
+      await refetch();
+      toast.success(result.message || "Credits added successfully.");
+      closeCreditModal();
+    } catch (error) {
+      const typedError = error as {
+        status?: number | string;
+        data?: { detail?: string; message?: string; error?: string } | string;
+        error?: string;
+      };
+      const message =
+        (typeof typedError.data === "string" ? typedError.data : typedError.data?.detail) ||
+        (typeof typedError.data === "object" ? typedError.data?.message : undefined) ||
+        typedError.error ||
+        (typedError.status ? `Request failed with status ${typedError.status}.` : "Failed to add credits.");
+      console.error("giveUserCredits failed:", error);
+      setCreditError(message);
+      toast.error(message);
+    }
+  };
 
   const handleToggleStatus = async (user: AdminUser) => {
     const currentStatus = optimisticStatuses[user.id] ?? user.status;
@@ -205,12 +271,28 @@ export default function AdminUsersPage() {
 
                       {/* Credits */}
                       <td className="py-4 px-5">
-                        <div className="w-32">
-                          <div className="flex items-center justify-between text-xs mb-1.5">
-                            <span className="text-gray-400">{user.credits_used} used</span>
-                            <span className="text-gray-500">{user.credits_left} left</span>
+                        <div className="w-full max-w-55">
+                          <div className="flex items-center gap-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 text-xs whitespace-nowrap">
+                                <span className="text-gray-400">{user.credits_used} used</span>
+                                <span className="text-gray-500">{user.credits_left} left</span>
+                              </div>
+                            </div>
+                            <div className="relative inline-flex group shrink-0">
+                            <button
+                              onClick={() => openCreditModal(user)}
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-colors"
+                              aria-label="Add credits"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                            <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-black">
+                              Add credits
+                            </div>
                           </div>
-                          <div className="h-1.5 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
+                          </div>
+                          <div className="mt-2 h-1.5 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
                             <div
                               className="h-full bg-cyan-500 rounded-full transition-all"
                               style={{ width: `${usedPercentage}%` }}
@@ -298,6 +380,131 @@ export default function AdminUsersPage() {
           </div>
         </div>
       </div>
+
+      {creditModalUser && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={closeCreditModal}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-gray-300 dark:border-[#1A3155] bg-white dark:bg-[#0D1117]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-[#1A3155]">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Add Credits</h3>
+                <p className="text-xs text-gray-500 mt-1">{creditModalUser.name} - {creditModalUser.email}</p>
+              </div>
+              <button
+                onClick={closeCreditModal}
+                className="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+              <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-4 py-3">
+                <p className="text-xs uppercase tracking-wider text-cyan-400 font-semibold">Current Balance</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{creditModalUser.credits_left} credits</p>
+              </div>
+
+              {creditError && (
+                <p className="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2.5">
+                  {creditError}
+                </p>
+              )}
+
+              <div>
+                <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={creditAmount}
+                  onChange={(e) => setCreditAmount(e.target.value)}
+                  placeholder="500"
+                  className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
+                />
+              </div>
+
+              <div>
+                <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                  Quick Amounts
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {[100, 500, 1000].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setCreditAmount(String(preset))}
+                      className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0F18] text-xs font-medium text-gray-700 dark:text-gray-300 hover:border-cyan-400 hover:text-cyan-400 transition-colors"
+                    >
+                      +{preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-[#1A3155]">
+              <button
+                onClick={closeCreditModal}
+                className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 text-sm font-medium hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleGrantCredits}
+                disabled={isGrantingCredits}
+                className="px-4 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors"
+              >
+                {isGrantingCredits ? "Adding..." : "Add Credits"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {creditSuccess && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-gray-300 dark:border-[#1A3155] bg-white dark:bg-[#0D1117] shadow-2xl overflow-hidden">
+            <div className="px-6 py-5 border-b border-gray-200 dark:border-[#1A3155]">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Credits added successfully</h3>
+              <p className="text-xs text-gray-500 mt-1">{creditSuccess.userName}</p>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-gray-200 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0F18] px-4 py-3">
+                  <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Credits Added</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{creditSuccess.creditsGranted}</p>
+                </div>
+                <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-4 py-3">
+                  <p className="text-[11px] font-semibold text-cyan-400 uppercase tracking-wider">New Balance</p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{creditSuccess.newBalance}</p>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-gray-200 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0F18] px-4 py-3">
+                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Transaction ID</p>
+                <p className="text-sm font-mono text-gray-700 dark:text-gray-300 mt-1">#{creditSuccess.transactionId}</p>
+              </div>
+            </div>
+
+            <div className="flex justify-end px-6 py-4 border-t border-gray-200 dark:border-[#1A3155]">
+              <button
+                onClick={() => setCreditSuccess(null)}
+                className="px-4 py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium transition-colors"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
