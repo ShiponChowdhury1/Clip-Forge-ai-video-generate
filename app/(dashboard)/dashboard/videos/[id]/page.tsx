@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useGetVideoQuery } from "@/lib/redux/features/videos/videosApi";
+import { useGetAllVideosQuery, useGetVideoQuery } from "@/lib/redux/features/videos/videosApi";
 import {
   ArrowLeft,
   Play,
@@ -18,9 +18,12 @@ import {
   Copy,
   Check,
   PlusCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
+import { useAppSelector } from "@/lib/redux/hooks";
 
 function buildVideoUrl(path: string | null | undefined): string {
   if (!path || typeof path !== "string" || path.trim() === "") return "";
@@ -34,12 +37,35 @@ export default function VideoDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const videoId = Number(params.id);
-  const { data: video, isLoading, refetch } = useGetVideoQuery(videoId);
+  const [selectedVideoId, setSelectedVideoId] = useState<number>(videoId);
+  const token = useAppSelector((state) => state.auth.token);
+  const { data: video, isLoading, refetch } = useGetVideoQuery(selectedVideoId);
+  const { data: allVideos = [] } = useGetAllVideosQuery(
+    { skip: 0, limit: 12 },
+    { skip: !token, refetchOnMountOrArgChange: true }
+  );
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const [previewAspectRatio, setPreviewAspectRatio] = useState<number | null>(null);
+  const [thumbStart, setThumbStart] = useState(0);
+
+  const thumbVideos = useMemo(
+    () =>
+      allVideos
+        .filter((item) => Boolean(item.path) && item.status.toLowerCase() === "completed")
+        .slice(0, 12),
+    [allVideos]
+  );
+
+  const visibleThumbCount = 6;
+  const maxThumbStart = Math.max(0, thumbVideos.length - visibleThumbCount);
+  const clampedThumbStart = Math.min(thumbStart, maxThumbStart);
+  const visibleThumbs = useMemo(
+    () => thumbVideos.slice(clampedThumbStart, clampedThumbStart + visibleThumbCount),
+    [thumbVideos, clampedThumbStart]
+  );
 
   const handleCopyScript = async () => {
     if (!video?.script) return;
@@ -211,13 +237,64 @@ export default function VideoDetailsPage() {
         <div>
           <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full flex flex-col shadow-[0_20px_50px_-30px_rgba(37,99,235,0.55)] dark:shadow-[0_20px_60px_-35px_rgba(59,130,246,0.45)]">
             <div className="px-4 sm:px-5 pt-4 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0B1320]/55">
-              <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide">Video Preview</h2>
-              <p className="text-[11px] text-gray-500 mt-0.5">Tap to play, inspect output quality, then download</p>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide">Video Preview</h2>
+                {thumbVideos.length > visibleThumbCount && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setThumbStart((prev) => Math.max(0, prev - visibleThumbCount))}
+                      disabled={thumbStart === 0}
+                      className="w-7 h-7 rounded-lg border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Previous videos"
+                    >
+                      <ChevronLeft className="w-4 h-4 mx-auto" />
+                    </button>
+                    <button
+                      onClick={() => setThumbStart((prev) => Math.min(maxThumbStart, prev + visibleThumbCount))}
+                      disabled={thumbStart >= maxThumbStart}
+                      className="w-7 h-7 rounded-lg border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Next videos"
+                    >
+                      <ChevronRight className="w-4 h-4 mx-auto" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {visibleThumbs.length > 0 && (
+                <div className="mt-3 flex gap-2">
+                  {visibleThumbs.map((item) => {
+                    const isActive = item.id === video.id;
+                    const thumbUrl = buildVideoUrl(item.path);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => setSelectedVideoId(item.id)}
+                        className={`relative h-16 w-28 shrink-0 overflow-hidden rounded-lg border transition-colors ${
+                          isActive
+                            ? "border-[#3B82F6] ring-2 ring-[#3B82F6]/20"
+                            : "border-gray-200 dark:border-[#1A3155] hover:border-[#3B82F6]/60"
+                        }`}
+                        title={item.title}
+                      >
+                        <video
+                          src={thumbUrl}
+                          className="h-full w-full object-cover"
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             <div className="px-4 sm:px-5 py-4 flex-1 flex items-center justify-center bg-linear-to-b from-transparent to-gray-50/60 dark:to-[#091121]/35">
               <div
-                className="relative max-h-[470px] w-full bg-black rounded-2xl overflow-hidden ring-1 ring-black/10 dark:ring-white/10 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.9)]"
+                className="relative max-h-117.5 w-full bg-black rounded-2xl overflow-hidden ring-1 ring-black/10 dark:ring-white/10 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.9)]"
                 style={{ aspectRatio: String(effectiveAspectRatio) }}
               >
                 {hasVideo ? (
@@ -407,7 +484,7 @@ export default function VideoDetailsPage() {
         <div className="px-4 pb-4">
           {video.script ? (
             <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-4 overflow-y-auto custom-scrollbar">
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed break-words w-full">
+              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed wrap-break-word w-full">
                 {video.script}
               </p>
             </div>

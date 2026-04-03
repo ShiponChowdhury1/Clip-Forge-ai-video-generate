@@ -37,6 +37,7 @@ export const authApi = createApi({
       return headers;
     },
   }),
+  
   endpoints: (builder) => ({
     // 1. Register
     register: builder.mutation<

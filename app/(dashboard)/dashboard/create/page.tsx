@@ -397,7 +397,12 @@ export default function CreateVideoPage() {
         alert("Session expired. Please login again.");
         return;
       }
-      alert(err.data?.detail || (editSourceVideoId ? "Failed to regenerate video" : "Failed to create video"));
+      const detail = err.data?.detail || "";
+      if (typeof detail === "string" && /capacity|processing/i.test(detail)) {
+        alert("Capacity reached. A video is already processing. Please wait until it finishes, then try again.");
+        return;
+      }
+      alert(detail || (editSourceVideoId ? "Failed to regenerate video" : "Failed to create video"));
       return;
     }
   };
@@ -508,7 +513,7 @@ export default function CreateVideoPage() {
       <CreateVideoHeader credits={displayCredits} />
 
       {/* Rest of content - constrained width */}
-      <div className="w-full max-w-[1108px] mx-auto">
+      <div className="w-full max-w-277 mx-auto">
         {/* Step Progress */}
         <StepProgress currentStep={currentStep} totalSteps={TOTAL_STEPS} />
 
