@@ -31,7 +31,10 @@ export default function Step1TitleKeywordsScript({
           Video Title
           <span className="group relative">
             <Info className="w-4 h-4 text-[#3B82F6] cursor-help" />
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#1A2332] text-gray-700 dark:text-gray-300 text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-300 dark:border-[#1A3155]">
+            <span
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#1A2332] text-gray-700 dark:text-gray-300 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-300 dark:border-[#1A3155]"
+              style={{ whiteSpace: "nowrap" }}
+            >
               Enter a descriptive title for your video
             </span>
           </span>
@@ -51,7 +54,10 @@ export default function Step1TitleKeywordsScript({
           Keywords
           <span className="group relative">
             <Info className="w-4 h-4 text-[#3B82F6] cursor-help" />
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#1A2332] text-gray-700 dark:text-gray-300 text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-300 dark:border-[#1A3155]">
+            <span
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#1A2332] text-gray-700 dark:text-gray-300 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-300 dark:border-[#1A3155]"
+              style={{ whiteSpace: "nowrap" }}
+            >
               Keywords help AI find relevant media for your scenes
             </span>
           </span>
@@ -71,7 +77,10 @@ export default function Step1TitleKeywordsScript({
           Negative Keywords
           <span className="group relative">
             <Info className="w-4 h-4 text-[#3B82F6] cursor-help" />
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#1A2332] text-gray-700 dark:text-gray-300 text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-300 dark:border-[#1A3155]">
+            <span
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#1A2332] text-gray-700 dark:text-gray-300 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-300 dark:border-[#1A3155]"
+              style={{ whiteSpace: "nowrap" }}
+            >
               Exclude unwanted elements from generated media
             </span>
           </span>
@@ -92,19 +101,21 @@ export default function Step1TitleKeywordsScript({
             Script
             <span className="group relative">
               <Info className="w-4 h-4 text-[#3B82F6] cursor-help" />
-              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#1A2332] text-gray-700 dark:text-gray-300 text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-300 dark:border-[#1A3155]">
+              <span
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#1A2332] text-gray-700 dark:text-gray-300 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-300 dark:border-[#1A3155]"
+                style={{ whiteSpace: "nowrap" }}
+              >
                 Write or paste your video script here
               </span>
             </span>
           </label>
-    
         </div>
         <textarea
           value={script}
           onChange={(e) => setScript(e.target.value)}
           placeholder="Write your script here or use AI to generate one..."
           rows={6}
-          className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm leading-relaxed placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors resize-none whitespace-pre-wrap overflow-hidden"
+          className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm leading-relaxed placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors resize-none overflow-hidden"
           style={{ overflow: "hidden" }}
           onInput={(e) => {
             const el = e.currentTarget;

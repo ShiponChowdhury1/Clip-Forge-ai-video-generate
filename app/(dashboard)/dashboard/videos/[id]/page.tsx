@@ -138,6 +138,8 @@ export default function VideoDetailsPage() {
   const hasVideo = typeof video.path === "string" && video.path.trim().length > 0 && video.status.toLowerCase() === "completed";
   const videoUrl = hasVideo ? buildVideoUrl(video.path.trim()) : "";
   const normalizedFormat = (video.format || "9:16").replace(/\s+/g, "").toLowerCase();
+  const isPortrait = normalizedFormat.includes("9:16") || normalizedFormat.includes("portrait");
+  const isSquare = normalizedFormat.includes("1:1") || normalizedFormat.includes("square");
   const fallbackAspectRatio =
     normalizedFormat.includes("1:1") || normalizedFormat.includes("square")
       ? 1
@@ -235,7 +237,7 @@ export default function VideoDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[60%_1fr] gap-6">
         {/* Left: Video Player */}
         <div>
-          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full flex flex-col shadow-[0_20px_50px_-30px_rgba(37,99,235,0.55)] dark:shadow-[0_20px_60px_-35px_rgba(59,130,246,0.45)]">
+          <div className={`bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden ${isPortrait ? "min-h-160" : "min-h-180"} h-full flex flex-col shadow-[0_20px_50px_-30px_rgba(37,99,235,0.55)] dark:shadow-[0_20px_60px_-35px_rgba(59,130,246,0.45)]`}>
             <div className="px-4 sm:px-5 pt-4 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0B1320]/55">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide">Video Preview</h2>
@@ -279,7 +281,7 @@ export default function VideoDetailsPage() {
                       >
                         <video
                           src={thumbUrl}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain"
                           muted
                           loop
                           playsInline
@@ -294,7 +296,7 @@ export default function VideoDetailsPage() {
 
             <div className="px-4 sm:px-5 py-4 flex-1 flex items-center justify-center bg-linear-to-b from-transparent to-gray-50/60 dark:to-[#091121]/35">
               <div
-                className="relative max-h-117.5 w-full bg-black rounded-2xl overflow-hidden ring-1 ring-black/10 dark:ring-white/10 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.9)]"
+                className={`relative ${isPortrait ? "max-h-140" : isSquare ? "max-h-120 max-w-120 mx-auto" : "max-h-180"} w-full bg-black rounded-2xl overflow-hidden ring-1 ring-black/10 dark:ring-white/10 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.9)]`}
                 style={{ aspectRatio: String(effectiveAspectRatio) }}
               >
                 {hasVideo ? (
@@ -302,7 +304,7 @@ export default function VideoDetailsPage() {
                     <video
                       ref={videoRef}
                       src={videoUrl}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                       preload="metadata"
                       controls={isPlaying}
                       onClick={togglePlay}
@@ -392,25 +394,26 @@ export default function VideoDetailsPage() {
 
         {/* Right: Details */}
         <div>
-          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden h-full shadow-[0_18px_48px_-34px_rgba(2,132,199,0.55)] dark:shadow-[0_18px_52px_-34px_rgba(59,130,246,0.35)]">
-            <div className="p-4 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0B1320]/55">
-              <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide">Generation Details</h2>
+          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden min-h-180 h-full shadow-[0_18px_48px_-34px_rgba(2,132,199,0.55)] dark:shadow-[0_18px_52px_-34px_rgba(59,130,246,0.35)]">
+            <div className="p-4 pb-2 bg-gray-50/70 dark:bg-[#0B1320]/55">
+              <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide m-2">Generation Details</h2>
             </div>
 
             <div className="px-4 pb-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-4 gap-3">
                 {detailRows.map((row) => (
                   <div
                     key={row.label}
                     className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-3"
                   >
-                    <div className="flex items-center gap-1.5 mb-1.5">
-                      <row.icon className="w-3.5 h-3.5 text-gray-500" />
-                      <span className="text-gray-500 text-xs">{row.label}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <row.icon className="w-3.5 h-3.5 text-gray-500" />
+                      </div>
+                      <span className="text-gray-900 dark:text-white text-xs font-semibold truncate capitalize">
+                        {row.value}
+                      </span>
                     </div>
-                    <p className="text-gray-900 dark:text-white text-sm font-medium truncate capitalize">
-                      {row.value}
-                    </p>
                   </div>
                 ))}
               </div>
@@ -449,51 +452,49 @@ export default function VideoDetailsPage() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-      </div>
 
-      {/* Script Section - Full Width */}
-      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden">
-        <div className="p-4 pb-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#3B82F6]" />
-            <h2 className="text-gray-900 dark:text-white text-sm font-semibold">Script</h2>
-          </div>
-          <div className="flex items-center gap-3">
-            {video.script && (
-              <span className="text-gray-500 text-xs shrink-0">
-                {video.script.split(/\s+/).length} words
-              </span>
-            )}
-            {video.script && (
-              <button
-                onClick={handleCopyScript}
-                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
-              >
-                {copied ? (
-                  <><Check className="w-3.5 h-3.5 text-[#22C55E]" /><span className="text-[#22C55E]">Copied!</span></>
-                ) : (
-                  <><Copy className="w-3.5 h-3.5" /><span>Copy</span></>
-                )}
-              </button>
-            )}
-          </div>
-        </div>
+            {/* Script */}
+            <div className="px-4 pb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#3B82F6]" />
+                  <h3 className="text-gray-900 dark:text-white text-sm font-semibold">Script</h3>
+                </div>
+                <div className="flex items-center gap-3">
+                  {video.script && (
+                    <span className="text-gray-500 text-xs shrink-0">
+                      {video.script.split(/\s+/).length} words
+                    </span>
+                  )}
+                  {video.script && (
+                    <button
+                      onClick={handleCopyScript}
+                      className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
+                    >
+                      {copied ? (
+                        <><Check className="w-3.5 h-3.5 text-[#22C55E]" /><span className="text-[#22C55E]">Copied!</span></>
+                      ) : (
+                        <><Copy className="w-3.5 h-3.5" /><span>Copy</span></>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
 
-        <div className="px-4 pb-4">
-          {video.script ? (
-            <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-4 overflow-y-auto custom-scrollbar">
-              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed wrap-break-word w-full">
-                {video.script}
-              </p>
+              {video.script ? (
+                <div className=" dark:border-[#1A3155]/50 rounded-xl p-4 overflow-y-auto custom-scrollbar max-h-112">
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed wrap-break-word w-full">
+                    {video.script}
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-6 text-center">
+                  <FileText className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">No script available</p>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-6 text-center">
-              <FileText className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-              <p className="text-gray-500 text-sm">No script available</p>
-            </div>
-          )}
+          </div>
         </div>
       </div>
 
