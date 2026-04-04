@@ -50,6 +50,7 @@ export default function VideoDetailsPage() {
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const [previewAspectRatio, setPreviewAspectRatio] = useState<number | null>(null);
   const [thumbStart, setThumbStart] = useState(0);
+  const [showFullScript, setShowFullScript] = useState(false);
 
   const thumbVideos = useMemo(
     () =>
@@ -238,33 +239,57 @@ export default function VideoDetailsPage() {
         {/* Left: Video Player */}
         <div>
           <div className={`bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden ${isPortrait ? "min-h-160" : "min-h-180"} h-full flex flex-col shadow-[0_20px_50px_-30px_rgba(37,99,235,0.55)] dark:shadow-[0_20px_60px_-35px_rgba(59,130,246,0.45)]`}>
-            <div className="px-4 sm:px-5 pt-4 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0B1320]/55">
+            <div className="px-4 sm:px-5 pt-3 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0B1320]/55">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide">Video Preview</h2>
+                <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                  Browse other videos
+                </span>
                 {thumbVideos.length > visibleThumbCount && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setThumbStart((prev) => Math.max(0, prev - visibleThumbCount))}
-                      disabled={thumbStart === 0}
-                      className="w-7 h-7 rounded-lg border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label="Previous videos"
-                    >
-                      <ChevronLeft className="w-4 h-4 mx-auto" />
-                    </button>
-                    <button
-                      onClick={() => setThumbStart((prev) => Math.min(maxThumbStart, prev + visibleThumbCount))}
-                      disabled={thumbStart >= maxThumbStart}
-                      className="w-7 h-7 rounded-lg border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label="Next videos"
-                    >
-                      <ChevronRight className="w-4 h-4 mx-auto" />
-                    </button>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setThumbStart((prev) => Math.max(0, prev - visibleThumbCount))}
+                        disabled={thumbStart === 0}
+                        className="w-7 h-7 rounded-lg border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Previous videos"
+                      >
+                        <ChevronLeft className="w-4 h-4 mx-auto" />
+                      </button>
+                      <span
+                        className={`text-xs font-medium ${
+                          thumbStart === 0
+                            ? "text-gray-400 dark:text-gray-500"
+                            : "text-gray-600 dark:text-gray-300"
+                        }`}
+                      >
+                        Previous
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setThumbStart((prev) => Math.min(maxThumbStart, prev + visibleThumbCount))}
+                        disabled={thumbStart >= maxThumbStart}
+                        className="w-7 h-7 rounded-lg border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Next videos"
+                      >
+                        <ChevronRight className="w-4 h-4 mx-auto" />
+                      </button>
+                      <span
+                        className={`text-xs font-medium ${
+                          thumbStart >= maxThumbStart
+                            ? "text-gray-400 dark:text-gray-500"
+                            : "text-gray-600 dark:text-gray-300"
+                        }`}
+                      >
+                        Next
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
 
               {visibleThumbs.length > 0 && (
-                <div className="mt-3 flex gap-2">
+                <div className="mt-3 flex gap-2 justify-center">
                   {visibleThumbs.map((item) => {
                     const isActive = item.id === video.id;
                     const thumbUrl = buildVideoUrl(item.path);
@@ -272,7 +297,7 @@ export default function VideoDetailsPage() {
                       <button
                         key={item.id}
                         onClick={() => setSelectedVideoId(item.id)}
-                        className={`relative h-16 w-28 shrink-0 overflow-hidden rounded-lg border transition-colors ${
+                        className={`relative h-20 w-36 shrink-0 overflow-hidden rounded-lg border transition-colors ${
                           isActive
                             ? "border-[#3B82F6] ring-2 ring-[#3B82F6]/20"
                             : "border-gray-200 dark:border-[#1A3155] hover:border-[#3B82F6]/60"
@@ -294,7 +319,7 @@ export default function VideoDetailsPage() {
               )}
             </div>
 
-            <div className="px-4 sm:px-5 py-4 flex-1 flex items-center justify-center bg-linear-to-b from-transparent to-gray-50/60 dark:to-[#091121]/35">
+            <div className="px-4 sm:px-5 py-3 flex-1 flex items-center justify-center bg-linear-to-b from-transparent to-gray-50/60 dark:to-[#091121]/35">
               <div
                 className={`relative ${isPortrait ? "max-h-140" : isSquare ? "max-h-120 max-w-120 mx-auto" : "max-h-180"} w-full bg-black rounded-2xl overflow-hidden ring-1 ring-black/10 dark:ring-white/10 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.9)]`}
                 style={{ aspectRatio: String(effectiveAspectRatio) }}
@@ -358,7 +383,7 @@ export default function VideoDetailsPage() {
             </div>
 
             {/* Action Buttons inside video card */}
-            <div className="px-4 sm:px-5 pb-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+            <div className="px-4 sm:px-5 pb-4 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
               <button
                 onClick={() => router.push("/dashboard/create")}
                 className="group relative overflow-hidden flex items-center justify-center gap-2.5 bg-white dark:bg-[#142238] border border-gray-300 dark:border-[#27456f] text-gray-900 dark:text-white rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-12px_rgba(59,130,246,0.55)] hover:bg-blue-50 dark:hover:bg-[#1b304e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0D1117]"
@@ -395,11 +420,11 @@ export default function VideoDetailsPage() {
         {/* Right: Details */}
         <div>
           <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden min-h-180 h-full shadow-[0_18px_48px_-34px_rgba(2,132,199,0.55)] dark:shadow-[0_18px_52px_-34px_rgba(59,130,246,0.35)]">
-            <div className="p-4 pb-2 bg-gray-50/70 dark:bg-[#0B1320]/55">
+            <div className="p-4 pb-1 bg-gray-50/70 dark:bg-[#0B1320]/55">
               <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide m-2">Generation Details</h2>
             </div>
 
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-3">
               <div className="grid grid-cols-4 gap-3">
                 {detailRows.map((row) => (
                   <div
@@ -421,7 +446,7 @@ export default function VideoDetailsPage() {
 
             {/* Keywords */}
             {video.keywords && (
-              <div className="px-4 pb-3 mt-4">
+              <div className="px-4 pb-2 mt-3">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Tag className="w-3.5 h-3.5 text-gray-500" />
                   <span className="text-gray-500 text-xs">Keywords</span>
@@ -438,7 +463,7 @@ export default function VideoDetailsPage() {
 
             {/* Negative Keywords */}
             {video.negative_keywords && (
-              <div className="px-4 pb-4">
+              <div className="px-4 pb-3">
                 <div className="flex items-center gap-1.5 mb-2">
                   <Tag className="w-3.5 h-3.5 text-[#E33629]/70" />
                   <span className="text-gray-500 text-xs">Negative Keywords</span>
@@ -454,7 +479,7 @@ export default function VideoDetailsPage() {
             )}
 
             {/* Script */}
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-3">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-[#3B82F6]" />
@@ -483,9 +508,30 @@ export default function VideoDetailsPage() {
 
               {video.script ? (
                 <div className=" dark:border-[#1A3155]/50 rounded-xl p-4 overflow-y-auto custom-scrollbar max-h-112">
-                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed wrap-break-word w-full">
-                    {video.script}
-                  </p>
+                  {(() => {
+                    const scriptWords = video.script.split(/\s+/).filter(Boolean);
+                    const shouldTruncate = scriptWords.length > 270;
+                    const visibleText = showFullScript
+                      ? video.script
+                      : scriptWords.slice(0, 270).join(" ");
+
+                    return (
+                      <>
+                        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed wrap-break-word w-full">
+                          {visibleText}
+                          {!showFullScript && shouldTruncate ? "..." : ""}
+                        </p>
+                        {shouldTruncate && (
+                          <button
+                            onClick={() => setShowFullScript((prev) => !prev)}
+                            className="mt-2 text-xs font-semibold text-[#3B82F6] hover:underline"
+                          >
+                            {showFullScript ? "Show less" : "More"}
+                          </button>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               ) : (
                 <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-6 text-center">

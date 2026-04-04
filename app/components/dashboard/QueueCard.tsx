@@ -70,8 +70,57 @@ function WaitingTimer({ createdAt }: { createdAt: string }) {
   );
 }
 
+function formatEta(seconds: number) {
+  if (!Number.isFinite(seconds) || seconds <= 0) return "--";
+  const total = Math.round(seconds);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) return `${h}h ${m.toString().padStart(2, "0")}m`;
+  if (m > 0) return `${m}m ${s.toString().padStart(2, "0")}s`;
+  return `${s}s`;
+}
+
 export default function QueueCard({ item, position, type }: QueueCardProps) {
   const isProcessing = type === "processing";
+  const [displayProgress, setDisplayProgress] = useState(item.progress);
+  const elapsedSeconds = item.started_at
+    ? Math.max(0, Math.floor((Date.now() - new Date(item.started_at).getTime()) / 1000))
+    : 0;
+  const estimatedRemainingSeconds =
+    item.progress > 0 && elapsedSeconds > 0
+      ? Math.max(0, Math.round((elapsedSeconds / item.progress) * (100 - item.progress)))
+      : 0;
+
+  useEffect(() => {
+    setDisplayProgress(item.progress);
+  }, [item.id, item.progress]);
+
+  useEffect(() => {
+    if (!isProcessing) return;
+    if (item.progress >= 100) {
+      setDisplayProgress(100);
+      return;
+    }
+
+    const targetCap = 99;
+    const interval = setInterval(() => {
+      setDisplayProgress((prev) => {
+        if (item.progress > prev) return item.progress;
+        if (prev >= targetCap) return prev;
+        return prev + 1;
+      });
+    }, 900);
+
+    return () => clearInterval(interval);
+  }, [isProcessing, item.progress]);
+
+  useEffect(() => {
+    if (!isProcessing) return;
+    if (item.progress > displayProgress) {
+      setDisplayProgress(item.progress);
+    }
+  }, [isProcessing, item.progress, displayProgress]);
 
   return (
     <div
@@ -89,7 +138,7 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
             <div className="relative">
               <div className="w-16 h-16 border-4 border-[#1A3155] border-t-[#F59E0B] rounded-full animate-spin" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[#F59E0B] text-xs font-bold">{item.progress}%</span>
+                <span className="text-[#F59E0B] text-xs font-bold">{displayProgress}%</span>
               </div>
             </div>
             {/* Status message */}
@@ -98,9 +147,14 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
             </p>
             {/* Timer */}
             {item.started_at && (
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-[#F59E0B]" />
-                <ElapsedTimer startedAt={item.started_at} />
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#F59E0B]" />
+                  <ElapsedTimer startedAt={item.started_at} />
+                </div>
+                <span className="text-xs text-gray-400">
+                  ETA ~ {formatEta(estimatedRemainingSeconds)}
+                </span>
               </div>
             )}
           </>
@@ -167,7 +221,7 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
             <div className="w-full h-1.5 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#F59E0B] to-[#F97316] rounded-full transition-all duration-500"
-                style={{ width: `${item.progress}%` }}
+                style={{ width: `${displayProgress}%` }}
               />
             </div>
           </div>

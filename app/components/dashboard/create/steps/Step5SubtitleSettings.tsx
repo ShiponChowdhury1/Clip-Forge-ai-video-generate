@@ -24,7 +24,7 @@ export const subtitleStyles: {
   previewStyle: string;
 }[] = [
   {
-    id: null,
+    id: 1,
     value: "none",
     label: "None",
     credits: "Free",
@@ -32,50 +32,50 @@ export const subtitleStyles: {
     previewStyle: "text-gray-500 text-xs",
   },
   {
-    id: 1,
+    id: 2,
     value: "classic-white",
     label: "Classic White",
-    credits: "10cr",
+    credits: "100cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
       "text-white text-xs font-semibold px-3 py-1.5 bg-black/55 rounded-md [text-shadow:0_2px_6px_rgba(0,0,0,0.95)]",
   },
   {
-    id: 2,
+    id: 3,
     value: "modern-box",
     label: "Modern Box",
-    credits: "10cr",
+    credits: "100cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
       "text-white text-xs font-bold px-3 py-2 bg-black/80 rounded-lg [text-shadow:0_2px_6px_rgba(0,0,0,0.95)]",
   },
   {
-    id: 3,
+    id: 4,
     value: "minimal-light",
     label: "Minimal Light",
-    credits: "10cr",
+    credits: "100cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
       "text-gray-900 text-xs font-semibold px-3 py-1.5 bg-white/90 rounded-md",
   },
   {
-    id: 4,
+    id: 5,
     value: "yellow-highlight",
     label: "Yellow Highlight",
-    credits: "15cr",
+    credits: "100cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
       "text-gray-900 text-xs font-bold px-3 py-1.5 bg-yellow-400 rounded-md",
   },
   {
-    id: 5,
+    id: 6,
     value: "pink-highlight",
     label: "Pink Highlight",
-    credits: "15cr",
+    credits: "100cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
