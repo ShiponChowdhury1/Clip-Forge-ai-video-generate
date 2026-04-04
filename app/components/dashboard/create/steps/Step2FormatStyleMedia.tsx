@@ -105,9 +105,9 @@ const formatOptions: {
   {
     value: "1:1",
     label: "1:1",
-    cardHeight: "h-[160px] sm:h-[194px]",
+    cardHeight: "h-[160px] sm:h-[184px]",
     innerWidth: "w-[72px] sm:w-[100px]",
-    innerHeight: "h-[95px] sm:h-[120px]",
+    innerHeight: "h-[96px] sm:h-[96px]",
   },
   {
     value: "16:9",

@@ -43,7 +43,7 @@ export default function Step1TitleKeywordsScript({
           type="text"
           value={videoTitle}
           onChange={(e) => setVideoTitle(e.target.value)}
-          placeholder="write your video title"
+          placeholder="Write your video title"
           className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors"
         />
       </div>
@@ -66,7 +66,7 @@ export default function Step1TitleKeywordsScript({
           type="text"
           value={keywords}
           onChange={(e) => setKeywords(e.target.value)}
-          placeholder="e.g., summer, beach, sunset, travel"
+          placeholder="Positive keywords"
           className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors"
         />
       </div>
@@ -89,7 +89,7 @@ export default function Step1TitleKeywordsScript({
           type="text"
           value={negativeKeywords}
           onChange={(e) => setNegativeKeywords(e.target.value)}
-          placeholder="e.g., people, text, watermarks"
+          placeholder="Negative keywords"
           className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors"
         />
       </div>
