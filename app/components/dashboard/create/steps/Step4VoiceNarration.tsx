@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Volume2 } from "lucide-react";
 
@@ -145,6 +146,59 @@ export default function Step4VoiceNarration({
   selectedVoice,
   setSelectedVoice,
 }: Step4VoiceNarrationProps) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playingVoiceId, setPlayingVoiceId] = useState<VoiceId | null>(null);
+
+  const stopPreview = useCallback(() => {
+    if (!audioRef.current) return;
+
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    audioRef.current.onended = null;
+    audioRef.current = null;
+    setPlayingVoiceId(null);
+  }, []);
+
+  const getPreviewSrc = (name: string) => {
+    const fileName = `Voice Sample - ${name}.mp3`;
+    return `/voice/${encodeURIComponent(fileName)}`;
+  };
+
+  const handlePlayPreview = async (voiceId: VoiceId, voiceName: string) => {
+    if (playingVoiceId === voiceId) {
+      stopPreview();
+      return;
+    }
+
+    stopPreview();
+
+    const audio = new Audio(getPreviewSrc(voiceName));
+    audioRef.current = audio;
+    setPlayingVoiceId(voiceId);
+
+    audio.onended = () => {
+      if (audioRef.current === audio) {
+        audioRef.current = null;
+        setPlayingVoiceId(null);
+      }
+    };
+
+    try {
+      await audio.play();
+    } catch {
+      if (audioRef.current === audio) {
+        audioRef.current = null;
+      }
+      setPlayingVoiceId(null);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      stopPreview();
+    };
+  }, [stopPreview]);
+
   return (
     <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-8">
       {/* Voice Type */}
@@ -152,51 +206,66 @@ export default function Step4VoiceNarration({
         <h3 className="text-gray-900 dark:text-white text-lg font-semibold mb-5">Voice Type</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {voices.map((voice) => (
-            <button
+            <div
               key={voice.id}
-              onClick={() => setSelectedVoice(voice.id)}
               className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
                 selectedVoice === voice.id
                   ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
                   : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
-              {/* Avatar */}
-              <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 self-center">
-                <Image
-                  src={voice.image}
-                  alt={voice.name}
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <p className="text-gray-900 dark:text-white text-xs font-semibold leading-tight">
-                  {voice.name} - {voice.description}
-                </p>
-                <div className="flex items-center gap-1.5 mt-1.5">
+              <button
+                type="button"
+                onClick={() => setSelectedVoice(voice.id)}
+                className="flex items-center gap-3 flex-1 min-w-0 text-left"
+              >
+                {/* Avatar */}
+                <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 self-center">
                   <Image
-                    src={voice.flag}
-                    alt={voice.accent}
-                    width={32}
-                    height={32}
-                    className="shrink-0"
+                    src={voice.image}
+                    alt={voice.name}
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover"
                   />
-                  <span className="text-gray-500 text-[10px]">
-                    {voice.accent}
-                  </span>
                 </div>
-                <p className="text-gray-500 text-[10px] mt-1">
-                  {voice.category}
-                </p>
-              </div>
 
-              {/* Play Icon */}
-              <Volume2 className="w-4 h-4 text-[#3B82F6] shrink-0 self-center" />
-            </button>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-900 dark:text-white text-xs font-semibold leading-tight">
+                    {voice.name} - {voice.description}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <Image
+                      src={voice.flag}
+                      alt={voice.accent}
+                      width={32}
+                      height={32}
+                      className="shrink-0"
+                    />
+                    <span className="text-gray-500 text-[10px]">
+                      {voice.accent}
+                    </span>
+                  </div>
+                  <p className="text-gray-500 text-[10px] mt-1">
+                    {voice.category}
+                  </p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handlePlayPreview(voice.id, voice.name)}
+                aria-label={`Play ${voice.name} voice sample`}
+                className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-[#1A3155] transition-colors shrink-0 self-center"
+              >
+                <Volume2
+                  className={`w-4 h-4 ${
+                    playingVoiceId === voice.id ? "text-green-500" : "text-[#3B82F6]"
+                  }`}
+                />
+              </button>
+            </div>
           ))}
         </div>
       </div>
