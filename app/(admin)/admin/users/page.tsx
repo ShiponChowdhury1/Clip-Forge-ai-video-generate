@@ -148,6 +148,8 @@ export default function AdminUsersPage() {
   };
 
   const hasNextPage = (users?.length ?? 0) >= perPage;
+  const inferredTotalPages = hasNextPage ? currentPage + 1 : currentPage;
+  const pageNumbers = Array.from({ length: inferredTotalPages }, (_, i) => i + 1);
 
   return (
     <div>
@@ -360,7 +362,7 @@ export default function AdminUsersPage() {
         {/* Pagination */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-5 py-3 sm:py-4 border-t border-gray-200 dark:border-[#1A3155]">
           <p className="text-xs sm:text-sm text-gray-500">
-            Page {currentPage}
+            Page {currentPage} of {inferredTotalPages}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -370,6 +372,19 @@ export default function AdminUsersPage() {
             >
               Previous
             </button>
+            {pageNumbers.map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`min-w-8 px-2.5 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${
+                  currentPage === page
+                    ? "bg-cyan-500 border-cyan-500 text-white"
+                    : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
             <button
               onClick={() => setCurrentPage((p) => p + 1)}
               disabled={!hasNextPage}

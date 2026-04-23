@@ -24,6 +24,8 @@ const colorPalette = [
   "bg-indigo-500",
 ];
 
+const MUSIC_CREDIT_COST = 25;
+
 // All local music files in public/music/
 const localMusicFiles = [
   "/music/Cinematic-Documentary.mp3",
@@ -124,6 +126,7 @@ export default function Step3BackgroundMusic({
       description: "Generate video without background music",
       color: "bg-amber-400",
       hasPreview: false,
+      credits: 0,
     },
     ...musicList.map((item, index) => ({
       value: String(item.id),
@@ -132,6 +135,7 @@ export default function Step3BackgroundMusic({
       description: item.file_path,
       color: colorPalette[(index + 1) % colorPalette.length],
       hasPreview: true,
+      credits: MUSIC_CREDIT_COST,
     })),
   ];
 
@@ -176,21 +180,32 @@ export default function Step3BackgroundMusic({
               </div>
 
               {/* Right side - play/pause icon */}
-              {option.hasPreview ? (
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                    playingId === option.value
-                      ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
-                      : "bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155]"
+              <div className="flex items-center gap-2 shrink-0">
+                <span
+                  className={`text-xs font-medium px-2 py-1 rounded-md border ${
+                    option.credits > 0
+                      ? "text-[#3B82F6] border-[#3B82F6]/40 bg-[#3B82F6]/10"
+                      : "text-gray-500 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#1A2332]"
                   }`}
                 >
-                  {playingId === option.value ? (
-                    <Pause className="w-3 h-3 text-[#3B82F6]" />
-                  ) : (
-                    <Play className="w-3 h-3 text-gray-400 ml-0.5" />
-                  )}
-                </div>
-              ) : null}
+                  {option.credits > 0 ? `+${option.credits} credits` : "0 credits"}
+                </span>
+                {option.hasPreview ? (
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                      playingId === option.value
+                        ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
+                        : "bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155]"
+                    }`}
+                  >
+                    {playingId === option.value ? (
+                      <Pause className="w-3 h-3 text-[#3B82F6]" />
+                    ) : (
+                      <Play className="w-3 h-3 text-gray-400 ml-0.5" />
+                    )}
+                  </div>
+                ) : null}
+              </div>
             </button>
           ))}
           {musicList.length === 0 && (

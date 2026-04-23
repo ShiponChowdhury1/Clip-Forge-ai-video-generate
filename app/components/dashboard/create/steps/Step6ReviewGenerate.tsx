@@ -62,6 +62,11 @@ export default function Step6ReviewGenerate({
       ? 200
       : 0;
   const musicCredits = backgroundMusic !== "no-music" ? COSTS.MUSIC : 0;
+  const musicCreditLabel = musicCredits > 0 ? `+${musicCredits} credits` : "0 credits";
+  const selectedMusicDisplay =
+    backgroundMusic === "no-music"
+      ? `${selectedMusicLabel} (0 credits)`
+      : `${selectedMusicLabel} (+${COSTS.MUSIC} credits)`;
   const totalCredits = baseCredits + subtitleCredits + sceneCredits + musicCredits;
   const remainingCredits = Math.max(currentCredits - totalCredits, 0);
   const hasEnoughCredits = currentCredits >= totalCredits;
@@ -98,7 +103,7 @@ export default function Step6ReviewGenerate({
       iconBg: "bg-blue-500/20",
       iconColor: "text-blue-400",
       label: "Music",
-      value: selectedMusicLabel,
+      value: selectedMusicDisplay,
     },
     {
       icon: Subtitles,
@@ -198,7 +203,7 @@ export default function Step6ReviewGenerate({
           <div className="flex items-center justify-between">
             <span className="text-gray-600 dark:text-gray-400 text-sm">Background Music</span>
             <span className="text-gray-900 dark:text-white text-sm font-medium">
-              +{musicCredits} credits
+              {musicCreditLabel}
             </span>
           </div>
 

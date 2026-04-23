@@ -82,17 +82,24 @@ export function AdminRoles() {
   const [currentPage, setCurrentPage] = useState(1);
   const [allUsers, setAllUsers] = useState<AdminUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [storedRole, setStoredRole] = useState("");
   const token = useAppSelector((state) => state.auth.token);
   const currentUser = useAppSelector((state) => state.auth.user);
   const { data: me } = useGetMeQuery(undefined, { skip: !token });
   const [updateUserRole] = useUpdateUserRoleMutation();
 
   const tokenRole = getRoleFromToken(token);
-  const storedRole = normalizeRole(
-    typeof window !== "undefined"
-      ? (JSON.parse(localStorage.getItem("user") || "{}") as { role?: string }).role
-      : null,
-  );
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("user");
+      const parsed = raw ? (JSON.parse(raw) as { role?: string }) : {};
+      setStoredRole(normalizeRole(parsed.role));
+    } catch {
+      setStoredRole("");
+    }
+  }, []);
+
   const canManageRoles =
     isSuperAdmin(me?.role) ||
     isSuperAdmin(currentUser?.role) ||
@@ -241,6 +248,18 @@ export function AdminRoles() {
     return filteredAdmins.slice(start, start + perPage);
   }, [filteredAdmins, currentPage]);
 
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    let start = Math.max(1, currentPage - 2);
+    const end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }, [currentPage, totalPages]);
+
   const handleRoleChange = async (userId: number, nextRole: ManagedRole) => {
     if (!canManageRoles) return;
     setListActionStatus("");
@@ -346,7 +365,7 @@ export function AdminRoles() {
                     <option value="admin">Admin</option>
                     <option value="super_admin">Super Admin</option>
                   </select>
-                  <span className="text-xs font-medium text-cyan-400 bg-cyan-400/10 px-2.5 py-1 rounded-full min-w-23 text-center">
+                  <span className="text-xs font-medium text-cyan-400 bg-cyan-400/10  py-3 rounded-full min-w-23 text-center">
                     {isUpdating ? (
                       <span className="inline-flex items-center gap-1">
                         <Loader2 className="w-3 h-3 animate-spin" />
@@ -361,29 +380,40 @@ export function AdminRoles() {
             );
           })}
 
-          {filteredAdmins.length > perPage && (
-            <div className="flex items-center justify-between gap-3 pt-2">
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                Page {currentPage} of {totalPages}
-              </p>
-              <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-3 pt-2">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              Page {currentPage} of {totalPages}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              {pageNumbers.map((page) => (
                 <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`min-w-8 px-2.5 py-1.5 rounded-lg border text-xs sm:text-sm transition-colors ${
+                    currentPage === page
+                      ? "bg-cyan-500 border-cyan-500 text-white"
+                      : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-cyan-400"
+                  }`}
                 >
-                  Prev
+                  {page}
                 </button>
-                <button
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </div>
+              ))}
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>

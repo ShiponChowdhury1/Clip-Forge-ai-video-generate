@@ -10,11 +10,11 @@ interface QueueCardProps {
   type: "processing" | "queued";
 }
 
-function ElapsedTimer({ startedAt }: { startedAt: string }) {
+function ElapsedTimer() {
   const [elapsed, setElapsed] = useState("");
 
   useEffect(() => {
-    const start = new Date(startedAt).getTime();
+    const start = Date.now();
 
     const tick = () => {
       const diff = Math.max(0, Math.floor((Date.now() - start) / 1000));
@@ -33,7 +33,7 @@ function ElapsedTimer({ startedAt }: { startedAt: string }) {
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [startedAt]);
+  }, []);
 
   return (
     <span className="text-[#F59E0B] font-mono text-sm font-semibold">{elapsed}</span>
@@ -70,27 +70,9 @@ function WaitingTimer({ createdAt }: { createdAt: string }) {
   );
 }
 
-function formatEta(seconds: number) {
-  if (!Number.isFinite(seconds) || seconds <= 0) return "--";
-  const total = Math.round(seconds);
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  if (h > 0) return `${h}h ${m.toString().padStart(2, "0")}m`;
-  if (m > 0) return `${m}m ${s.toString().padStart(2, "0")}s`;
-  return `${s}s`;
-}
-
 export default function QueueCard({ item, position, type }: QueueCardProps) {
   const isProcessing = type === "processing";
   const [displayProgress, setDisplayProgress] = useState(item.progress);
-  const elapsedSeconds = item.started_at
-    ? Math.max(0, Math.floor((Date.now() - new Date(item.started_at).getTime()) / 1000))
-    : 0;
-  const estimatedRemainingSeconds =
-    item.progress > 0 && elapsedSeconds > 0
-      ? Math.max(0, Math.round((elapsedSeconds / item.progress) * (100 - item.progress)))
-      : 0;
 
   useEffect(() => {
     setDisplayProgress(item.progress);
@@ -146,17 +128,10 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
               {item.message || "Processing..."}
             </p>
             {/* Timer */}
-            {item.started_at && (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-[#F59E0B]" />
-                  <ElapsedTimer startedAt={item.started_at} />
-                </div>
-                <span className="text-xs text-gray-400">
-                  ETA ~ {formatEta(estimatedRemainingSeconds)}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-[#F59E0B]" />
+              <ElapsedTimer />
+            </div>
           </>
         ) : (
           <>

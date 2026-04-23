@@ -1,8 +1,18 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Play, ShieldCheck, Zap, Users } from "lucide-react";
+import { useAppSelector } from "@/lib/redux/hooks";
 
 export default function Hero() {
+  const router = useRouter();
+  const token = useAppSelector((state) => state.auth.token);
+
+  const handleStartCreating = () => {
+    const hasToken = token || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+    router.push(hasToken ? "/dashboard/create" : "/login");
+  };
+
   return (
     <section className="w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-12 pt-10 sm:pt-12 md:pt-16 pb-6 sm:pb-8 flex flex-col items-center justify-center gap-4 sm:gap-5 md:gap-6">
       {/* Subtitle */}
@@ -23,7 +33,10 @@ Built for TikTok, Reels, and YouTube Shorts.
 
       {/* CTA Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center mt-2 sm:mt-4 w-full sm:w-auto px-4 sm:px-0">
-        <button className="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-white font-semibold px-5 sm:px-6 py-3 rounded-lg transition flex items-center justify-center gap-2 text-sm">
+        <button
+          onClick={handleStartCreating}
+          className="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-white font-semibold px-5 sm:px-6 py-3 rounded-lg transition flex items-center justify-center gap-2 text-sm"
+        >
           Start Creating Free
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

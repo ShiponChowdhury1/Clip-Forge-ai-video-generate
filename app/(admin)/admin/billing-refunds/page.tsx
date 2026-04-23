@@ -39,6 +39,9 @@ export default function AdminBillingRefundsPage() {
   }, { skip: !token });
 
   const records = data?.records ?? [];
+  const hasNextPage = records.length >= LIMIT;
+  const inferredTotalPages = hasNextPage ? page + 2 : page + 1;
+  const pageNumbers = Array.from({ length: inferredTotalPages }, (_, i) => i + 1);
   const filtered = records.filter(
     (t) =>
       t.user.toLowerCase().includes(search.toLowerCase()) ||
@@ -188,25 +191,35 @@ export default function AdminBillingRefundsPage() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-3 sm:px-4 py-3 border-t border-gray-200 dark:border-[#1A3155]">
           <p className="text-xs text-gray-500">
-            Showing {filtered.length} records
+            Page {page + 1} of {inferredTotalPages}
           </p>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronLeft className="w-4 h-4" />
+              Previous
             </button>
-            <button className="w-8 h-8 rounded-lg bg-[#2563EB] text-white text-xs font-medium flex items-center justify-center">
-              {page + 1}
-            </button>
+            {pageNumbers.map((pageNumber) => (
+              <button
+                key={pageNumber}
+                onClick={() => setPage(pageNumber - 1)}
+                className={`min-w-8 px-2.5 py-1.5 rounded-lg border text-xs sm:text-sm transition-colors ${
+                  page + 1 === pageNumber
+                    ? "bg-cyan-500 border-cyan-500 text-white"
+                    : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
+                }`}
+              >
+                {pageNumber}
+              </button>
+            ))}
             <button
               onClick={() => setPage((p) => p + 1)}
-              disabled={records.length < LIMIT}
-              className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={!hasNextPage}
+              className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronRight className="w-4 h-4" />
+              Next
             </button>
           </div>
         </div>
