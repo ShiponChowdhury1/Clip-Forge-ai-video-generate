@@ -18,6 +18,7 @@ const Step6ReviewGenerate = lazy(() => import("@/app/components/dashboard/create
 import { useCreateVideoMutation, useGetMusicQuery, useUpdateVideoMutation } from "@/lib/redux/features/videos/videosApi";
 import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2FormatStyleMedia";
 import type { MusicOption } from "@/app/components/dashboard/create/steps/Step3BackgroundMusic";
@@ -332,7 +333,20 @@ export default function CreateVideoPage() {
     }
   };
 
+  const selectedMusicLabel =
+    backgroundMusic === "no-music"
+      ? "No Music"
+      : musicList.find((item) => item.id === Number(backgroundMusic))?.name || "Unknown Music";
+
   const handleGenerate = async () => {
+    const hasTitle = videoTitle.trim().length > 0;
+    const hasScript = script.trim().length > 0;
+
+    if (!hasTitle || !hasScript) {
+      toast.error("Please add Video Title and Script before generating.");
+      return;
+    }
+
     const mediaOption =
       sceneMedia === "all-images" ? "all_images"
       : sceneMedia === "first-scene-video" ? "first_scene"
@@ -394,15 +408,15 @@ export default function CreateVideoPage() {
       console.error("[Create Video] API failed:", { status: err.status, detail: err.data?.detail, full: err });
       setIsGenerating(false);
       if (err.status === 401) {
-        alert("Session expired. Please login again.");
+        toast.error("Session expired. Please login again.");
         return;
       }
       const detail = err.data?.detail || "";
       if (typeof detail === "string" && /capacity|processing/i.test(detail)) {
-        alert("Capacity reached. A video is already processing. Please wait until it finishes, then try again.");
+        toast.info("Capacity reached. A video is already processing. Please wait until it finishes, then try again.");
         return;
       }
-      alert(detail || (editSourceVideoId ? "Failed to regenerate video" : "Failed to create video"));
+      toast.error(detail || (editSourceVideoId ? "Failed to regenerate video" : "Failed to create video"));
       return;
     }
   };
@@ -495,6 +509,7 @@ export default function CreateVideoPage() {
             selectedVoice={selectedVoice}
             sceneMedia={sceneMedia}
             backgroundMusic={backgroundMusic}
+            selectedMusicLabel={selectedMusicLabel}
             subtitleStyle={subtitleStyle}
             subtitlesEnabled={subtitlesEnabled}
             currentCredits={displayCredits}

@@ -11,6 +11,7 @@ interface Step6ReviewGenerateProps {
   selectedVoice: VoiceId;
   sceneMedia: SceneMediaOption;
   backgroundMusic: MusicOption;
+  selectedMusicLabel: string;
   subtitleStyle: SubtitleStyle;
   subtitlesEnabled: boolean;
   currentCredits?: number;
@@ -30,6 +31,7 @@ export default function Step6ReviewGenerate({
   selectedVoice,
   sceneMedia,
   backgroundMusic,
+  selectedMusicLabel,
   subtitleStyle,
   subtitlesEnabled,
   currentCredits = 0,
@@ -64,6 +66,7 @@ export default function Step6ReviewGenerate({
   const remainingCredits = Math.max(currentCredits - totalCredits, 0);
   const hasEnoughCredits = currentCredits >= totalCredits;
   const creditsShortage = Math.max(totalCredits - currentCredits, 0);
+  const scriptPreview = script.trim();
 
   // Format scene media for display
   const sceneMediaLabel =
@@ -95,7 +98,7 @@ export default function Step6ReviewGenerate({
       iconBg: "bg-blue-500/20",
       iconColor: "text-blue-400",
       label: "Music",
-      value: formatLabel(backgroundMusic),
+      value: selectedMusicLabel,
     },
     {
       icon: Subtitles,
@@ -131,11 +134,10 @@ export default function Step6ReviewGenerate({
           {/* Script Preview */}
           <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 mb-4">
             <h5 className="text-gray-900 dark:text-white text-sm font-semibold">Script Preview</h5>
-            <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
-              Choose how captions will appear in your video
-            </p>
-            <p className="text-gray-500 text-xs mt-2">
-              {wordCount} words • ~{estimatedMinutes} min video
+            <p className="text-gray-600 dark:text-gray-400 text-xs mt-2 leading-relaxed">
+              {scriptPreview
+                ? `${scriptPreview.slice(0, 220)}${scriptPreview.length > 220 ? "..." : ""}`
+                : "No script added yet."}
             </p>
           </div>
 
@@ -223,23 +225,23 @@ export default function Step6ReviewGenerate({
       </div>
 
       {/* Generate Button */}
-       <div className="flex justify-between items-center">
-            <button
-            onClick={onBack}
-            className="flex items-center gap-1.5 text-[#2563EB] hover:text-[#1D4ED8] transition-colors px-3 py-2 rounded-lg hover:bg-[#2563EB]/8"
-            aria-label="Go back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Back</span>
-          </button>
+      <div className="flex justify-between items-center">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 text-[#3B82F6] hover:text-[#60A5FA] font-medium text-sm transition-colors px-4 py-2.5 rounded-lg hover:bg-[#3B82F6]/5"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
       <button
         onClick={onGenerate}
         disabled={isGenerating || !hasEnoughCredits}
-        className="w-50 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-base py-2 rounded-xl transition-colors"
+        className="flex items-center justify-center bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm px-6 py-2.5 rounded-lg transition-colors"
       >
         {isGenerating ? "Generating..." : hasEnoughCredits ? "Generate Video" : `Need ${creditsShortage} More Credits`}
       </button>
-       </div>
+      </div>
     </div>
   );
 }
