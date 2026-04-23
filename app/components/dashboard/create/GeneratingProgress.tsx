@@ -32,9 +32,10 @@ export default function GeneratingProgress({
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}
-          className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-[#3B82F6] hover:text-[#2563EB] transition-colors px-3 py-2 rounded-lg hover:bg-[#3B82F6]/8"
         >
           <ArrowLeft className="w-5 h-5" />
+          <span className="text-sm font-medium">Back</span>
         </button>
         <h2 className="text-gray-900 dark:text-white text-lg font-bold">Create New Video</h2>
       </div>
@@ -123,7 +124,7 @@ export default function GeneratingProgress({
       <div className="grid grid-cols-2 gap-3 pt-2">
         <button
           onClick={onBack}
-          className="bg-gray-100 dark:bg-[#1A2332] hover:bg-gray-200 dark:hover:bg-[#243044] text-gray-900 dark:text-white font-medium text-sm py-3 rounded-xl transition-colors border border-gray-300 dark:border-[#1A3155]"
+          className="bg-[#EFF6FF] dark:bg-[#0B1D33] hover:bg-[#DBEAFE] dark:hover:bg-[#10253F] text-[#2563EB] dark:text-[#93C5FD] font-medium text-sm py-3 rounded-xl transition-colors border border-[#BFDBFE] dark:border-[#1A3155]"
         >
           {error ? "Try Again" : "Back"}
         </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Mic, Film, Music2, Subtitles } from "lucide-react";
+import { ArrowLeft, Mic, Film, Music2, Subtitles } from "lucide-react";
 import type { SceneMediaOption } from "./Step2FormatStyleMedia";
 import type { VoiceId } from "./Step4VoiceNarration";
 import type { MusicOption } from "./Step3BackgroundMusic";
@@ -14,6 +14,7 @@ interface Step6ReviewGenerateProps {
   subtitleStyle: SubtitleStyle;
   subtitlesEnabled: boolean;
   currentCredits?: number;
+  onBack: () => void;
   onGenerate: () => void;
   isGenerating: boolean;
 }
@@ -32,13 +33,14 @@ export default function Step6ReviewGenerate({
   subtitleStyle,
   subtitlesEnabled,
   currentCredits = 0,
+  onBack,
   onGenerate,
   isGenerating,
 }: Step6ReviewGenerateProps) {
   // Mirror backend billing rules for transparent UX (backend remains source of truth)
   const COSTS = {
     BASE_PER_MINUTE: 200,
-    SUBTITLE: 100,
+    SUBTITLE: 0,
     MUSIC: 25,
   } as const;
 
@@ -53,9 +55,9 @@ export default function Step6ReviewGenerate({
     sceneMedia === "all-images"
       ? 0
       : sceneMedia === "first-last-scene-video"
-      ? 2
+      ? 300
       : sceneMedia === "first-scene-video" || sceneMedia === "last-scene-video"
-      ? 2
+      ? 200
       : 0;
   const musicCredits = backgroundMusic !== "no-music" ? COSTS.MUSIC : 0;
   const totalCredits = baseCredits + subtitleCredits + sceneCredits + musicCredits;
@@ -106,14 +108,18 @@ export default function Step6ReviewGenerate({
 
   return (
     <div className="space-y-4">
+    
       {/* Main review card */}
       <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-6">
         {/* Header */}
-        <div>
-          <h3 className="text-gray-900 dark:text-white text-lg font-bold">Review & Generate</h3>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+        <div className="flex flex-col items-start gap-2">
+  
+          <div className="space-y-1">
+            <h3 className="text-gray-900 dark:text-white text-lg font-bold">Review & Generate</h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
             Confirm your settings before generating
-          </p>
+            </p>
+          </div>
         </div>
 
         {/* Configuration Summary */}
@@ -203,12 +209,7 @@ export default function Step6ReviewGenerate({
               <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">After Generation</span>
               <span className="text-emerald-400 text-sm font-bold">{remainingCredits} credits</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-900 dark:text-white text-sm font-bold">Total</span>
-              <span className="text-[#3B82F6] text-sm font-bold">
-                {totalCredits} credits
-              </span>
-            </div>
+          
           </div>
 
           {!hasEnoughCredits && (
@@ -222,13 +223,23 @@ export default function Step6ReviewGenerate({
       </div>
 
       {/* Generate Button */}
+       <div className="flex justify-between items-center">
+            <button
+            onClick={onBack}
+            className="flex items-center gap-1.5 text-[#2563EB] hover:text-[#1D4ED8] transition-colors px-3 py-2 rounded-lg hover:bg-[#2563EB]/8"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="text-sm font-medium">Back</span>
+          </button>
       <button
         onClick={onGenerate}
         disabled={isGenerating || !hasEnoughCredits}
-        className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-base py-4 rounded-xl transition-colors"
+        className="w-50 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-base py-2 rounded-xl transition-colors"
       >
         {isGenerating ? "Generating..." : hasEnoughCredits ? "Generate Video" : `Need ${creditsShortage} More Credits`}
       </button>
+       </div>
     </div>
   );
 }

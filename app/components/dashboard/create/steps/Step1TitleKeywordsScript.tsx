@@ -2,6 +2,8 @@
 
 import { Info } from "lucide-react";
 
+const MAX_SCRIPT_CHARACTERS = 800;
+
 interface Step1TitleKeywordsScriptProps {
   videoTitle: string;
   setVideoTitle: (value: string) => void;
@@ -23,6 +25,8 @@ export default function Step1TitleKeywordsScript({
   script,
   setScript,
 }: Step1TitleKeywordsScriptProps) {
+  const remainingCharacters = Math.max(MAX_SCRIPT_CHARACTERS - script.length, 0);
+
   return (
     <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-6">
       {/* Video Title */}
@@ -90,7 +94,7 @@ export default function Step1TitleKeywordsScript({
           value={negativeKeywords}
           onChange={(e) => setNegativeKeywords(e.target.value)}
           placeholder="Negative keywords"
-          className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors"
+          className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors "
         />
       </div>
 
@@ -112,7 +116,15 @@ export default function Step1TitleKeywordsScript({
         </div>
         <textarea
           value={script}
-          onChange={(e) => setScript(e.target.value)}
+          onChange={(e) => {
+            const nextValue = e.target.value;
+            if (nextValue.length <= MAX_SCRIPT_CHARACTERS) {
+              setScript(nextValue);
+              return;
+            }
+
+            setScript(nextValue.slice(0, MAX_SCRIPT_CHARACTERS));
+          }}
           placeholder="Write your script here or use AI to generate one..."
           rows={6}
           className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm leading-relaxed placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors resize-none overflow-hidden"
@@ -125,7 +137,7 @@ export default function Step1TitleKeywordsScript({
         />
         <div className="flex justify-end mt-2">
           <span className="text-gray-500 text-xs">
-            {script.length} characters
+            {remainingCharacters} characters left
           </span>
         </div>
       </div>

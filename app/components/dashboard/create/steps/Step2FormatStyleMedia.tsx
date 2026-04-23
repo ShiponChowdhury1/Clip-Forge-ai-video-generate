@@ -124,12 +124,12 @@ const sceneMediaOptions: {
   credits: number;
 }[] = [
   { value: "all-images", label: "Use all images", credits: 0 },
-  { value: "first-scene-video", label: "First Scene video", credits: 30 },
-  { value: "last-scene-video", label: "Last Scene video", credits: 30 },
+  { value: "first-scene-video", label: "First Scene video", credits: 200 },
+  { value: "last-scene-video", label: "Last Scene video", credits: 200 },
   {
     value: "first-last-scene-video",
     label: "First & Last Scene video",
-    credits: 60,
+    credits: 300,
   },
 ];
 

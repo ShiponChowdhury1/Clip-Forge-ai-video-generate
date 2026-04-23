@@ -498,6 +498,7 @@ export default function CreateVideoPage() {
             subtitleStyle={subtitleStyle}
             subtitlesEnabled={subtitlesEnabled}
             currentCredits={displayCredits}
+            onBack={handleBack}
             onGenerate={handleGenerate}
             isGenerating={isGenerating}
           />

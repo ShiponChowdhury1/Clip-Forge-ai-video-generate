@@ -35,7 +35,7 @@ export const subtitleStyles: {
     id: 2,
     value: "classic-white",
     label: "Classic White",
-    credits: "100cr",
+    credits: "0cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
@@ -45,7 +45,7 @@ export const subtitleStyles: {
     id: 3,
     value: "modern-box",
     label: "Modern Box",
-    credits: "100cr",
+    credits: "0cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
@@ -55,7 +55,7 @@ export const subtitleStyles: {
     id: 4,
     value: "minimal-light",
     label: "Minimal Light",
-    credits: "100cr",
+    credits: "0cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
@@ -65,7 +65,7 @@ export const subtitleStyles: {
     id: 5,
     value: "yellow-highlight",
     label: "Yellow Highlight",
-    credits: "100cr",
+    credits: "0cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
@@ -75,7 +75,7 @@ export const subtitleStyles: {
     id: 6,
     value: "pink-highlight",
     label: "Pink Highlight",
-    credits: "100cr",
+    credits: "0cr",
     previewText:
       "This is a longer subtitle preview that should wrap safely on multiple lines.",
     previewStyle:
