@@ -173,3 +173,25 @@ input[type="checkbox"]:checked::before {
 .dark .legal-rich-content a {
   color: #d1d5db !important;
 }
+
+/* ── Support floating icon animation ────────────────────────────────── */
+@keyframes supportZoomPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 10px 22px rgba(59, 130, 246, 0.28);
+  }
+  50% {
+    transform: scale(1.11);
+    box-shadow: 0 14px 28px rgba(59, 130, 246, 0.38);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 10px 22px rgba(59, 130, 246, 0.28);
+  }
+}
+
+.animate-support-zoom {
+  animation: supportZoomPulse 1.7s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
+}

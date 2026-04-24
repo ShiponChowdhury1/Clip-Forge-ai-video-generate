@@ -62,7 +62,7 @@ export const videoStyles: VideoStyleData[] = [
   },
   {
     value: "characature",
-    label: "Characature",
+    label: "Caricature",
     image: "/video-style/characature.png",
   },
   {
