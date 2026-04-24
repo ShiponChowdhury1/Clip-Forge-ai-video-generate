@@ -87,6 +87,8 @@ export const videosApi = createApi({
             if (index !== -1) draft.splice(index, 1);
           })
         );
+
+
         const patchResult2 = dispatch(
           videosApi.util.updateQueryData("getAllVideos", { skip: 0, limit: 9 }, (draft) => {
             const index = draft.findIndex((v) => v.id === id);
@@ -146,6 +148,11 @@ export const videosApi = createApi({
     }),
   }),
 });
+
+
+
+
+
 
 export type {
   MusicItem,

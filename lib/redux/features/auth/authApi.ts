@@ -20,9 +20,23 @@ import { setUser } from "@/lib/redux/features/auth/authSlice";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
 
+interface NotificationSettingsPayload {
+  email: boolean;
+  low_balance: boolean;
+  payment: boolean;
+  video_status: boolean;
+  message: boolean;
+  product_update: boolean;
+}
+
+interface NotificationSettingsResponse extends NotificationSettingsPayload {
+  id: number;
+  user_id: number;
+}
+
 export const authApi = createApi({
   reducerPath: "authApi",
-  tagTypes: ["AuthProfile"],
+  tagTypes: ["AuthProfile", "NotificationSettings"],
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_BASE_URL}/v1/auth`,
     prepareHeaders: (headers, { getState }) => {
@@ -284,6 +298,28 @@ export const authApi = createApi({
         method: "GET",
       }),
     }),
+
+    // 16. Get notification settings
+    getNotificationSettings: builder.query<NotificationSettingsResponse, void>({
+      query: () => ({
+        url: `${API_BASE_URL}/v1/users/notifications/settings`,
+        method: "GET",
+      }),
+      providesTags: ["NotificationSettings"],
+    }),
+
+    // 17. Update notification settings
+    updateNotificationSettings: builder.mutation<
+      NotificationSettingsResponse,
+      NotificationSettingsPayload
+    >({
+      query: (body) => ({
+        url: `${API_BASE_URL}/v1/users/notifications/settings`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["NotificationSettings"],
+    }),
   }),
 });
 
@@ -319,4 +355,6 @@ export const {
   useResendOtpMutation,
   useUpdateProfileMutation,
   useGetUserCreditBalanceQuery,
+  useGetNotificationSettingsQuery,
+  useUpdateNotificationSettingsMutation,
 } = authApi;
