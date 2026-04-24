@@ -20,11 +20,9 @@ import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi"
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-import type { SceneMediaOption, VideoStyleOption, VideoFormat } from "@/app/components/dashboard/create/steps/Step2FormatStyleMedia";
+import type { SceneMediaOption, SubtitleStyle, VideoStyleOption, VideoFormat, VoiceId } from "@/types/createVideo";
 import type { MusicOption } from "@/app/components/dashboard/create/steps/Step3BackgroundMusic";
-import type { VoiceId } from "@/app/components/dashboard/create/steps/Step4VoiceNarration";
-import type { SubtitleStyle } from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
-import { subtitleStyles } from "@/app/components/dashboard/create/steps/Step5SubtitleSettings";
+import { subtitleStyles } from "@/app/data/createVideoOptions";
 
 const TOTAL_STEPS = 6;
 

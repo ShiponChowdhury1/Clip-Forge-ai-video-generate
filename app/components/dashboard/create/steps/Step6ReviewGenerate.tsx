@@ -1,10 +1,9 @@
 "use client";
 
 import { ArrowLeft, Mic, Film, Music2, Subtitles } from "lucide-react";
-import type { SceneMediaOption } from "./Step2FormatStyleMedia";
-import type { VoiceId } from "./Step4VoiceNarration";
+import type { SceneMediaOption, SubtitleStyle } from "@/types/createVideo";
+import type { VoiceId } from "@/types/createVideo";
 import type { MusicOption } from "./Step3BackgroundMusic";
-import type { SubtitleStyle } from "./Step5SubtitleSettings";
 
 interface Step6ReviewGenerateProps {
   script: string;

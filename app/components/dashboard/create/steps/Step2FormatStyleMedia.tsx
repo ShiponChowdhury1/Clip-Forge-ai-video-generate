@@ -2,26 +2,8 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-
-export type VideoFormat = "9:16" | "1:1" | "16:9";
-
-export type SceneMediaOption =
-  | "all-images"
-  | "first-scene-video"
-  | "last-scene-video"
-  | "first-last-scene-video";
-
-export type VideoStyleOption =
-  | "3d-cartoon"
-  | "anime"
-  | "comic-noir"
-  | "b-w-sketch"
-  | "characature"
-  | "hyper-realistic"
-  | "medeival-painting"
-  | "realistic-action-art"
-  | "retro-noir"
-  | "warm-fable";
+import { formatOptions, sceneMediaOptions, videoStyles } from "@/app/data/createVideoOptions";
+import type { SceneMediaOption, VideoFormat, VideoStyleOption } from "@/types/createVideo";
 
 interface Step2FormatStyleMediaProps {
   videoFormat: VideoFormat;
@@ -31,108 +13,6 @@ interface Step2FormatStyleMediaProps {
   sceneMedia: SceneMediaOption;
   setSceneMedia: (value: SceneMediaOption) => void;
 }
-
-const videoStyles: {
-  value: VideoStyleOption;
-  label: string;
-  image: string;
-}[] = [
-  {
-    value: "3d-cartoon",
-    label: "3D Cartoon",
-    image: "/video-style/3D-cartoon.png",
-  },
-  {
-    value: "anime",
-    label: "Anime",
-    image: "/video-style/anime.png",
-  },
-  {
-    value: "comic-noir",
-    label: "Comic Noir",
-    image: "/video-style/comicNoir.png",
-  },
-  {
-    value: "b-w-sketch",
-    label: "B&W Sketch",
-    image: "/video-style/b-W-Sketch.png",
-  },
-  {
-    value: "characature",
-    label: "Characature",
-    image: "/video-style/characature.png",
-  },
-  {
-    value: "hyper-realistic",
-    label: "Hyper Realistic",
-    image: "/video-style/hyperRealistic.png",
-  },
-  {
-    value: "medeival-painting",
-    label: "Medieval Painting",
-    image: "/video-style/medeivalPainting.png",
-  },
-  {
-    value: "realistic-action-art",
-    label: "Realistic Action Art",
-    image: "/video-style/realisticActionArt.png",
-  },
-  {
-    value: "retro-noir",
-    label: "Retro Noir",
-    image: "/video-style/retroNoir.png",
-  },
-  {
-    value: "warm-fable",
-    label: "Warm Fable",
-    image: "/video-style/warmFable.png",
-  },
-];
-
-const formatOptions: {
-  value: VideoFormat;
-  label: string;
-  cardHeight: string;
-  innerWidth: string;
-  innerHeight: string;
-}[] = [
-  {
-    value: "9:16",
-    label: "9:16",
-    cardHeight: "h-[190px] sm:h-[250px]",
-    innerWidth: "w-[72px] sm:w-[100px]",
-    innerHeight: "h-[95px] sm:h-[160px]",
-  },
-  {
-    value: "1:1",
-    label: "1:1",
-    cardHeight: "h-[160px] sm:h-[184px]",
-    innerWidth: "w-[72px] sm:w-[100px]",
-    innerHeight: "h-[96px] sm:h-[96px]",
-  },
-  {
-    value: "16:9",
-    label: "16:9",
-    cardHeight: "h-[126px] sm:h-[134px]",
-    innerWidth: "w-[78px] sm:w-[110px]",
-    innerHeight: "h-[44px] sm:h-[60px]",
-  },
-];
-
-const sceneMediaOptions: {
-  value: SceneMediaOption;
-  label: string;
-  credits: number;
-}[] = [
-  { value: "all-images", label: "Use all images", credits: 0 },
-  { value: "first-scene-video", label: "First Scene video", credits: 200 },
-  { value: "last-scene-video", label: "Last Scene video", credits: 200 },
-  {
-    value: "first-last-scene-video",
-    label: "First & Last Scene video",
-    credits: 300,
-  },
-];
 
 export default function Step2FormatStyleMedia({
   videoFormat,

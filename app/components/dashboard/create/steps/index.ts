@@ -6,7 +6,6 @@ export { default as Step5SubtitleSettings } from "./Step5SubtitleSettings";
 export { default as Step6ReviewGenerate } from "./Step6ReviewGenerate";
 
 // Type exports
-export type { SceneMediaOption, VideoStyleOption, VideoFormat } from "./Step2FormatStyleMedia";
-export type { VoiceId } from "./Step4VoiceNarration";
+export type { SceneMediaOption, VideoStyleOption, VideoFormat, VoiceId } from "@/types/createVideo";
 export type { MusicOption } from "./Step3BackgroundMusic";
-export type { SubtitleStyle } from "./Step5SubtitleSettings";
+export type { SubtitleStyle } from "@/types/createVideo";

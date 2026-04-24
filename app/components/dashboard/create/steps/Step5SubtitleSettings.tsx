@@ -1,12 +1,7 @@
 "use client";
 
-export type SubtitleStyle =
-  | "none"
-  | "classic-white"
-  | "modern-box"
-  | "minimal-light"
-  | "yellow-highlight"
-  | "pink-highlight";
+import { subtitleStyles } from "@/app/data/createVideoOptions";
+import type { SubtitleStyle } from "@/types/createVideo";
 
 interface Step5SubtitleSettingsProps {
   subtitlesEnabled: boolean;
@@ -14,74 +9,6 @@ interface Step5SubtitleSettingsProps {
   subtitleStyle: SubtitleStyle;
   setSubtitleStyle: (value: SubtitleStyle) => void;
 }
-
-export const subtitleStyles: {
-  id: number | null;
-  value: SubtitleStyle;
-  label: string;
-  credits: string;
-  previewText: string;
-  previewStyle: string;
-}[] = [
-  {
-    id: 1,
-    value: "none",
-    label: "None",
-    credits: "Free",
-    previewText: "No subtitles",
-    previewStyle: "text-gray-500 text-xs",
-  },
-  {
-    id: 2,
-    value: "classic-white",
-    label: "Classic White",
-    credits: "0cr",
-    previewText:
-      "This is a longer subtitle preview that should wrap safely on multiple lines.",
-    previewStyle:
-      "text-white text-xs font-semibold px-3 py-1.5 bg-black/55 rounded-md [text-shadow:0_2px_6px_rgba(0,0,0,0.95)]",
-  },
-  {
-    id: 3,
-    value: "modern-box",
-    label: "Modern Box",
-    credits: "0cr",
-    previewText:
-      "This is a longer subtitle preview that should wrap safely on multiple lines.",
-    previewStyle:
-      "text-white text-xs font-bold px-3 py-2 bg-black/80 rounded-lg [text-shadow:0_2px_6px_rgba(0,0,0,0.95)]",
-  },
-  {
-    id: 4,
-    value: "minimal-light",
-    label: "Minimal Light",
-    credits: "0cr",
-    previewText:
-      "This is a longer subtitle preview that should wrap safely on multiple lines.",
-    previewStyle:
-      "text-gray-900 text-xs font-semibold px-3 py-1.5 bg-white/90 rounded-md",
-  },
-  {
-    id: 5,
-    value: "yellow-highlight",
-    label: "Yellow Highlight",
-    credits: "0cr",
-    previewText:
-      "This is a longer subtitle preview that should wrap safely on multiple lines.",
-    previewStyle:
-      "text-gray-900 text-xs font-bold px-3 py-1.5 bg-yellow-400 rounded-md",
-  },
-  {
-    id: 6,
-    value: "pink-highlight",
-    label: "Pink Highlight",
-    credits: "0cr",
-    previewText:
-      "This is a longer subtitle preview that should wrap safely on multiple lines.",
-    previewStyle:
-      "text-white text-xs font-bold px-3 py-1.5 bg-pink-500 rounded-lg [text-shadow:0_2px_6px_rgba(0,0,0,0.95)]",
-  },
-];
 
 export default function Step5SubtitleSettings({
   subtitlesEnabled,
