@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Trash2, User, X, AlertTriangle } from "lucide-react";
+import { Trash2, User, X, AlertTriangle } from "lucide-react";
 import { toast } from "react-toastify";
 import { AdminHeader } from "@/app/components/admin";
 import { useAppSelector } from "@/lib/redux/hooks";
@@ -23,7 +23,18 @@ export default function AdminUsageHistoryPage() {
   const entries = logs ?? [];
   const hasNextPage = entries.length >= LIMIT;
   const inferredTotalPages = hasNextPage ? page + 2 : page + 1;
-  const pageNumbers = Array.from({ length: inferredTotalPages }, (_, i) => i + 1);
+  const currentPage = page + 1;
+  const maxVisiblePages = 3;
+  const tentativeStart = Math.max(1, currentPage - 1);
+  const startPage = Math.min(
+    tentativeStart,
+    Math.max(1, inferredTotalPages - maxVisiblePages + 1)
+  );
+  const endPage = Math.min(inferredTotalPages, startPage + maxVisiblePages - 1);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
@@ -143,7 +154,7 @@ export default function AdminUsageHistoryPage() {
         {/* Pagination */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-5 py-3 sm:py-4 border-t border-gray-200 dark:border-[#1A3155]">
           <p className="text-xs sm:text-sm text-gray-500">
-            Page {page + 1} of {inferredTotalPages}
+            Page {currentPage} of {inferredTotalPages}
           </p>
           <div className="flex items-center gap-2">
             <button

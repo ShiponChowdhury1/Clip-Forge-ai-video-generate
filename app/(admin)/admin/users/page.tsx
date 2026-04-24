@@ -149,7 +149,17 @@ export default function AdminUsersPage() {
 
   const hasNextPage = (users?.length ?? 0) >= perPage;
   const inferredTotalPages = hasNextPage ? currentPage + 1 : currentPage;
-  const pageNumbers = Array.from({ length: inferredTotalPages }, (_, i) => i + 1);
+  const maxVisiblePages = 3;
+  const tentativeStart = Math.max(1, currentPage - 1);
+  const startPage = Math.min(
+    tentativeStart,
+    Math.max(1, inferredTotalPages - maxVisiblePages + 1)
+  );
+  const endPage = Math.min(inferredTotalPages, startPage + maxVisiblePages - 1);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
   return (
     <div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ChevronLeft, ChevronRight, ChevronDown, CheckCircle, XCircle, Clock, CalendarDays } from "lucide-react";
+import { Search, ChevronDown, CheckCircle, XCircle, Clock, CalendarDays } from "lucide-react";
 import { AdminHeader } from "@/app/components/admin";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { useGetAdminBillingQuery } from "@/lib/redux/features/admin/adminApi";
@@ -41,7 +41,18 @@ export default function AdminBillingRefundsPage() {
   const records = data?.records ?? [];
   const hasNextPage = records.length >= LIMIT;
   const inferredTotalPages = hasNextPage ? page + 2 : page + 1;
-  const pageNumbers = Array.from({ length: inferredTotalPages }, (_, i) => i + 1);
+  const currentPage = page + 1;
+  const maxVisiblePages = 3;
+  const tentativeStart = Math.max(1, currentPage - 1);
+  const startPage = Math.min(
+    tentativeStart,
+    Math.max(1, inferredTotalPages - maxVisiblePages + 1)
+  );
+  const endPage = Math.min(inferredTotalPages, startPage + maxVisiblePages - 1);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
   const filtered = records.filter(
     (t) =>
       t.user.toLowerCase().includes(search.toLowerCase()) ||
@@ -191,7 +202,7 @@ export default function AdminBillingRefundsPage() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-3 sm:px-4 py-3 border-t border-gray-200 dark:border-[#1A3155]">
           <p className="text-xs text-gray-500">
-            Page {page + 1} of {inferredTotalPages}
+            Page {currentPage} of {inferredTotalPages}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -206,7 +217,7 @@ export default function AdminBillingRefundsPage() {
                 key={pageNumber}
                 onClick={() => setPage(pageNumber - 1)}
                 className={`min-w-8 px-2.5 py-1.5 rounded-lg border text-xs sm:text-sm transition-colors ${
-                  page + 1 === pageNumber
+                  currentPage === pageNumber
                     ? "bg-cyan-500 border-cyan-500 text-white"
                     : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
                 }`}
