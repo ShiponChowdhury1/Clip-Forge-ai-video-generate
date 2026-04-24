@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 
 export type VideoFormat = "9:16" | "1:1" | "16:9";
@@ -141,6 +142,13 @@ export default function Step2FormatStyleMedia({
   sceneMedia,
   setSceneMedia,
 }: Step2FormatStyleMediaProps) {
+  useEffect(() => {
+    const hasValidSelection = sceneMediaOptions.some((option) => option.value === sceneMedia);
+    if (!hasValidSelection) {
+      setSceneMedia("all-images");
+    }
+  }, [sceneMedia, setSceneMedia]);
+
   return (
     <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-8">
       {/* Video Format */}
@@ -226,10 +234,10 @@ export default function Step2FormatStyleMedia({
         </div>
       </div>
 
-      {/* Scene Media Options */}
+      {/* Scene Settings */}
       <div>
         <h3 className="text-gray-900 dark:text-white text-sm font-semibold mb-4">
-          Scene Media Options
+          Scene Settings
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {sceneMediaOptions.map((option) => (
@@ -245,8 +253,8 @@ export default function Step2FormatStyleMedia({
               <span className="text-gray-900 dark:text-white text-sm font-medium">
                 {option.label}
               </span>
-              <span className="text-gray-500 text-xs mt-0.5">
-                {option.credits} additional credits
+              <span className="text-gray-500 dark:text-gray-400 text-[11px] mt-1 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-[#1A2332] border border-gray-200 dark:border-[#1A3155]">
+                {option.credits > 0 ? `+${option.credits} credits` : "No extra credits"}
               </span>
               {sceneMedia === option.value && (
                 <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />

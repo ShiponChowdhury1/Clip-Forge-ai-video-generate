@@ -61,6 +61,7 @@ export default function Step6ReviewGenerate({
       : sceneMedia === "first-scene-video" || sceneMedia === "last-scene-video"
       ? 200
       : 0;
+  const sceneCreditLabel = sceneCredits > 0 ? `+${sceneCredits} credits` : "0 credits";
   const musicCredits = backgroundMusic !== "no-music" ? COSTS.MUSIC : 0;
   const musicCreditLabel = musicCredits > 0 ? `+${musicCredits} credits` : "0 credits";
   const selectedMusicDisplay =
@@ -96,7 +97,7 @@ export default function Step6ReviewGenerate({
       iconBg: "bg-blue-500/20",
       iconColor: "text-blue-400",
       label: "Video Scenes",
-      value: sceneMediaLabel,
+      value: `${sceneMediaLabel} (${sceneCreditLabel})`,
     },
     {
       icon: Music2,
@@ -147,7 +148,7 @@ export default function Step6ReviewGenerate({
           </div>
 
           {/* Config cards 2x2 grid */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-4 gap-3">
             {configCards.map((card) => (
               <div
                 key={card.label}
@@ -194,9 +195,9 @@ export default function Step6ReviewGenerate({
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-400 text-sm">VideoScenes</span>
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Video Scenes</span>
             <span className="text-gray-900 dark:text-white text-sm font-medium">
-              +{sceneCredits} credits
+              {sceneCreditLabel}
             </span>
           </div>
 

@@ -118,6 +118,28 @@ export default function Step3BackgroundMusic({
     setPlayingId(value);
   };
 
+  const handleSelectOption = (option: {
+    value: string;
+    label: string;
+    hasPreview: boolean;
+  }) => {
+    if (option.value === "no-music") {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+      setPlayingId(null);
+      setBackgroundMusic(option.value);
+      return;
+    }
+
+    setBackgroundMusic(option.value);
+    if (option.hasPreview) {
+      handlePlay(option.value, option.label);
+    }
+  };
+
   const musicOptions = [
     {
       value: "no-music",
@@ -151,17 +173,14 @@ export default function Step3BackgroundMusic({
         ) : isError ? (
           <div className="text-red-500 text-sm py-4 text-center">Failed to load music options. Please try again.</div>
         ) : (
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {musicOptions.map((option) => (
             <button
               key={option.value}
-              onClick={() => {
-                setBackgroundMusic(option.value);
-                if (option.hasPreview) {
-                  handlePlay(option.value, option.label);
-                }
-              }}
-              className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${
+              onClick={() => handleSelectOption(option)}
+              className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left ${
+                option.value === "no-music" ? "sm:col-span-2" : ""
+              } ${
                 backgroundMusic === option.value
                   ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
                   : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
@@ -209,7 +228,7 @@ export default function Step3BackgroundMusic({
             </button>
           ))}
           {musicList.length === 0 && (
-            <p className="text-gray-500 dark:text-gray-400 text-xs text-center pt-2">
+            <p className="col-span-full text-gray-500 dark:text-gray-400 text-xs text-center pt-2">
               Music library is empty on backend right now. You can continue with &quot;No Music&quot;.
             </p>
           )}
