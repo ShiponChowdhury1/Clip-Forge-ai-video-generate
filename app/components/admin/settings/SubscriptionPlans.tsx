@@ -17,6 +17,7 @@ const defaultPlanForm = {
   name: "",
   monthly_price: "",
   product_id: "",
+  stripe_price_id: "",
   monthly_credits: "",
   video_limit_per_month: "",
   priority_level: "",
@@ -54,6 +55,7 @@ export function SubscriptionPlans() {
       name: plan.name,
       monthly_price: String(plan.monthly_price),
       product_id: plan.product_id || "",
+      stripe_price_id: plan.stripe_price_id || "",
       monthly_credits: String(plan.monthly_credits),
       video_limit_per_month: String(plan.video_limit_per_month),
       priority_level: String(plan.priority_level),
@@ -82,6 +84,7 @@ export function SubscriptionPlans() {
       name: planForm.name,
       monthly_price: Number(planForm.monthly_price) || 0,
       product_id: planForm.product_id.trim() || null,
+      stripe_price_id: planForm.stripe_price_id.trim() || null,
       monthly_credits: Number(planForm.monthly_credits) || 0,
       video_limit_per_month: Number(planForm.video_limit_per_month) || 0,
       priority_level: Number(planForm.priority_level) || 1,
@@ -176,16 +179,28 @@ export function SubscriptionPlans() {
                 </div>
               </div>
 
-              {/* Stripe Product ID */}
-              <div>
-                <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Product ID</label>
-                <input
-                  type="text"
-                  value={planForm.product_id}
-                  onChange={(e) => setPlanForm((f) => ({ ...f, product_id: e.target.value }))}
-                  placeholder="e.g. prod_U9NqMLLByGUd2c"
-                  className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors"
-                />
+              {/* Stripe Product ID + Price ID */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Product ID</label>
+                  <input
+                    type="text"
+                    value={planForm.product_id}
+                    onChange={(e) => setPlanForm((f) => ({ ...f, product_id: e.target.value }))}
+                    placeholder="e.g. prod_U9NqMLLByGUd2c"
+                    className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">Price ID</label>
+                  <input
+                    type="text"
+                    value={planForm.stripe_price_id}
+                    onChange={(e) => setPlanForm((f) => ({ ...f, stripe_price_id: e.target.value }))}
+                    placeholder="e.g. price_1R8Yxv..."
+                    className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6] transition-colors"
+                  />
+                </div>
               </div>
 
               {/* Video Limit & Priority */}

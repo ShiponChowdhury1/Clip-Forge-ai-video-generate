@@ -20,7 +20,9 @@ export function CreditSettings() {
   const [name, setName] = useState("");
   const [credits, setCredits] = useState("");
   const [price, setPrice] = useState("");
+  const [planType, setPlanType] = useState<"monthly" | "yearly" | "one_time">("one_time");
   const [productId, setProductId] = useState("");
+  const [priceId, setPriceId] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [formError, setFormError] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -32,7 +34,9 @@ export function CreditSettings() {
     setName("");
     setCredits("");
     setPrice("");
+    setPlanType("one_time");
     setProductId("");
+    setPriceId("");
     setStatus("active");
     setFormError("");
     setShowModal(true);
@@ -43,14 +47,18 @@ export function CreditSettings() {
     packageName: string,
     packageCredits: number,
     packagePrice: number,
+    packagePlanType?: "monthly" | "yearly" | "one_time",
     packageProductId?: string | null,
+    packagePriceId?: string | null,
     packageStatus?: "active" | "inactive"
   ) => {
     setEditingId(id);
     setName(packageName);
     setCredits(String(packageCredits));
     setPrice(String(packagePrice));
+    setPlanType(packagePlanType || "one_time");
     setProductId(packageProductId || "");
+    setPriceId(packagePriceId || "");
     setStatus(packageStatus?.trim() === "inactive" ? "inactive" : "active");
     setFormError("");
     setShowModal(true);
@@ -91,7 +99,9 @@ export function CreditSettings() {
             name: name.trim(),
             credits: parsedCredits,
             price: parsedPrice,
+            plan_type: planType,
             product_id: productId.trim() || null,
+            stripe_price_id: priceId.trim() || null,
             status,
           },
         }).unwrap();
@@ -101,7 +111,9 @@ export function CreditSettings() {
           name: name.trim(),
           credits: parsedCredits,
           price: parsedPrice,
+          plan_type: planType,
           product_id: productId.trim() || null,
+          stripe_price_id: priceId.trim() || null,
           status: "active",
         }).unwrap();
         toast.success("New credit package added successfully.");
@@ -145,7 +157,9 @@ export function CreditSettings() {
           name: existing.name,
           credits: existing.credits,
           price: existing.price,
+          plan_type: existing.plan_type || "one_time",
           product_id: existing.product_id || null,
+          stripe_price_id: existing.stripe_price_id || null,
           status: nextStatus,
         },
       }).unwrap();
@@ -190,17 +204,33 @@ export function CreditSettings() {
                 </p>
               )}
 
-              <div>
-                <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">
-                  Package Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Creator Pack"
-                  className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">
+                    Package Name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="e.g. Creator Pack"
+                    className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">
+                    Plan Type
+                  </label>
+                  <select
+                    value={planType}
+                    onChange={(e) => setPlanType(e.target.value as "monthly" | "yearly" | "one_time")}
+                    className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
+                  >
+                    <option value="monthly">monthly</option>
+                    <option value="yearly">yearly</option>
+                    <option value="one_time">one_time</option>
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -233,18 +263,33 @@ export function CreditSettings() {
                 </div>
               </div>
 
-              <div>
-                <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">
-                  Stripe Product ID
-                </label>
-                <input
-                  type="text"
-                  value={productId}
-                  onChange={(e) => setProductId(e.target.value)}
-                  placeholder="e.g. prod_ABC123XYZ"
-                  className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">
+                    Stripe Product ID
+                  </label>
+                  <input
+                    type="text"
+                    value={productId}
+                    onChange={(e) => setProductId(e.target.value)}
+                    placeholder="e.g. prod_ABC123XYZ"
+                    className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider block mb-1.5">
+                    Price ID
+                  </label>
+                  <input
+                    type="text"
+                    value={priceId}
+                    onChange={(e) => setPriceId(e.target.value)}
+                    placeholder="e.g. price_1R8Yxv..."
+                    className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
+                  />
+                </div>
               </div>
+              
 
             </div>
 
@@ -349,7 +394,7 @@ export function CreditSettings() {
                         )}
                       </div>
                       <button
-                        onClick={() => openEditModal(pkg.id, pkg.name, pkg.credits, pkg.price, pkg.product_id, pkg.status)}
+                        onClick={() => openEditModal(pkg.id, pkg.name, pkg.credits, pkg.price, pkg.plan_type, pkg.product_id, pkg.stripe_price_id, pkg.status)}
                         className="text-gray-400 hover:text-cyan-400 transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#1A2332]"
                         title="Edit credit package"
                       >
