@@ -91,6 +91,18 @@ export default function FAQ() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleOpenFromFooter = () => {
+      openSupportModal();
+    };
+
+    window.addEventListener("open-contact-support-modal", handleOpenFromFooter);
+
+    return () => {
+      window.removeEventListener("open-contact-support-modal", handleOpenFromFooter);
+    };
+  }, []);
+
   const displayFaqs = useMemo<DisplayFaq[]>(() => {
     return remoteFaqs.map((item) => ({
       question: item.Question,

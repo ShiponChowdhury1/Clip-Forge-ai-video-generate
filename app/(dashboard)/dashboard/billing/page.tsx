@@ -21,6 +21,10 @@ import {
   useGetSubscriptionsQuery,
 } from "@/lib/redux/features/admin/adminApi";
 import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi";
+import {
+  useSubscriptionCheckoutMutation,
+  useCreditCheckoutMutation,
+} from "@/lib/redux/features/billing/billingApi";
 
 // Sample billing history data
 const sampleInvoices: Invoice[] = [
@@ -48,6 +52,9 @@ export default function BillingPage() {
   const { data: subscriptions, isLoading: subscriptionsLoading } = useGetSubscriptionsQuery();
   const { data: creditPackages = [], isLoading: creditPackagesLoading } = useGetCreditPackagesQuery();
 
+  const [subscriptionCheckout, { isLoading: isCheckoutLoading }] = useSubscriptionCheckoutMutation();
+  const [creditCheckout, { isLoading: isCreditCheckoutLoading }] = useCreditCheckoutMutation();
+
   const activePlans = useMemo(
     () => (subscriptions ?? []).filter((plan) => plan.plan_status?.toLowerCase() === "active"),
     [subscriptions]
@@ -69,6 +76,7 @@ export default function BillingPage() {
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const currentCredits = typeof creditBalance === "number" ? creditBalance : (authUser?.credits ?? 0);
 
   const shouldOpenCheckout = searchParams.get("checkout") === "1";
@@ -132,6 +140,10 @@ export default function BillingPage() {
       : `$${effectivePlan.price.toFixed(2)}`
     : selectedPrice;
 
+  // Determine the effective plan/package ID for checkout
+  const effectivePlanId = effectivePlan?.id ?? null;
+  const effectiveCheckoutSource = isForcedCheckout ? forcedCheckoutSource : checkoutSource;
+
   const handleSelectPlan = (id: number, kind: "plan" | "package") => {
     if (kind === "plan") {
       setSelectedPlanId(id);
@@ -142,6 +154,7 @@ export default function BillingPage() {
     }
     setShowPricingModal(false);
     setView("checkout");
+    setCheckoutError(null);
   };
 
   const handleBuyCredits = () => {
@@ -156,12 +169,40 @@ export default function BillingPage() {
     setShowPricingModal(true);
   };
 
-  const handleConfirmPayment = () => {
+  // Real Stripe checkout — calls the API and redirects to Stripe
+  const handleConfirmPayment = async () => {
+    if (!effectivePlanId) {
+      setCheckoutError("No plan or package selected.");
+      return;
+    }
+
+    setCheckoutError(null);
     setView("processing");
-    // Simulate payment processing
-    setTimeout(() => {
-      setView("success");
-    }, 3000);
+
+    try {
+      let checkoutUrl: string;
+
+      if (effectiveCheckoutSource === "plan") {
+        // Subscription plan checkout
+        const result = await subscriptionCheckout({ plan_id: effectivePlanId }).unwrap();
+        checkoutUrl = result.checkout_url;
+      } else {
+        // Credit package checkout
+        const result = await creditCheckout({ package_id: effectivePlanId }).unwrap();
+        checkoutUrl = result.checkout_url;
+      }
+
+      // Redirect to Stripe checkout page
+      window.location.href = checkoutUrl;
+    } catch (err: unknown) {
+      console.error("Checkout failed:", err);
+      const errorMessage =
+        err && typeof err === "object" && "data" in err
+          ? (err as { data?: { detail?: string } }).data?.detail || "Payment checkout failed. Please try again."
+          : "Payment checkout failed. Please try again.";
+      setCheckoutError(errorMessage);
+      setView("checkout");
+    }
   };
 
   const handleBackToMain = () => {
@@ -171,6 +212,7 @@ export default function BillingPage() {
     }
     setView("main");
     setShowPricingModal(false);
+    setCheckoutError(null);
   };
 
   return (
@@ -196,6 +238,16 @@ export default function BillingPage() {
           <ArrowLeft className="w-4 h-4" />
           Back to Billing
         </button>
+      )}
+
+      {/* Checkout Error Banner */}
+      {checkoutError && effectiveView === "checkout" && (
+        <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm flex items-center gap-2">
+          <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+          {checkoutError}
+        </div>
       )}
 
       {/* Main Billing View */}
@@ -225,6 +277,7 @@ export default function BillingPage() {
           currentBalance={currentCredits}
           price={effectivePrice}
           onConfirmPayment={handleConfirmPayment}
+          isLoading={isCheckoutLoading || isCreditCheckoutLoading}
           onChangePackage={() => {
             setBillingModalType(checkoutSource === "package" ? "buy" : "change");
             setShowPricingModal(true);

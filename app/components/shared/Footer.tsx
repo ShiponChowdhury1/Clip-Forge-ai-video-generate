@@ -5,6 +5,13 @@ import Image from "next/image";
 import { Twitter, Github, Linkedin, Instagram } from "lucide-react";
 
 export default function Footer() {
+  const handleOpenSupportModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("open-contact-support-modal"));
+    }
+  };
+
   return (
     <footer className="w-full bg-gray-50 dark:bg-[#0d0d0d] mt-12 sm:mt-16 md:mt-20">
       {/* Main Footer Content */}
@@ -56,7 +63,15 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-xs sm:text-sm mb-4 sm:mb-6 tracking-wider">LEGAL</h4>
             <ul className="space-y-3 sm:space-y-4">
-              <li><a href="mailto:contact@clipforge.com" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition text-xs sm:text-sm">Contact</a></li>
+              <li>
+                <a
+                  href="#contact-support"
+                  onClick={handleOpenSupportModal}
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition text-xs sm:text-sm"
+                >
+                  Contact
+                </a>
+              </li>
               <li><Link href="/privacy-policy" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition text-xs sm:text-sm">Privacy Policy</Link></li>
               <li><Link href="/terms-of-service" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition text-xs sm:text-sm">Terms of Service</Link></li>
               <li><Link href="/refund-policy" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition text-xs sm:text-sm">Refund Policy</Link></li>

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Lock, Sparkles } from "lucide-react";
+import { Lock, Sparkles, Loader2 } from "lucide-react";
 
 interface PaymentCheckoutProps {
   selectedPlan: string;
@@ -10,6 +9,7 @@ interface PaymentCheckoutProps {
   price: string;
   onConfirmPayment: () => void;
   onChangePackage: () => void;
+  isLoading?: boolean;
 }
 
 export default function PaymentCheckout({
@@ -19,107 +19,34 @@ export default function PaymentCheckout({
   price,
   onConfirmPayment,
   onChangePackage,
+  isLoading = false,
 }: PaymentCheckoutProps) {
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "stripe">(
-    "card"
-  );
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [cardholderName, setCardholderName] = useState("");
-
   const priceNum = parseFloat(price.replace("$", "")) || 0;
   const newBalance = currentBalance + credits;
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      {/* Payment Details */}
+      {/* Payment Info */}
       <div className="flex-1 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Payment Details</h2>
 
-        {/* Payment Method Toggle */}
-        <div className="mb-6">
-          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-            Payment Method
+        {/* Stripe Info Notice */}
+        <div className="bg-gray-50 dark:bg-[#0A1628] border border-cyan-500/20 rounded-lg p-5 mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-[#635BFF]/10 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.918 3.757 7.11c0 4.46 2.72 6.467 7.177 8.292 2.86 1.152 3.854 1.95 3.854 3.147 0 1.032-.89 1.63-2.462 1.63-2.1 0-4.934-.89-7.033-2.127L4.38 23.64C5.947 24.55 8.85 25 11.497 25c2.584 0 4.727-.653 6.253-1.832 1.675-1.305 2.525-3.236 2.525-5.73 0-4.58-2.768-6.556-6.3-8.288z" fill="#635BFF"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-gray-900 dark:text-white text-sm font-semibold">Powered by Stripe</p>
+              <p className="text-gray-500 text-xs">Secure checkout via Stripe</p>
+            </div>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            After confirming, you will be redirected to Stripe&apos;s secure payment page to complete your transaction.
+            Once payment is successful, you will be redirected back automatically.
           </p>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setPaymentMethod("card")}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                paymentMethod === "card"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-[#1A1F2E] text-gray-300 border border-[#2A3040] hover:border-gray-600"
-              }`}
-            >
-              Credit Card
-            </button>
-            <button
-              onClick={() => setPaymentMethod("stripe")}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                paymentMethod === "stripe"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-[#1A1F2E] text-gray-300 border border-[#2A3040] hover:border-gray-600"
-              }`}
-            >
-              Stripe
-            </button>
-          </div>
-        </div>
-
-        {/* Card Number */}
-        <div className="mb-5">
-          <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-            Card Number
-          </label>
-          <input
-            type="text"
-            placeholder="1234 5678 9012 3456"
-            value={cardNumber}
-            onChange={(e) => setCardNumber(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-[#0A0E14] border border-gray-300 dark:border-[#1A3155] rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
-          />
-        </div>
-
-        {/* Expiry + CVV Row */}
-        <div className="flex gap-4 mb-5">
-          <div className="flex-1">
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-              Expiry Date
-            </label>
-            <input
-              type="text"
-              placeholder="MM / YY"
-              value={expiryDate}
-              onChange={(e) => setExpiryDate(e.target.value)}
-              className="w-full bg-gray-50 dark:bg-[#0A0E14] border border-gray-300 dark:border-[#1A3155] rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2 uppercase">
-              CVV
-            </label>
-            <input
-              type="text"
-              placeholder="123"
-              value={cvv}
-              onChange={(e) => setCvv(e.target.value)}
-              className="w-full bg-gray-50 dark:bg-[#0A0E14] border border-gray-300 dark:border-[#1A3155] rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
-            />
-          </div>
-        </div>
-
-        {/* Cardholder Name */}
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-            Cardholder Name
-          </label>
-          <input
-            type="text"
-            placeholder="John Doe"
-            value={cardholderName}
-            onChange={(e) => setCardholderName(e.target.value)}
-            className="w-full bg-gray-50 dark:bg-[#0A0E14] border border-gray-300 dark:border-[#1A3155] rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
-          />
         </div>
 
         {/* Secure Transaction Notice */}
@@ -131,7 +58,7 @@ export default function PaymentCheckout({
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-xs">
               Your payment information is encrypted and secure. We never store
-              your card details.
+              your card details. All payments are processed by Stripe.
             </p>
           </div>
         </div>
@@ -204,13 +131,26 @@ export default function PaymentCheckout({
           {/* Buttons */}
           <button
             onClick={onConfirmPayment}
-            className="w-full bg-cyan-500 hover:bg-cyan-400 text-white font-semibold py-3 rounded-xl transition-colors text-sm mb-3"
+            disabled={isLoading}
+            className={`w-full flex items-center justify-center gap-2 font-semibold py-3 rounded-xl transition-colors text-sm mb-3 ${
+              isLoading
+                ? "bg-cyan-500/50 cursor-not-allowed text-white/70"
+                : "bg-cyan-500 hover:bg-cyan-400 text-white"
+            }`}
           >
-            Confirm Payment
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Redirecting to Stripe...
+              </>
+            ) : (
+              "Proceed to Payment"
+            )}
           </button>
           <button
             onClick={onChangePackage}
-            className="w-full bg-transparent border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 font-medium py-3 rounded-xl transition-colors text-sm"
+            disabled={isLoading}
+            className="w-full bg-transparent border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 font-medium py-3 rounded-xl transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Change Package
           </button>

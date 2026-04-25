@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bell } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -112,18 +112,29 @@ export default function NotificationSettings({
     isLoading,
     isFetching,
     isError,
+    refetch,
   } = useGetNotificationSettingsQuery();
   const [updateNotificationSettings, { isLoading: isSaving }] =
     useUpdateNotificationSettingsMutation();
 
-  const [notifications, setNotifications] =
-    useState<NotificationItem[]>(defaultNotifications);
+  const [overrides, setOverrides] =
+    useState<Partial<Record<NotificationKey, boolean>>>({});
 
-  useEffect(() => {
-    if (notificationSettings) {
-      setNotifications(toItems(notificationSettings));
-    }
+  const serverNotifications = useMemo(() => {
+    if (!notificationSettings) return null;
+    return toItems(notificationSettings);
   }, [notificationSettings]);
+
+  const effectiveNotifications = useMemo(() => {
+    if (!serverNotifications) return null;
+    return serverNotifications.map((item) => ({
+      ...item,
+      enabled:
+        typeof overrides[item.id] === "boolean"
+          ? Boolean(overrides[item.id])
+          : item.enabled,
+    }));
+  }, [overrides, serverNotifications]);
 
   useEffect(() => {
     if (isError) {
@@ -132,9 +143,14 @@ export default function NotificationSettings({
   }, [isError]);
 
   const toggleNotification = (id: NotificationKey) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, enabled: !n.enabled } : n))
-    );
+    if (!effectiveNotifications) return;
+    const currentItem = effectiveNotifications.find((item) => item.id === id);
+    if (!currentItem) return;
+
+    setOverrides((prev) => ({
+      ...prev,
+      [id]: !currentItem.enabled,
+    }));
   };
 
   const resetToDefault = async () => {
@@ -145,8 +161,9 @@ export default function NotificationSettings({
 
     try {
       const payload = toPayload(defaultNotifications);
-      const data = await updateNotificationSettings(payload).unwrap();
-      setNotifications(toItems(data));
+      await updateNotificationSettings(payload).unwrap();
+      setOverrides({});
+      void refetch();
       toast.success("Notification settings reset to default.");
     } catch {
       toast.error("Failed to reset notification settings.");
@@ -155,9 +172,11 @@ export default function NotificationSettings({
 
   const handleSavePreferences = async () => {
     try {
-      const payload = toPayload(notifications);
-      const data = await updateNotificationSettings(payload).unwrap();
-      setNotifications(toItems(data));
+      if (!effectiveNotifications) return;
+      const payload = toPayload(effectiveNotifications);
+      await updateNotificationSettings(payload).unwrap();
+      setOverrides({});
+      void refetch();
       toast.success("Notification settings updated successfully.");
     } catch {
       toast.error("Failed to update notification settings.");
@@ -182,12 +201,12 @@ export default function NotificationSettings({
 
       <div className="max-w-2xl mx-auto bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 mb-6">
         <div className="space-y-3">
-          {isLoading && (
+          {(isLoading || !effectiveNotifications) && (
             <p className="text-xs text-gray-500 dark:text-gray-400 pb-1">
               Loading notification settings...
             </p>
           )}
-          {notifications.map((item) => (
+          {effectiveNotifications?.map((item) => (
             <div
               key={item.id}
               className="flex items-center justify-between bg-gray-50 dark:bg-[#0A1020] border border-gray-200 dark:border-[#1A2332] rounded-xl px-5 py-4"
@@ -202,10 +221,10 @@ export default function NotificationSettings({
               </div>
               <button
                 onClick={() => toggleNotification(item.id)}
-                disabled={isLoading || isFetching || isSaving}
+                disabled={isLoading || isFetching || isSaving || !effectiveNotifications}
                 className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-200 ${
                   item.enabled ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
-                } ${(isLoading || isFetching || isSaving) ? "opacity-60 cursor-not-allowed" : ""}`}
+                } ${(isLoading || isFetching || isSaving || !effectiveNotifications) ? "opacity-60 cursor-not-allowed" : ""}`}
               >
                 <span
                   className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-all duration-200 ${
@@ -221,7 +240,7 @@ export default function NotificationSettings({
       <div className="max-w-2xl mx-auto flex items-center justify-between">
         <button
           onClick={resetToDefault}
-          disabled={isLoading || isFetching || isSaving}
+          disabled={isLoading || isFetching || isSaving || !effectiveNotifications}
           className="text-cyan-400 hover:text-cyan-300 text-sm underline underline-offset-2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           Reset to Default
@@ -235,7 +254,7 @@ export default function NotificationSettings({
           </button>
           <button
             onClick={handleSavePreferences}
-            disabled={isLoading || isFetching || isSaving}
+            disabled={isLoading || isFetching || isSaving || !effectiveNotifications}
             className="bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] text-gray-700 dark:text-gray-300 font-medium px-6 py-2.5 rounded-xl transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isSaving ? "Saving..." : "Save Preferences"}
