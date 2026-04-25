@@ -58,8 +58,8 @@ export default function BillingPage() {
   const [subscriptionCheckout, { isLoading: isCheckoutLoading }] = useSubscriptionCheckoutMutation();
   const [creditCheckout, { isLoading: isCreditCheckoutLoading }] = useCreditCheckoutMutation();
 
-  // Detect Stripe redirect: ?payment_success=true
-  const isPaymentSuccess = searchParams.get("payment_success") === "true";
+  // Detect Stripe redirect: ?payment_success=true (also handles malformed ?payment_success=true?session_id=xxx)
+  const isPaymentSuccess = (searchParams.get("payment_success") ?? "").startsWith("true");
 
   // On payment success redirect, refetch credits and sync to Redux
   useEffect(() => {
