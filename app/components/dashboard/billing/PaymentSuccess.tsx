@@ -1,67 +1,51 @@
 "use client";
 
-import { CheckCircle, LayoutDashboard, FileText, Wallet } from "lucide-react";
+import { CheckCircle, Settings, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-interface PaymentSuccessProps {
-  creditsAdded: number;
-  updatedBalance: number;
-  onViewInvoice: () => void;
-}
-
-export default function PaymentSuccess({
-  creditsAdded,
-  updatedBalance,
-  onViewInvoice,
-}: PaymentSuccessProps) {
+export default function PaymentSuccess() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
       <div className="text-center max-w-md w-full">
-        {/* Success Icon */}
+        {/* Success Icon with animation */}
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-cyan-500 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/30">
-            <CheckCircle className="w-10 h-10 text-white" />
+          <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-500/30 animate-bounce">
+            <CheckCircle className="w-12 h-12 text-white" />
           </div>
         </div>
 
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Payment Successful!
+          Payment Successful! 🎉
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-8">
-          <span className="text-cyan-400 font-semibold">{creditsAdded} credits</span>{" "}
-          have been added to your account
+          Your plan has been updated and credits have been added to your account.
+          
         </p>
 
-        {/* Updated Balance Card */}
+        {/* Info Card */}
         <div className="bg-white dark:bg-[#0D1117] border border-cyan-500/30 rounded-2xl p-6 mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Wallet className="w-5 h-5 text-cyan-400" />
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Sparkles className="w-5 h-5 text-cyan-400" />
             <span className="text-gray-600 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider">
-              Updated Balance
+              Subscription Updated
             </span>
           </div>
-          <p className="text-5xl font-bold text-gray-900 dark:text-white mb-2">
-            {updatedBalance.toLocaleString()}
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            Your profile, plan, and credit balance have been refreshed.
+            Head to your settings to view the updated details.
+            
           </p>
-          <p className="text-cyan-400 text-sm">+{creditsAdded} credits added</p>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-center gap-4">
+        {/* Go to Settings Button */}
+        <div className="flex items-center justify-center">
           <Link
-            href="/dashboard/create"
-            className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
+            href="/dashboard/settings"
+            className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-all text-sm shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <LayoutDashboard className="w-4 h-4" />
-            Start Creating
+            <Settings className="w-4 h-4" />
+            Go to Settings
           </Link>
-          <button
-            onClick={onViewInvoice}
-            className="flex items-center gap-2 bg-transparent border border-gray-300 dark:border-[#1A3155] text-cyan-400 hover:bg-gray-100 dark:hover:bg-[#1A2332] font-medium px-6 py-3 rounded-xl transition-colors text-sm"
-          >
-            <FileText className="w-4 h-4" />
-            View Invoice
-          </button>
         </div>
       </div>
     </div>

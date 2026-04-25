@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { CreditCard, ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setUser } from "@/lib/redux/features/auth/authSlice";
+import type { AuthUser } from "@/types/auth";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import {
   CreditWallet,
@@ -41,10 +43,11 @@ type CheckoutSource = "plan" | "package";
 
 export default function BillingPage() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const searchParams = useSearchParams();
-  const authUser = useSelector((state: { auth: { user: { id: number; credits: number } | null } }) => state.auth.user);
+  const authUser = useSelector((state: { auth: { user: AuthUser | null } }) => state.auth.user);
   const userId = authUser?.id ?? null;
-  const { data: creditBalance } = useGetUserCreditBalanceQuery(userId ?? skipToken, {
+  const { data: creditBalance, refetch: refetchCredits } = useGetUserCreditBalanceQuery(userId ?? skipToken, {
     refetchOnMountOrArgChange: true,
     pollingInterval: 30000,
     skipPollingIfUnfocused: true,
@@ -54,6 +57,27 @@ export default function BillingPage() {
 
   const [subscriptionCheckout, { isLoading: isCheckoutLoading }] = useSubscriptionCheckoutMutation();
   const [creditCheckout, { isLoading: isCreditCheckoutLoading }] = useCreditCheckoutMutation();
+
+  // Detect Stripe redirect: ?payment_success=true
+  const isPaymentSuccess = searchParams.get("payment_success") === "true";
+
+  // On payment success redirect, refetch credits and sync to Redux
+  useEffect(() => {
+    if (isPaymentSuccess && userId) {
+      refetchCredits();
+    }
+  }, [isPaymentSuccess, userId, refetchCredits]);
+
+  // Sync updated credit balance back to Redux user state
+  useEffect(() => {
+    if (typeof creditBalance === "number" && authUser && creditBalance !== authUser.credits) {
+      const updatedUser: AuthUser = { ...authUser, credits: creditBalance };
+      dispatch(setUser(updatedUser));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+    }
+  }, [creditBalance, authUser, dispatch]);
 
   const activePlans = useMemo(
     () => (subscriptions ?? []).filter((plan) => plan.plan_status?.toLowerCase() === "active"),
@@ -68,7 +92,7 @@ export default function BillingPage() {
     [creditPackages]
   );
 
-  const [view, setView] = useState<BillingView>("main");
+  const [view, setView] = useState<BillingView>(isPaymentSuccess ? "success" : "main");
   const [billingModalType, setBillingModalType] = useState<BillingModalType>("buy");
   const [checkoutSource, setCheckoutSource] = useState<CheckoutSource>(
     searchParams.get("package") ? "package" : "plan"
@@ -288,14 +312,8 @@ export default function BillingPage() {
       {/* Processing View */}
       {effectiveView === "processing" && <ProcessingPayment />}
 
-      {/* Success View */}
-      {effectiveView === "success" && (
-        <PaymentSuccess
-          creditsAdded={effectiveCredits}
-          updatedBalance={currentCredits + effectiveCredits}
-          onViewInvoice={handleBackToMain}
-        />
-      )}
+      {/* Success View — shown after Stripe payment redirect */}
+      {effectiveView === "success" && <PaymentSuccess />}
 
       {/* Pricing Plans Modal */}
       {showPricingModal && (

@@ -19,6 +19,14 @@ interface CreditCheckoutResponse {
   checkout_url: string;
 }
 
+/** Build the Stripe success redirect URL from the current origin */
+const getSuccessUrl = () => {
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}/dashboard/billing?payment_success=true`;
+  }
+  return "https://clipforgereels.com/dashboard/billing?payment_success=true";
+};
+
 export const billingApi = createApi({
   reducerPath: "billingApi",
   baseQuery: fetchBaseQuery({
@@ -45,7 +53,10 @@ export const billingApi = createApi({
       query: (body) => ({
         url: "/subscription/checkout",
         method: "POST",
-        body,
+        body: {
+          ...body,
+          success_url: getSuccessUrl(),
+        },
       }),
     }),
 
@@ -57,7 +68,10 @@ export const billingApi = createApi({
       query: (body) => ({
         url: "/credit/checkout",
         method: "POST",
-        body,
+        body: {
+          ...body,
+          success_url: getSuccessUrl(),
+        },
       }),
     }),
   }),
@@ -67,3 +81,4 @@ export const {
   useSubscriptionCheckoutMutation,
   useCreditCheckoutMutation,
 } = billingApi;
+
