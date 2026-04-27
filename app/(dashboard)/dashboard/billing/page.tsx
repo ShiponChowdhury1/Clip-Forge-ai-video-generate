@@ -58,8 +58,29 @@ function BillingPageContent() {
   } = useGetPaymentHistoryQuery({ page: historyPage, page_size: historyPageSize });
 
   // Detect Stripe redirect: ?payment_success=true (also handles malformed ?payment_success=true?session_id=xxx)
-  const isPaymentSuccess = (searchParams.get("payment_success") ?? "").startsWith("true");
+  const rawPaymentSuccess = searchParams.get("payment_success") ?? "";
+  const rawSessionId = searchParams.get("session_id");
+  const extractedSessionId =
+    rawSessionId ||
+    (rawPaymentSuccess.includes("session_id=")
+      ? rawPaymentSuccess.split("session_id=")[1]?.split("&")[0] || null
+      : null);
+  const isPaymentSuccess = rawPaymentSuccess.split("?")[0].startsWith("true");
   const shouldOpenBuyModal = searchParams.get("buy") === "1";
+
+  useEffect(() => {
+    const hasMalformedSuccessQuery = rawPaymentSuccess.includes("?") || rawPaymentSuccess.includes("session_id=");
+
+    if (!hasMalformedSuccessQuery) return;
+
+    const cleanParams = new URLSearchParams();
+    cleanParams.set("payment_success", "true");
+    if (extractedSessionId) {
+      cleanParams.set("session_id", extractedSessionId);
+    }
+
+    router.replace(`/dashboard/billing?${cleanParams.toString()}`);
+  }, [extractedSessionId, rawPaymentSuccess, router]);
 
   // On payment success redirect, refetch credits and sync to Redux
   useEffect(() => {
