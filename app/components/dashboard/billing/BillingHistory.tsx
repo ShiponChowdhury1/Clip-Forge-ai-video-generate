@@ -17,9 +17,19 @@ interface BillingHistoryProps {
   invoices: Invoice[];
   isLoading?: boolean;
   isError?: boolean;
+  page?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
-export default function BillingHistory({ invoices, isLoading = false, isError = false }: BillingHistoryProps) {
+export default function BillingHistory({
+  invoices,
+  isLoading = false,
+  isError = false,
+  page = 1,
+  totalPages = 1,
+  onPageChange,
+}: BillingHistoryProps) {
   const handleDownloadInvoice = async (invoice: Invoice) => {
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF();
@@ -114,6 +124,48 @@ export default function BillingHistory({ invoices, isLoading = false, isError = 
           </div>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-end gap-2 pt-5 mt-4 border-t border-gray-200 dark:border-[#1A2332]">
+          <button
+            onClick={() => onPageChange?.(Math.max(1, page - 1))}
+            disabled={page <= 1 || isLoading}
+            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2A3040] text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, index) => {
+              const pageNumber = index + 1;
+              const isActive = pageNumber === page;
+
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => onPageChange?.(pageNumber)}
+                  disabled={isLoading}
+                  className={`w-9 h-9 rounded-lg border text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isActive
+                      ? "bg-cyan-500 border-cyan-500 text-white"
+                      : "bg-gray-100 dark:bg-[#1A1F2E] border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-[#252B3B]"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => onPageChange?.(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages || isLoading}
+            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2A3040] text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

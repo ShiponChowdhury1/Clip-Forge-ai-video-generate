@@ -147,8 +147,9 @@ export default function ProfileSection({
       subscription.status === "active" && subscription.plan?.name?.trim()
         ? subscription.plan.name.trim()
         : "Free";
+    const currentPlan = (user.subscription_plan || "Free").trim();
 
-    if (nextPlan === user.subscription_plan) return;
+    if (nextPlan === currentPlan) return;
 
     const updatedUser = {
       ...user,

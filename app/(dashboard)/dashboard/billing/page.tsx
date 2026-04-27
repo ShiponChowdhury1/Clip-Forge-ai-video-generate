@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { CreditCard, ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -33,7 +33,7 @@ type BillingView = "main" | "pricing" | "checkout" | "processing" | "success";
 type BillingModalType = "change" | "buy";
 type CheckoutSource = "plan" | "package";
 
-export default function BillingPage() {
+function BillingPageContent() {
   const router = useRouter();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
@@ -49,11 +49,13 @@ export default function BillingPage() {
 
   const [subscriptionCheckout, { isLoading: isCheckoutLoading }] = useSubscriptionCheckoutMutation();
   const [creditCheckout, { isLoading: isCreditCheckoutLoading }] = useCreditCheckoutMutation();
+  const [historyPage, setHistoryPage] = useState(1);
+  const historyPageSize = 10;
   const {
     data: paymentHistory,
     isLoading: isPaymentHistoryLoading,
     isError: isPaymentHistoryError,
-  } = useGetPaymentHistoryQuery({ page: 1, page_size: 20 });
+  } = useGetPaymentHistoryQuery({ page: historyPage, page_size: historyPageSize });
 
   // Detect Stripe redirect: ?payment_success=true (also handles malformed ?payment_success=true?session_id=xxx)
   const isPaymentSuccess = (searchParams.get("payment_success") ?? "").startsWith("true");
@@ -119,6 +121,9 @@ export default function BillingPage() {
       };
     });
   }, [paymentHistory]);
+
+  const totalHistoryPages = paymentHistory?.total_pages ?? 1;
+  const currentHistoryPage = paymentHistory?.page ?? historyPage;
 
   const [view, setView] = useState<BillingView>(isPaymentSuccess ? "success" : "main");
   const [billingModalType, setBillingModalType] = useState<BillingModalType>("buy");
@@ -272,19 +277,21 @@ export default function BillingPage() {
   return (
     <div>
       {/* Header */}
-      <DashboardHeader
-        icon={
-          <div className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-            <CreditCard className="w-6 h-6 text-white" />
-          </div>
-        }
-        title="Billing"
-        description="Manage your subscription and payments"
-        showCreateButton={false}
-      />
+      {effectiveView !== "success" && (
+        <DashboardHeader
+          icon={
+            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+              <CreditCard className="w-6 h-6 text-white" />
+            </div>
+          }
+          title="Billing"
+          description="Manage your subscription and payments"
+          showCreateButton={false}
+        />
+      )}
 
       {/* Back button when in checkout/processing/success */}
-      {effectiveView !== "main" && (
+      {effectiveView !== "main" && effectiveView !== "success" && (
         <button
           onClick={handleBackToMain}
           className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm mb-4 transition-colors"
@@ -323,6 +330,9 @@ export default function BillingPage() {
             invoices={invoices}
             isLoading={isPaymentHistoryLoading}
             isError={isPaymentHistoryError}
+            page={currentHistoryPage}
+            totalPages={totalHistoryPages}
+            onPageChange={setHistoryPage}
           />
         </>
       )}
@@ -347,7 +357,11 @@ export default function BillingPage() {
       {effectiveView === "processing" && <ProcessingPayment />}
 
       {/* Success View — shown after Stripe payment redirect */}
-      {effectiveView === "success" && <PaymentSuccess />}
+      {effectiveView === "success" && (
+        <div className="fixed inset-0 z-70 bg-white dark:bg-black p-4 lg:p-6 flex items-center justify-center">
+          <PaymentSuccess />
+        </div>
+      )}
 
       {/* Pricing Plans Modal */}
       {(showPricingModal || isForcedBuyModal) && (
@@ -368,5 +382,19 @@ export default function BillingPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function BillingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[40vh] flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-gray-300 dark:border-[#1A3155] border-t-cyan-500 rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <BillingPageContent />
+    </Suspense>
   );
 }

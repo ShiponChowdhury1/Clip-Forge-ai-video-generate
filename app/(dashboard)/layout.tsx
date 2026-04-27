@@ -47,21 +47,36 @@ export default function DashboardLayout({
   useEffect(() => {
     if (!profile) return;
 
+    const normalizedProfilePlan = profile.subscription_plan?.trim();
+    const resolvedPlan = normalizedProfilePlan || user?.subscription_plan || "Free";
+    const resolvedPicture = resolveProfileImageUrl(profile.profile_image_url, user?.picture);
+
     const freshUser = {
       id: profile.id,
       name: profile.name,
       email: profile.email,
       credits: profile.credits,
-      subscription_plan: profile.subscription_plan || user?.subscription_plan || "Free",
+      subscription_plan: resolvedPlan,
       role: profile.role,
-      picture: resolveProfileImageUrl(profile.profile_image_url, user?.picture),
+      picture: resolvedPicture,
     };
+
+    const isSameUser =
+      user?.id === freshUser.id &&
+      user?.name === freshUser.name &&
+      user?.email === freshUser.email &&
+      user?.credits === freshUser.credits &&
+      (user?.subscription_plan || "Free") === freshUser.subscription_plan &&
+      user?.role === freshUser.role &&
+      user?.picture === freshUser.picture;
+
+    if (isSameUser) return;
 
     dispatch(setUser(freshUser));
     if (typeof window !== "undefined") {
       localStorage.setItem("user", JSON.stringify(freshUser));
     }
-  }, [profile, dispatch]);
+  }, [dispatch, profile, user]);
 
   useEffect(() => {
     if (!token) {
@@ -87,7 +102,9 @@ export default function DashboardLayout({
     <MuteProvider>
       <div className="min-h-screen bg-white dark:bg-black">
         <Sidebar onCollapsedChange={setSidebarCollapsed} />
-        <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-26" : "lg:ml-77"}`}>{children}</main>
+        <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-26" : "lg:ml-77"}`}>
+          {children}
+        </main>
       </div>
     </MuteProvider>
   );

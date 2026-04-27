@@ -72,37 +72,41 @@ function WaitingTimer({ createdAt }: { createdAt: string }) {
 
 export default function QueueCard({ item, position, type }: QueueCardProps) {
   const isProcessing = type === "processing";
-  const [displayProgress, setDisplayProgress] = useState(item.progress);
+  const [progressState, setProgressState] = useState({
+    id: item.id,
+    value: item.progress,
+  });
 
-  useEffect(() => {
-    setDisplayProgress(item.progress);
-  }, [item.id, item.progress]);
+  const displayProgress =
+    !isProcessing
+      ? item.progress
+      : progressState.id === item.id
+        ? Math.max(progressState.value, item.progress)
+        : item.progress;
 
   useEffect(() => {
     if (!isProcessing) return;
-    if (item.progress >= 100) {
-      setDisplayProgress(100);
-      return;
-    }
 
     const targetCap = 99;
     const interval = setInterval(() => {
-      setDisplayProgress((prev) => {
-        if (item.progress > prev) return item.progress;
-        if (prev >= targetCap) return prev;
-        return prev + 1;
+      setProgressState((prev) => {
+        const previousValue = prev.id === item.id ? prev.value : item.progress;
+        const syncedValue = Math.max(previousValue, item.progress);
+
+        if (item.progress >= 100) {
+          return { id: item.id, value: 100 };
+        }
+
+        if (syncedValue >= targetCap) {
+          return { id: item.id, value: syncedValue };
+        }
+
+        return { id: item.id, value: syncedValue + 1 };
       });
     }, 900);
 
     return () => clearInterval(interval);
-  }, [isProcessing, item.progress]);
-
-  useEffect(() => {
-    if (!isProcessing) return;
-    if (item.progress > displayProgress) {
-      setDisplayProgress(item.progress);
-    }
-  }, [isProcessing, item.progress, displayProgress]);
+  }, [isProcessing, item.id, item.progress]);
 
   return (
     <div

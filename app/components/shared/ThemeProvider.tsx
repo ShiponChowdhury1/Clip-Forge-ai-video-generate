@@ -19,14 +19,11 @@ export default function ThemeProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, setTheme] = useState<Theme>("dark");
-
-  useEffect(() => {
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "dark";
     const saved = localStorage.getItem("theme");
-    if (saved === "light" || saved === "dark") {
-      setTheme(saved);
-    }
-  }, []);
+    return saved === "light" || saved === "dark" ? saved : "dark";
+  });
 
   useEffect(() => {
     const root = document.documentElement;

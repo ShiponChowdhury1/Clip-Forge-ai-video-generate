@@ -22,7 +22,7 @@ import {
   Camera,
   Check,
 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -851,7 +851,7 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
     }
   };
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     setNotificationsLoading(true);
     setNotificationsError(null);
 
@@ -877,7 +877,7 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
     } finally {
       setNotificationsLoading(false);
     }
-  };
+  }, [authToken]);
 
   const markNotificationAsRead = async (notificationId: number) => {
     const token = authToken || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
@@ -919,7 +919,7 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
 
     return () => clearInterval(timer);
     // authToken change should refresh notifications for the new session.
-  }, [authToken]);
+  }, [fetchNotifications]);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
