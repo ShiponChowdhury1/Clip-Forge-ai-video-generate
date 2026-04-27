@@ -10,69 +10,20 @@ import {
   Video,
   ShoppingCart,
   RotateCcw,
-  CheckCircle,
 } from "lucide-react";
+import { useState } from "react";
 import { useAppSelector } from "@/lib/redux/hooks";
+import { useGetCreditWalletQuery } from "@/lib/redux/features/auth/authApi";
 
-interface Transaction {
+type UiTransaction = {
+  id: number;
   date: string;
   action: string;
-  type: "Usage" | "Purchase" | "Refund";
+  rawType: string;
+  type: "Usage" | "Purchase" | "Refund" | "Grant";
   credits: number;
-  status: "COMPLETED";
-}
-
-const transactions: Transaction[] = [
-  {
-    date: "Feb 4, 2026",
-    action: "Video Generation",
-    type: "Usage",
-    credits: -25,
-    status: "COMPLETED",
-  },
-  {
-    date: "Feb 3, 2026",
-    action: "Pro Package Purchase",
-    type: "Purchase",
-    credits: 500,
-    status: "COMPLETED",
-  },
-  {
-    date: "Feb 2, 2026",
-    action: "Video Generation",
-    type: "Usage",
-    credits: -10,
-    status: "COMPLETED",
-  },
-  {
-    date: "Feb 1, 2026",
-    action: "Failed Generation Refund",
-    type: "Refund",
-    credits: 10,
-    status: "COMPLETED",
-  },
-  {
-    date: "Jan 30, 2026",
-    action: "Video Generation",
-    type: "Usage",
-    credits: -15,
-    status: "COMPLETED",
-  },
-  {
-    date: "Jan 28, 2026",
-    action: "Starter Package Purchase",
-    type: "Purchase",
-    credits: 100,
-    status: "COMPLETED",
-  },
-  {
-    date: "Jan 25, 2026",
-    action: "Video Generation",
-    type: "Usage",
-    credits: -20,
-    status: "COMPLETED",
-  },
-];
+  referenceId?: string | null;
+};
 
 interface CreditWalletDetailProps {
   onBack: () => void;
@@ -83,11 +34,85 @@ export default function CreditWalletDetail({
   onBack,
   onBuyCredits,
 }: CreditWalletDetailProps) {
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const user = useAppSelector((state) => state.auth.user);
-  const credits = user?.credits ?? 0;
+  const { data: walletData, isLoading, isFetching, isError } = useGetCreditWalletQuery({
+    page,
+    page_size: pageSize,
+  });
+  const credits = walletData?.user_credits ?? user?.credits ?? 0;
   const userName = user?.name || "User";
+  const totalPages = walletData?.total_pages ?? 1;
 
-  const getActionIcon = (type: Transaction["type"]) => {
+  const transactions: UiTransaction[] = (walletData?.transaction_history || []).map((tx) => {
+    const createdAt = new Date(tx.created_at);
+    const date = createdAt.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    if (tx.type === "spend") {
+      return {
+        id: tx.id,
+        date,
+        action: "Video Generation",
+        rawType: tx.type,
+        type: "Usage",
+        credits: -Math.abs(tx.amount),
+        referenceId: tx.reference_id,
+      };
+    }
+
+    if (tx.type === "subscription") {
+      return {
+        id: tx.id,
+        date,
+        action: "Subscription Purchase",
+        rawType: tx.type,
+        type: "Purchase",
+        credits: Math.abs(tx.amount),
+        referenceId: tx.reference_id,
+      };
+    }
+
+    if (tx.type === "purchase") {
+      return {
+        id: tx.id,
+        date,
+        action: "Credit Package Purchase",
+        rawType: tx.type,
+        type: "Purchase",
+        credits: Math.abs(tx.amount),
+        referenceId: tx.reference_id,
+      };
+    }
+
+    if (tx.type === "admin_grant") {
+      return {
+        id: tx.id,
+        date,
+        action: "Admin Credit Grant",
+        rawType: tx.type,
+        type: "Grant",
+        credits: Math.abs(tx.amount),
+        referenceId: tx.reference_id,
+      };
+    }
+
+    return {
+      id: tx.id,
+      date,
+      action: "Credit Refund",
+      rawType: tx.type,
+      type: "Refund",
+      credits: Math.abs(tx.amount),
+      referenceId: tx.reference_id,
+    };
+  });
+
+  const getActionIcon = (type: UiTransaction["type"]) => {
     switch (type) {
       case "Usage":
         return (
@@ -105,6 +130,12 @@ export default function CreditWalletDetail({
         return (
           <div className="w-9 h-9 bg-cyan-500/10 rounded-lg flex items-center justify-center">
             <RotateCcw className="w-4 h-4 text-cyan-400" />
+          </div>
+        );
+      case "Grant":
+        return (
+          <div className="w-9 h-9 bg-blue-500/10 rounded-lg flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-blue-400" />
           </div>
         );
     }
@@ -169,7 +200,7 @@ export default function CreditWalletDetail({
           <p className="text-gray-600 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
             Purchased
           </p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">600</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{walletData?.purchased ?? 0}</p>
           <p className="text-green-400 text-xs">All time</p>
         </div>
 
@@ -184,7 +215,7 @@ export default function CreditWalletDetail({
           <p className="text-gray-600 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
             Used
           </p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">70</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{walletData?.used ?? 0}</p>
           <p className="text-yellow-400 text-xs">All time</p>
         </div>
 
@@ -199,7 +230,7 @@ export default function CreditWalletDetail({
           <p className="text-gray-600 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
             Remaining
           </p>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{credits}</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{walletData?.remaining ?? credits}</p>
           <p className="text-blue-400 text-xs">Current balance</p>
         </div>
       </div>
@@ -209,56 +240,114 @@ export default function CreditWalletDetail({
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">Transaction History</h3>
           <span className="text-gray-500 text-sm">
-            {transactions.length} transactions
+            {walletData?.total_transactions ?? transactions.length} transactions
           </span>
         </div>
 
         {/* Table Header */}
-        <div className="grid grid-cols-[120px_1fr_100px_100px] gap-4 pb-3 border-b border-gray-200 dark:border-[#1A2332] mb-1">
+        <div className="grid grid-cols-[120px_1.2fr_110px_1.6fr_100px] gap-4 pb-3 border-b border-gray-200 dark:border-[#1A2332] mb-1">
           <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
             Date
           </span>
           <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
             Action
           </span>
-          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider text-right">
-            Credits
+          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
+            Type
+          </span>
+          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
+            Reference ID
           </span>
           <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider text-right">
-            Status
+            Credits
           </span>
         </div>
 
         {/* Rows */}
         <div className="divide-y divide-gray-200 dark:divide-[#1A2332]">
-          {transactions.map((tx, idx) => (
-            <div
-              key={idx}
-              className="grid grid-cols-[120px_1fr_100px_100px] gap-4 py-4 items-center"
-            >
-              <span className="text-gray-600 dark:text-gray-400 text-sm">{tx.date}</span>
-              <div className="flex items-center gap-3">
-                {getActionIcon(tx.type)}
-                <div>
-                  <p className="text-gray-900 dark:text-white text-sm font-medium">{tx.action}</p>
-                  <p className="text-gray-500 text-xs">{tx.type}</p>
-                </div>
-              </div>
-              <span
-                className={`text-sm font-semibold text-right ${
-                  tx.credits > 0 ? "text-green-400" : "text-gray-900 dark:text-white"
-                }`}
+          {(isLoading || isFetching) && (
+            <div className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">Loading transactions...</div>
+          )}
+
+          {isError && !isLoading && !isFetching && (
+            <div className="py-6 text-center text-sm text-red-500">Failed to load credit wallet data.</div>
+          )}
+
+          {!isLoading && !isFetching && !isError && transactions.length === 0 && (
+            <div className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">No transactions found.</div>
+          )}
+
+          {!isLoading &&
+            !isFetching &&
+            !isError &&
+            transactions.map((tx) => (
+              <div
+                key={tx.id}
+                className="grid grid-cols-[120px_1.2fr_110px_1.6fr_100px] gap-4 py-4 items-center"
               >
-                {tx.credits > 0 ? `+${tx.credits}` : tx.credits}
-              </span>
-              <div className="flex justify-end">
-                <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  COMPLETED
+                <span className="text-gray-600 dark:text-gray-400 text-sm">{tx.date}</span>
+                <div className="flex items-center gap-3">
+                  {getActionIcon(tx.type)}
+                  <div>
+                    <p className="text-gray-900 dark:text-white text-sm font-medium">{tx.action}</p>
+                  </div>
+                </div>
+                <span className="text-gray-500 dark:text-gray-400 text-sm capitalize">
+                  {tx.rawType}
+                </span>
+                <span className="text-gray-500 dark:text-gray-400 text-sm break-all">
+                  {tx.referenceId || "—"}
+                </span>
+                <span
+                  className={`text-sm font-semibold text-right ${
+                    tx.credits > 0 ? "text-green-400" : "text-gray-900 dark:text-white"
+                  }`}
+                >
+                  {tx.credits > 0 ? `+${tx.credits}` : tx.credits}
                 </span>
               </div>
-            </div>
-          ))}
+            ))}
+        </div>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-end gap-2 pt-5 mt-3 border-t border-gray-200 dark:border-[#1A2332]">
+          <button
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            disabled={page <= 1 || isFetching}
+            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2A3040] text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, index) => {
+              const pageNumber = index + 1;
+              const isActive = (walletData?.page ?? page) === pageNumber;
+
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => setPage(pageNumber)}
+                  disabled={isFetching}
+                  className={`w-9 h-9 rounded-lg border text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isActive
+                      ? "bg-cyan-500 border-cyan-500 text-white"
+                      : "bg-gray-100 dark:bg-[#1A1F2E] border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-[#252B3B]"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+            disabled={page >= totalPages || isFetching}
+            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2A3040] text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
         </div>
       </div>
 

@@ -19,6 +19,30 @@ interface CreditCheckoutResponse {
   checkout_url: string;
 }
 
+interface PaymentHistoryRequest {
+  page: number;
+  page_size: number;
+}
+
+interface PaymentHistoryItem {
+  id: number;
+  user: string;
+  payment_type: "subscription" | "credit_package";
+  amount: number;
+  credits: number;
+  transaction_id: string;
+  status: "completed" | "pending" | "failed";
+  created_at: string;
+}
+
+interface PaymentHistoryResponse {
+  page: number;
+  page_size: number;
+  total_payments: number;
+  total_pages: number;
+  payments: PaymentHistoryItem[];
+}
+
 /** Build the Stripe success redirect URL from the current origin */
 const getSuccessUrl = () => {
   if (typeof window !== "undefined") {
@@ -74,11 +98,20 @@ export const billingApi = createApi({
         },
       }),
     }),
+
+    // User payment history for Billing History section
+    getPaymentHistory: builder.query<PaymentHistoryResponse, PaymentHistoryRequest>({
+      query: ({ page, page_size }) => ({
+        url: `/history?page=${page}&page_size=${page_size}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
 export const {
   useSubscriptionCheckoutMutation,
   useCreditCheckoutMutation,
+  useGetPaymentHistoryQuery,
 } = billingApi;
 

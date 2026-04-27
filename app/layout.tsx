@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Clipforge - Create Faceless Short-Form Videos with AI",
+  title: "Clipforgereels - Create Faceless Short-Form Videos with AI",
   description:
     "Clipforge helps you create faceless AI videos for TikTok, YouTube Shorts, and Instagram Reels in minutes. Generate scripts, visuals, voiceovers, and captions automatically.",
 };

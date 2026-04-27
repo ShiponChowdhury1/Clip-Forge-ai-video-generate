@@ -147,7 +147,7 @@ export default function Step6ReviewGenerate({
           </div>
 
           {/* Config cards 2x2 grid */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid   lg:grid-cols-4 md:grid-cols-2 grid-cols-1  gap-3">
             {configCards.map((card) => (
               <div
                 key={card.label}
@@ -178,7 +178,7 @@ export default function Step6ReviewGenerate({
           </div>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 ">
           <div className="flex items-center justify-between">
             <span className="text-gray-600 dark:text-gray-400 text-sm">
               Base video ({estimatedMinutes} min)

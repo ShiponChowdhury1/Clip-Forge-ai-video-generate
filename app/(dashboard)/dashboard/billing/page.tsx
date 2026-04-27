@@ -26,16 +26,8 @@ import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi"
 import {
   useSubscriptionCheckoutMutation,
   useCreditCheckoutMutation,
+  useGetPaymentHistoryQuery,
 } from "@/lib/redux/features/billing/billingApi";
-
-// Sample billing history data
-const sampleInvoices: Invoice[] = [
-  { id: "INV-001", date: "Jan 15, 2024", amount: "49.00", status: "PAID" },
-  { id: "INV-001", date: "Jan 15, 2024", amount: "49.00", status: "PAID" },
-  { id: "INV-001", date: "Jan 15, 2024", amount: "49.00", status: "PAID" },
-  { id: "INV-001", date: "Jan 15, 2024", amount: "49.00", status: "PAID" },
-  { id: "INV-001", date: "Jan 15, 2024", amount: "49.00", status: "PAID" },
-];
 
 type BillingView = "main" | "pricing" | "checkout" | "processing" | "success";
 type BillingModalType = "change" | "buy";
@@ -57,9 +49,15 @@ export default function BillingPage() {
 
   const [subscriptionCheckout, { isLoading: isCheckoutLoading }] = useSubscriptionCheckoutMutation();
   const [creditCheckout, { isLoading: isCreditCheckoutLoading }] = useCreditCheckoutMutation();
+  const {
+    data: paymentHistory,
+    isLoading: isPaymentHistoryLoading,
+    isError: isPaymentHistoryError,
+  } = useGetPaymentHistoryQuery({ page: 1, page_size: 20 });
 
   // Detect Stripe redirect: ?payment_success=true (also handles malformed ?payment_success=true?session_id=xxx)
   const isPaymentSuccess = (searchParams.get("payment_success") ?? "").startsWith("true");
+  const shouldOpenBuyModal = searchParams.get("buy") === "1";
 
   // On payment success redirect, refetch credits and sync to Redux
   useEffect(() => {
@@ -91,6 +89,36 @@ export default function BillingPage() {
         .sort((a, b) => a.price - b.price),
     [creditPackages]
   );
+
+  const invoices = useMemo<Invoice[]>(() => {
+    return (paymentHistory?.payments ?? []).map((payment) => {
+      const createdAt = new Date(payment.created_at);
+      const date = createdAt.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      const normalizedStatus = payment.status.toUpperCase();
+      const status: Invoice["status"] =
+        normalizedStatus === "COMPLETED"
+          ? "PAID"
+          : normalizedStatus === "PENDING"
+            ? "PENDING"
+            : "FAILED";
+
+      return {
+        id: `PAY-${payment.id}`,
+        date,
+        amount: `$${Number(payment.amount).toFixed(2)}`,
+        status,
+        paymentType: payment.payment_type,
+        transactionId: payment.transaction_id,
+        credits: payment.credits,
+        userEmail: payment.user,
+      };
+    });
+  }, [paymentHistory]);
 
   const [view, setView] = useState<BillingView>(isPaymentSuccess ? "success" : "main");
   const [billingModalType, setBillingModalType] = useState<BillingModalType>("buy");
@@ -144,7 +172,9 @@ export default function BillingPage() {
   const selectedPrice = `$${(selectedPlan?.monthly_price ?? 0).toFixed(2)}`;
 
   const isForcedCheckout = shouldOpenCheckout && view === "main";
+  const isForcedBuyModal = shouldOpenBuyModal && view === "main";
   const effectiveView: BillingView = isForcedCheckout ? "checkout" : view;
+  const effectiveBillingModalType: BillingModalType = isForcedBuyModal ? "buy" : billingModalType;
   const effectivePlan = isForcedCheckout
     ? forcedCheckoutSource === "package"
       ? querySelectedPackage
@@ -289,7 +319,11 @@ export default function BillingPage() {
             onUpdate={() => {}}
           />
 
-          <BillingHistory invoices={sampleInvoices} />
+          <BillingHistory
+            invoices={invoices}
+            isLoading={isPaymentHistoryLoading}
+            isError={isPaymentHistoryError}
+          />
         </>
       )}
 
@@ -316,15 +350,21 @@ export default function BillingPage() {
       {effectiveView === "success" && <PaymentSuccess />}
 
       {/* Pricing Plans Modal */}
-      {showPricingModal && (
+      {(showPricingModal || isForcedBuyModal) && (
         <PricingPlans
-          modalType={billingModalType}
+          modalType={effectiveBillingModalType}
           plans={activePlans}
           creditPackages={activeCreditPackages}
           isPlansLoading={subscriptionsLoading}
           isCreditPackagesLoading={creditPackagesLoading}
           onSelectPlan={handleSelectPlan}
-          onClose={() => setShowPricingModal(false)}
+          onClose={() => {
+            if (isForcedBuyModal) {
+              router.replace("/dashboard/billing");
+              return;
+            }
+            setShowPricingModal(false);
+          }}
         />
       )}
     </div>

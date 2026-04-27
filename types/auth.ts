@@ -127,3 +127,25 @@ export interface MySubscriptionResponse {
     created_at: string;
   };
 }
+
+export interface CreditWalletTransaction {
+  id: number;
+  user_id: number;
+  amount: number;
+  type: "admin_grant" | "subscription" | "purchase" | "spend" | "refund";
+  source: string;
+  reference_id: string | null;
+  created_at: string;
+}
+
+export interface CreditWalletResponse {
+  user_credits: number;
+  purchased: number;
+  used: number;
+  remaining: number;
+  page: number;
+  page_size: number;
+  total_transactions: number;
+  total_pages: number;
+  transaction_history: CreditWalletTransaction[];
+}

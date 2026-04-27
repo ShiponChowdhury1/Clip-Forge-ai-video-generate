@@ -15,6 +15,7 @@ import type {
   UserProfile,
   UpdateProfileResponse,
   MySubscriptionResponse,
+  CreditWalletResponse,
 } from "@/types/auth";
 import { setUser } from "@/lib/redux/features/auth/authSlice";
 
@@ -308,7 +309,19 @@ export const authApi = createApi({
       }),
     }),
 
-    // 17. Get notification settings
+    // 17. Get credit wallet details
+    getCreditWallet: builder.query<CreditWalletResponse, { page?: number; page_size?: number } | void>({
+      query: (params) => {
+        const page = params?.page ?? 1;
+        const pageSize = params?.page_size ?? 20;
+        return {
+          url: `${API_BASE_URL}/v1/users/settings/credit-wallet?page=${page}&page_size=${pageSize}`,
+          method: "GET",
+        };
+      },
+    }),
+
+    // 18. Get notification settings
     getNotificationSettings: builder.query<NotificationSettingsResponse, void>({
       query: () => ({
         url: `${API_BASE_URL}/v1/users/notifications/settings`,
@@ -317,7 +330,7 @@ export const authApi = createApi({
       providesTags: ["NotificationSettings"],
     }),
 
-    // 18. Update notification settings
+    // 19. Update notification settings
     updateNotificationSettings: builder.mutation<
       NotificationSettingsResponse,
       NotificationSettingsPayload
@@ -347,6 +360,7 @@ export type {
   UserProfile,
   UpdateProfileResponse,
   MySubscriptionResponse,
+  CreditWalletResponse,
 } from "@/types/auth";
 
 export const {
@@ -366,6 +380,7 @@ export const {
   useUpdateProfileMutation,
   useGetUserCreditBalanceQuery,
   useGetMySubscriptionQuery,
+  useGetCreditWalletQuery,
   useGetNotificationSettingsQuery,
   useUpdateNotificationSettingsMutation,
 } = authApi;

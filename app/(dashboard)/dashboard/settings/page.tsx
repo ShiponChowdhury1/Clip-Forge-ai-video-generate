@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ProfileSection,
   CreditWalletDetail,
@@ -13,6 +14,11 @@ type SettingsView = "profile" | "wallet" | "notifications";
 export default function SettingsPage() {
   const [view, setView] = useState<SettingsView>("profile");
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const router = useRouter();
+
+  const handleBuyCredits = () => {
+    router.push("/dashboard/billing?buy=1");
+  };
 
   return (
     <div>
@@ -31,7 +37,7 @@ export default function SettingsPage() {
       {view === "wallet" && (
         <CreditWalletDetail
           onBack={() => setView("profile")}
-          onBuyCredits={() => {}}
+          onBuyCredits={handleBuyCredits}
         />
       )}
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { Check, X } from "lucide-react";
-import { useMemo } from "react";
+import { Check, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGetCreditPackagesQuery } from "@/lib/redux/features/admin/adminApi";
 import { useAppSelector } from "@/lib/redux/hooks";
@@ -30,6 +30,7 @@ export default function PricingCards({
   onSelectPlan,
 }: PricingCardsProps) {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(0);
   const token = useAppSelector((state) => state.auth.token);
   const userRole = useAppSelector((state) => state.auth.user?.role);
   const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -71,6 +72,23 @@ export default function PricingCards({
       badge: idx === highlightedIndex ? "MOST POPULAR" : undefined,
     }));
   }, [creditPackages]);
+
+  const cardsPerPage = 3;
+  const totalPages = Math.max(1, Math.ceil(displayPlans.length / cardsPerPage));
+  const safePageIndex = currentPage % totalPages;
+
+  const visiblePlans =
+    isSection && displayPlans.length > cardsPerPage
+      ? displayPlans.slice(safePageIndex * cardsPerPage, (safePageIndex + 1) * cardsPerPage)
+      : displayPlans;
+
+  const nextPage = () => {
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+  };
 
   const handleSelectPlan = (planName: string) => {
     if (onSelectPlan) {
@@ -140,113 +158,143 @@ export default function PricingCards({
           No active credit packages available right now.
         </p>
       ) : (
-        <div
-          className={`flex flex-col lg:flex-row justify-center items-center lg:items-end ${
-            isSection ? "gap-4 sm:gap-6" : "gap-5"
-          }`}
-        >
-          {displayPlans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`relative transition-all duration-300 flex flex-col w-full ${
-                plan.highlighted
-                  ? "bg-linear-to-b from-gray-100 dark:from-gray-800/80 to-white dark:to-gray-900/80 border-cyan-500/50 shadow-lg shadow-cyan-500/5 order-first lg:order-0"
-                  : "bg-linear-to-b from-gray-50 dark:from-gray-900/50 to-white dark:to-black border-gray-200 dark:border-gray-800/50 hover:border-gray-300 dark:hover:border-gray-700/50"
-              }`}
-              style={
-                isSection
-                  ? {
-                      width: "100%",
-                      maxWidth: plan.highlighted ? "420.05px" : "396.78px",
-                      height: "auto",
-                      minHeight: plan.highlighted ? "607.36px" : "555.26px",
-                      paddingTop: "44.33px",
-                      paddingBottom: "44.33px",
-                      paddingLeft: "44.33px",
-                      paddingRight: "44.33px",
-                      borderRadius: "26.6px",
-                      borderWidth: "1.23px",
-                      borderStyle: "solid" as const,
-                      borderColor: plan.highlighted
-                        ? "rgba(6, 182, 212, 0.5)"
-                        : "rgba(55, 65, 81, 0.5)",
-                    }
-                  : {
-                      maxWidth: "340px",
-                      padding: "24px",
-                      borderRadius: "16px",
-                      borderWidth: "1px",
-                      borderStyle: "solid" as const,
-                      borderColor: plan.highlighted
-                        ? "rgba(6, 182, 212, 0.5)"
-                        : "rgba(55, 65, 81, 0.5)",
-                    }
-              }
-            >
-              {/* Badge */}
-              {plan.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-cyan-500 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap">
-                    {plan.badge}
-                  </span>
-                </div>
-              )}
-
-              {/* Card Content */}
-              <div className="flex flex-col h-full flex-1">
-                <div style={{ marginBottom: isSection ? "35.46px" : "0" }} className={isSection ? "" : "mb-6"}>
-                  <h3 className="text-lg font-semibold mb-1">
-                    {plan.name}
-                  </h3>
-                  <div className="mb-1">
-                    <span className="text-3xl font-bold">
-                      {plan.price}
-                    </span>
-                    <span className="text-gray-500 text-sm ml-2">
-                      {plan.period}
+        <div className="space-y-6">
+          <div
+            className={
+              isSection
+                ? "grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch"
+                : "flex flex-col lg:flex-row justify-center items-center lg:items-end gap-5"
+            }
+          >
+            {visiblePlans.map((plan) => (
+              <div
+                key={plan.name}
+                className={`relative transition-all duration-300 flex flex-col w-full ${
+                  plan.highlighted
+                    ? "bg-linear-to-b from-gray-100 dark:from-gray-800/80 to-white dark:to-gray-900/80 border-cyan-500/50 shadow-lg shadow-cyan-500/5"
+                    : "bg-linear-to-b from-gray-50 dark:from-gray-900/50 to-white dark:to-black border-gray-200 dark:border-gray-800/50 hover:border-gray-300 dark:hover:border-gray-700/50"
+                }`}
+                style={
+                  isSection
+                    ? {
+                        minHeight: plan.highlighted ? "607.36px" : "555.26px",
+                        paddingTop: "44.33px",
+                        paddingBottom: "44.33px",
+                        paddingLeft: "44.33px",
+                        paddingRight: "44.33px",
+                        borderRadius: "26.6px",
+                        borderWidth: "1.23px",
+                        borderStyle: "solid" as const,
+                        borderColor: plan.highlighted
+                          ? "rgba(6, 182, 212, 0.5)"
+                          : "rgba(55, 65, 81, 0.5)",
+                      }
+                    : {
+                        maxWidth: "340px",
+                        padding: "24px",
+                        borderRadius: "16px",
+                        borderWidth: "1px",
+                        borderStyle: "solid" as const,
+                        borderColor: plan.highlighted
+                          ? "rgba(6, 182, 212, 0.5)"
+                          : "rgba(55, 65, 81, 0.5)",
+                      }
+                }
+              >
+                {plan.badge && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="bg-cyan-500 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                      {plan.badge}
                     </span>
                   </div>
-                  <p className="text-cyan-400 text-xs">{plan.credits}</p>
-                </div>
+                )}
 
-                <div
-                  className="space-y-3 flex-1"
-                  style={{ marginBottom: isSection ? "35.46px" : "0" }}
-                    >
-                  {plan.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      {feature.included ? (
-                        <Check className="w-4 h-4 text-cyan-500" />
-                      ) : (
-                        <X className="w-4 h-4 text-gray-600" />
-                      )}
-                      <span
-                        className={`text-sm ${
-                          feature.included ? "text-gray-700 dark:text-gray-300" : "text-gray-400 dark:text-gray-600"
-                        }`}
-                      >
-                        {feature.text}
-                      </span>
+                <div className="flex flex-col h-full flex-1">
+                  <div style={{ marginBottom: isSection ? "35.46px" : "0" }} className={isSection ? "" : "mb-6"}>
+                    <h3 className="text-lg font-semibold mb-1">{plan.name}</h3>
+                    <div className="mb-1">
+                      <span className="text-3xl font-bold">{plan.price}</span>
+                      <span className="text-gray-500 text-sm ml-2">{plan.period}</span>
                     </div>
-                  ))}
-                </div>
+                    <p className="text-cyan-400 text-xs">{plan.credits}</p>
+                  </div>
 
-                <div className={isSection ? "mt-auto" : "mt-6"}>
-                  <button
-                    onClick={() => handleSelectPlan(plan.name)}
-                    className={`w-full py-3 font-medium transition text-sm ${
-                      plan.highlighted
-                        ? "bg-cyan-500 hover:bg-cyan-400 text-white"
-                        : "bg-transparent border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600"
-                    }`}
-                    style={{ borderRadius: "12px" }}
-                  >
-                    {plan.button}
-                  </button>
+                  <div className="space-y-3 flex-1" style={{ marginBottom: isSection ? "35.46px" : "0" }}>
+                    {plan.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        {feature.included ? (
+                          <Check className="w-4 h-4 text-cyan-500" />
+                        ) : (
+                          <X className="w-4 h-4 text-gray-600" />
+                        )}
+                        <span
+                          className={`text-sm ${
+                            feature.included
+                              ? "text-gray-700 dark:text-gray-300"
+                              : "text-gray-400 dark:text-gray-600"
+                          }`}
+                        >
+                          {feature.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className={isSection ? "mt-auto" : "mt-6"}>
+                    <button
+                      onClick={() => handleSelectPlan(plan.name)}
+                      className={`w-full py-3 font-medium transition text-sm ${
+                        plan.highlighted
+                          ? "bg-cyan-500 hover:bg-cyan-400 text-white"
+                          : "bg-transparent border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-cyan-500 hover:text-white hover:border-cyan-500"
+                      }`}
+                      style={{ borderRadius: "12px" }}
+                    >
+                      {plan.button}
+                    </button>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {isSection && totalPages > 1 && (
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={prevPage}
+                className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-cyan-500 hover:text-cyan-500 transition-colors flex items-center justify-center"
+                aria-label="Previous pricing cards"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentPage(index)}
+                    aria-label={`Go to pricing page ${index + 1}`}
+                  >
+                    <div
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        index === safePageIndex
+                          ? "bg-cyan-400 w-6"
+                          : "bg-gray-500/50 hover:bg-gray-400/70 w-2"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={nextPage}
+                className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-cyan-500 hover:text-cyan-500 transition-colors flex items-center justify-center"
+                aria-label="Next pricing cards"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
