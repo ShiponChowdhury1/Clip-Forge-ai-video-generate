@@ -186,44 +186,85 @@ export default function Step3BackgroundMusic({
                   : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
-              {/* Color indicator */}
-              <div
-                className={`w-10 h-10 rounded-lg ${option.color} shrink-0`}
-              />
-
-              {/* Info */}
-              <div className="flex-1 text-left">
-                <span className="text-gray-900 dark:text-white text-sm font-medium">
-                  {option.label}
-                </span>
-              </div>
-
-              {/* Right side - play/pause icon */}
-              <div className="flex items-center gap-2 shrink-0">
-                <span
-                  className={`text-xs font-medium px-2 py-1 rounded-md border ${
-                    option.credits > 0
-                      ? "text-[#3B82F6] border-[#3B82F6]/40 bg-[#3B82F6]/10"
-                      : "text-gray-500 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#1A2332]"
-                  }`}
-                >
-                  {option.credits > 0 ? `+${option.credits} credits` : "0 credits"}
-                </span>
-                {option.hasPreview ? (
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                      playingId === option.value
-                        ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
-                        : "bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155]"
-                    }`}
-                  >
-                    {playingId === option.value ? (
-                      <Pause className="w-3 h-3 text-[#3B82F6]" />
-                    ) : (
-                      <Play className="w-3 h-3 text-gray-400 ml-0.5" />
-                    )}
+              <div className="w-full min-w-0">
+                {/* Mobile: two-line layout */}
+                <div className="sm:hidden">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`w-10 h-10 rounded-lg ${option.color} shrink-0`}
+                    />
+                    <span className="text-gray-900 dark:text-white text-sm font-medium truncate">
+                      {option.label}
+                    </span>
                   </div>
-                ) : null}
+
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-md border shrink-0 ${
+                        option.credits > 0
+                          ? "text-[#3B82F6] border-[#3B82F6]/40 bg-[#3B82F6]/10"
+                          : "text-gray-500 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#1A2332]"
+                      }`}
+                    >
+                      {option.credits > 0 ? `+${option.credits} credits` : "0 credits"}
+                    </span>
+                    {option.hasPreview ? (
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                          playingId === option.value
+                            ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
+                            : "bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155]"
+                        }`}
+                      >
+                        {playingId === option.value ? (
+                          <Pause className="w-3 h-3 text-[#3B82F6]" />
+                        ) : (
+                          <Play className="w-3 h-3 text-gray-400 ml-0.5" />
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                {/* Tablet/Laptop/Desktop: previous single-line layout */}
+                <div className="hidden sm:flex sm:items-center sm:gap-4 sm:w-full">
+                  <div
+                    className={`w-10 h-10 rounded-lg ${option.color} shrink-0`}
+                  />
+
+                  <div className="flex-1 text-left min-w-0">
+                    <span className="text-gray-900 dark:text-white text-sm font-medium truncate block">
+                      {option.label}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span
+                      className={`text-xs font-medium px-2 py-1 rounded-md border ${
+                        option.credits > 0
+                          ? "text-[#3B82F6] border-[#3B82F6]/40 bg-[#3B82F6]/10"
+                          : "text-gray-500 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#1A2332]"
+                      }`}
+                    >
+                      {option.credits > 0 ? `+${option.credits} credits` : "0 credits"}
+                    </span>
+                    {option.hasPreview ? (
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                          playingId === option.value
+                            ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
+                            : "bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155]"
+                        }`}
+                      >
+                        {playingId === option.value ? (
+                          <Pause className="w-3 h-3 text-[#3B82F6]" />
+                        ) : (
+                          <Play className="w-3 h-3 text-gray-400 ml-0.5" />
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
               </div>
             </button>
           ))}
