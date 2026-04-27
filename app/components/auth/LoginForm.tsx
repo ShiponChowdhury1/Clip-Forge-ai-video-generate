@@ -33,6 +33,7 @@ export default function LoginForm() {
       const result = await login({ email, password }).unwrap();
       const normalizedUser = {
         ...result.user,
+        subscription_plan: result.user.subscription_plan || "Free",
         picture: result.user.picture || resolveProfileImageUrl(result.user.profile_image_url),
       };
       localStorage.setItem("token", result.access_token);

@@ -20,7 +20,7 @@ export function CreditSettings() {
   const [name, setName] = useState("");
   const [credits, setCredits] = useState("");
   const [price, setPrice] = useState("");
-  const [planType, setPlanType] = useState<"monthly" | "yearly" | "one_time">("one_time");
+  const [planType, setPlanType] = useState<"monthly" | "one_time">("one_time");
   const [productId, setProductId] = useState("");
   const [priceId, setPriceId] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
@@ -47,7 +47,7 @@ export function CreditSettings() {
     packageName: string,
     packageCredits: number,
     packagePrice: number,
-    packagePlanType?: "monthly" | "yearly" | "one_time",
+    packagePlanType?: "monthly" | "one_time",
     packageProductId?: string | null,
     packagePriceId?: string | null,
     packageStatus?: "active" | "inactive"
@@ -223,11 +223,10 @@ export function CreditSettings() {
                   </label>
                   <select
                     value={planType}
-                    onChange={(e) => setPlanType(e.target.value as "monthly" | "yearly" | "one_time")}
+                    onChange={(e) => setPlanType(e.target.value as "monthly" | "one_time")}
                     className="w-full bg-gray-100 dark:bg-[#0A0F18] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-[#3B82F6]"
                   >
                     <option value="monthly">monthly</option>
-                    <option value="yearly">yearly</option>
                     <option value="one_time">one_time</option>
                   </select>
                 </div>

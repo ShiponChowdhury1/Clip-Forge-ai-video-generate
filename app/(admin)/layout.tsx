@@ -58,7 +58,7 @@ export default function AdminLayout({
         name: profile.name,
         email: profile.email,
         credits: profile.credits,
-        subscription_plan: profile.subscription_plan,
+        subscription_plan: profile.subscription_plan || user?.subscription_plan || "Free",
         role: profile.role || user?.role || "admin",
         picture: resolveProfileImageUrl(profile.profile_image_url, user?.picture),
       };

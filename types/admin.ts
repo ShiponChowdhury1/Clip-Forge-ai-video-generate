@@ -32,7 +32,7 @@ export interface CreditPackage {
   name: string;
   credits: number;
   price: number;
-  plan_type?: "monthly" | "yearly" | "one_time";
+  plan_type?: "monthly" | "one_time";
   product_id?: string | null;
   stripe_price_id?: string | null;
   status?: "active" | "inactive";
@@ -43,7 +43,7 @@ export interface CreateCreditPackagePayload {
   name: string;
   credits: number;
   price: number;
-  plan_type?: "monthly" | "yearly" | "one_time";
+  plan_type?: "monthly" | "one_time";
   product_id?: string | null;
   stripe_price_id?: string | null;
   status?: "active" | "inactive";

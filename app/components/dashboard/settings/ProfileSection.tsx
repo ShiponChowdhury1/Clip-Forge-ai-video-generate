@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Mail,
   Crown,
@@ -20,7 +20,10 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
-import { useUpdateProfileMutation } from "@/lib/redux/features/auth/authApi";
+import {
+  useUpdateProfileMutation,
+  useGetMySubscriptionQuery,
+} from "@/lib/redux/features/auth/authApi";
 import { setUser } from "@/lib/redux/features/auth/authSlice";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
@@ -34,8 +37,12 @@ export default function ProfileSection({
   onNavigate,
 }: ProfileSectionProps) {
   const user = useAppSelector((state) => state.auth.user);
+  const token = useAppSelector((state) => state.auth.token);
   const dispatch = useAppDispatch();
   const [updateProfile] = useUpdateProfileMutation();
+  const { data: subscription } = useGetMySubscriptionQuery(undefined, {
+    skip: !token,
+  });
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [editName, setEditName] = useState(user?.name || "");
@@ -132,6 +139,32 @@ export default function ProfileSection({
 
   const getInitials = (name: string) =>
     name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+
+  useEffect(() => {
+    if (!user || !subscription) return;
+
+    const nextPlan =
+      subscription.status === "active" && subscription.plan?.name?.trim()
+        ? subscription.plan.name.trim()
+        : "Free";
+
+    if (nextPlan === user.subscription_plan) return;
+
+    const updatedUser = {
+      ...user,
+      subscription_plan: nextPlan,
+    };
+
+    dispatch(setUser(updatedUser));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    }
+  }, [subscription, user, dispatch]);
+
+  const activePlanName =
+    subscription?.status === "active" && subscription.plan?.name?.trim()
+      ? subscription.plan.name.trim()
+      : user?.subscription_plan || "Free";
 
   return (
     <div className="space-y-6">
@@ -271,7 +304,7 @@ export default function ProfileSection({
             <div className="shrink-0">
               <div className="inline-flex items-center gap-2 bg-linear-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 text-cyan-400 text-sm font-semibold px-4 py-2 rounded-xl">
                 <Sparkles className="w-4 h-4" />
-                <span className="capitalize">{user?.subscription_plan || "Free"} Plan</span>
+                <span className="capitalize">{activePlanName} Plan</span>
               </div>
             </div>
           </div>
@@ -289,7 +322,7 @@ export default function ProfileSection({
               <div className="w-9 h-9 bg-purple-500/10 rounded-lg flex items-center justify-center mx-auto mb-2.5">
                 <Crown className="w-4 h-4 text-purple-400" />
               </div>
-              <p className="text-cyan-400 font-bold text-2xl leading-none capitalize">{user?.subscription_plan || "Free"}</p>
+              <p className="text-cyan-400 font-bold text-2xl leading-none capitalize">{activePlanName}</p>
               <p className="text-gray-500 text-[11px] uppercase tracking-wider font-medium mt-1.5">Plan</p>
             </div>
           </div>

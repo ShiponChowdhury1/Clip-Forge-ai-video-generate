@@ -108,3 +108,22 @@ export interface UpdateProfileResponse {
   role: UserRole;
   created_at: string;
 }
+
+export interface MySubscriptionResponse {
+  id: number;
+  user_id: number;
+  plan_id: number;
+  stripe_subscription_id: string | null;
+  stripe_customer_id: string | null;
+  start_date: string;
+  end_date: string;
+  status: string;
+  renewal_date: string | null;
+  created_at: string;
+  plan?: {
+    id: number;
+    name: string;
+    monthly_price: number;
+    created_at: string;
+  };
+}

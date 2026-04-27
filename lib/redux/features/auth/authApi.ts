@@ -14,6 +14,7 @@ import type {
   MessageResponse,
   UserProfile,
   UpdateProfileResponse,
+  MySubscriptionResponse,
 } from "@/types/auth";
 import { setUser } from "@/lib/redux/features/auth/authSlice";
 
@@ -151,7 +152,7 @@ export const authApi = createApi({
               subscription_plan:
                 typeof parsed.subscription_plan === "string"
                   ? parsed.subscription_plan
-                  : "",
+                  : "Free",
               role:
                 parsed.role === "admin" ||
                 parsed.role === "super_admin" ||
@@ -299,7 +300,15 @@ export const authApi = createApi({
       }),
     }),
 
-    // 16. Get notification settings
+    // 16. Get current user subscription
+    getMySubscription: builder.query<MySubscriptionResponse, void>({
+      query: () => ({
+        url: `${API_BASE_URL}/v1/payments/subscription/me`,
+        method: "GET",
+      }),
+    }),
+
+    // 17. Get notification settings
     getNotificationSettings: builder.query<NotificationSettingsResponse, void>({
       query: () => ({
         url: `${API_BASE_URL}/v1/users/notifications/settings`,
@@ -308,7 +317,7 @@ export const authApi = createApi({
       providesTags: ["NotificationSettings"],
     }),
 
-    // 17. Update notification settings
+    // 18. Update notification settings
     updateNotificationSettings: builder.mutation<
       NotificationSettingsResponse,
       NotificationSettingsPayload
@@ -337,6 +346,7 @@ export type {
   MessageResponse,
   UserProfile,
   UpdateProfileResponse,
+  MySubscriptionResponse,
 } from "@/types/auth";
 
 export const {
@@ -355,6 +365,7 @@ export const {
   useResendOtpMutation,
   useUpdateProfileMutation,
   useGetUserCreditBalanceQuery,
+  useGetMySubscriptionQuery,
   useGetNotificationSettingsQuery,
   useUpdateNotificationSettingsMutation,
 } = authApi;

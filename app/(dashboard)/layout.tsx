@@ -52,7 +52,7 @@ export default function DashboardLayout({
       name: profile.name,
       email: profile.email,
       credits: profile.credits,
-      subscription_plan: profile.subscription_plan,
+      subscription_plan: profile.subscription_plan || user?.subscription_plan || "Free",
       role: profile.role,
       picture: resolveProfileImageUrl(profile.profile_image_url, user?.picture),
     };
