@@ -7,6 +7,7 @@ import { useGoogleAuthMutation } from "@/lib/redux/features/auth/authApi";
 import { setCredentials, setUser } from "@/lib/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { useRouter } from "next/navigation";
+import { formatApiDetail } from "@/lib/utils/formatApiError";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
@@ -92,8 +93,9 @@ export default function SocialButtons() {
       const role = userData?.role || "user";
       router.push(role === "admin" || role === "super_admin" ? "/admin" : "/dashboard");
     } catch (err: unknown) {
-      const apiError = err as { data?: { detail?: string } };
-      setError(apiError.data?.detail || "Google sign-in failed. Please try again.");
+      const apiError = err as { data?: { detail?: unknown } };
+      const detail = formatApiDetail(apiError.data?.detail);
+      setError(detail || "Google sign-in failed. Please try again.");
     }
   };
 

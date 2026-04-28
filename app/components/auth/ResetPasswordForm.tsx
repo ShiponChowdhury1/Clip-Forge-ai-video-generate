@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AuthCard, AuthInput, AuthButton } from "@/app/components/auth";
 import { useResetPasswordMutation } from "@/lib/redux/features/auth/authApi";
 import { clearResetFlow } from "@/lib/redux/features/auth/authSlice";
+import { formatApiDetail } from "@/lib/utils/formatApiError";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 
 export default function ResetPasswordForm() {
@@ -45,8 +46,9 @@ export default function ResetPasswordForm() {
       dispatch(clearResetFlow());
       setTimeout(() => router.push("/login"), 1500);
     } catch (err: unknown) {
-      const apiError = err as { data?: { detail?: string } };
-      setError(apiError.data?.detail || "Failed to reset password.");
+      const apiError = err as { data?: { detail?: unknown } };
+      const detail = formatApiDetail(apiError.data?.detail);
+      setError(detail || "Failed to reset password.");
     }
   };
 

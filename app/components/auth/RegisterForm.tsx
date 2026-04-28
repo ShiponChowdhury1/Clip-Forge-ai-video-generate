@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { AuthCard, AuthInput, AuthButton, SocialButtons, OtpInput } from "@/app/components/auth";
 import { useRegisterMutation, useVerifyRegisterOtpMutation, useResendOtpMutation } from "@/lib/redux/features/auth/authApi";
+import { formatApiDetail } from "@/lib/utils/formatApiError";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -39,9 +40,8 @@ export default function RegisterForm() {
       // Registration successful, show OTP modal
       setShowOtpModal(true);
     } catch (err: unknown) {
-      const apiError = err as { data?: { detail?: string } };
-      const detail = apiError.data?.detail || "";
-
+      const apiError = err as { data?: { detail?: unknown } };
+      const detail = formatApiDetail(apiError.data?.detail) || "";
       // If user exists but might be unverified, resend OTP and show modal
       if (detail.toLowerCase().includes("already exists")) {
         try {
@@ -71,8 +71,9 @@ export default function RegisterForm() {
       await verifyRegisterOtp({ email, otp }).unwrap();
       router.push("/login");
     } catch (err: unknown) {
-      const apiError = err as { data?: { detail?: string } };
-      setOtpError(apiError.data?.detail || "Invalid OTP. Please try again.");
+      const apiError = err as { data?: { detail?: unknown } };
+      const detail = formatApiDetail(apiError.data?.detail);
+      setOtpError(detail || "Invalid OTP. Please try again.");
     }
   };
 
@@ -101,11 +102,7 @@ export default function RegisterForm() {
           <AuthInput label="Full Name" type="text" placeholder="John Doe" value={name} onChange={setName} />
           <AuthInput label="Email Address" type="email" placeholder="name@example.com" value={email} onChange={setEmail} />
           <AuthInput label="Password" type="password" placeholder="********" value={password} onChange={setPassword} />
-
-          <AuthButton text="Create Account" loading={isLoading} />
-
-          {/* Terms Checkbox */}
-          <div className="flex items-start gap-3">
+       <div className="flex items-start gap-3">
             <input
               type="checkbox"
               id="terms"
@@ -127,6 +124,10 @@ export default function RegisterForm() {
             </label>
           </div>
 
+          <AuthButton text="Create Account" loading={isLoading} />
+
+   
+          
           <SocialButtons />
 
           <p className="text-gray-600 dark:text-gray-400 text-sm text-center">

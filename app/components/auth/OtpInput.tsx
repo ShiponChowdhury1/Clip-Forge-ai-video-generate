@@ -49,7 +49,7 @@ export default function OtpInput({ length = 6, onChange }: OtpInputProps) {
   return (
     <div className="w-full">
       <label
-        className="text-sm capitalize block mb-2"
+        className="text-sm capitalize block mb-4 text-center"
         style={{
           fontFamily: "Arimo, sans-serif",
           fontWeight: 400,
@@ -61,7 +61,7 @@ export default function OtpInput({ length = 6, onChange }: OtpInputProps) {
       >
         Verification Code
       </label>
-      <div className="flex gap-2 sm:gap-3 justify-between">
+      <div className="flex justify-center gap-2 sm:gap-2.5">
         {otp.map((digit, index) => (
           <input
             key={index}
@@ -75,7 +75,7 @@ export default function OtpInput({ length = 6, onChange }: OtpInputProps) {
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
-            className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl text-center text-base font-medium outline-none focus:border-[#00A6F4]/50 transition text-gray-900 dark:text-white"
+            className="w-16 h-16 sm:w-16 sm:h-16 bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl text-center text-lg font-medium outline-none focus:border-[#00A6F4]/50 transition text-gray-900 dark:text-white"
           />
         ))}
       </div>

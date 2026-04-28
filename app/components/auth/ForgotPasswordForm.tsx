@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { AuthCard, AuthButton, AuthInput } from "@/app/components/auth";
 import { useForgotPasswordMutation } from "@/lib/redux/features/auth/authApi";
+import { formatApiDetail } from "@/lib/utils/formatApiError";
 import { setResetEmail } from "@/lib/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
 
@@ -30,8 +31,9 @@ export default function ForgotPasswordForm() {
       // Navigate to verify-email page after short delay
       setTimeout(() => router.push("/verify-email"), 1500);
     } catch (err: unknown) {
-      const apiError = err as { data?: { detail?: string } };
-      setError(apiError.data?.detail || "Failed to send OTP. Please try again.");
+      const apiError = err as { data?: { detail?: unknown } };
+      const detail = formatApiDetail(apiError.data?.detail);
+      setError(detail || "Failed to send OTP. Please try again.");
     }
   };
 
