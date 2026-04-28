@@ -101,13 +101,13 @@ export default function PricingCards({
     const storedRole =
       typeof window !== "undefined"
         ? (() => {
-            try {
-              const parsed = JSON.parse(localStorage.getItem("user") || "{}");
-              return (parsed as { role?: string }).role || null;
-            } catch {
-              return null;
-            }
-          })()
+          try {
+            const parsed = JSON.parse(localStorage.getItem("user") || "{}");
+            return (parsed as { role?: string }).role || null;
+          } catch {
+            return null;
+          }
+        })()
         : null;
     const effectiveToken = token || storedToken;
     const effectiveRole = (userRole || storedRole || "").toLowerCase();
@@ -134,20 +134,18 @@ export default function PricingCards({
     <div>
       {/* Heading */}
       <h2
-        className={`font-bold text-center ${
-          isSection
+        className={`font-bold text-center ${isSection
             ? "text-2xl sm:text-3xl md:text-4xl mb-2 sm:mb-3"
             : "text-2xl sm:text-3xl mb-2"
-        }`}
+          }`}
       >
         Simple, credit-based pricing
       </h2>
       <p
-        className={`text-center text-gray-600 dark:text-gray-400 ${
-          isSection
+        className={`text-center text-gray-600 dark:text-gray-400 ${isSection
             ? "text-xs sm:text-sm mb-8 sm:mb-10 md:mb-12"
             : "text-sm mb-8"
-        }`}
+          }`}
       >
         Each video generation uses 1 credit. No hidden fees.
       </p>
@@ -169,36 +167,35 @@ export default function PricingCards({
             {visiblePlans.map((plan) => (
               <div
                 key={plan.name}
-                className={`relative transition-all duration-300 flex flex-col w-full ${
-                  plan.highlighted
+                className={`relative transition-all duration-300 flex flex-col w-full ${plan.highlighted
                     ? "bg-linear-to-b from-gray-100 dark:from-gray-800/80 to-white dark:to-gray-900/80 border-cyan-500/50 shadow-lg shadow-cyan-500/5"
                     : "bg-linear-to-b from-gray-50 dark:from-gray-900/50 to-white dark:to-black border-gray-200 dark:border-gray-800/50 hover:border-gray-300 dark:hover:border-gray-700/50"
-                }`}
+                  }`}
                 style={
                   isSection
                     ? {
-                        minHeight: plan.highlighted ? "607.36px" : "555.26px",
-                        paddingTop: "44.33px",
-                        paddingBottom: "44.33px",
-                        paddingLeft: "44.33px",
-                        paddingRight: "44.33px",
-                        borderRadius: "26.6px",
-                        borderWidth: "1.23px",
-                        borderStyle: "solid" as const,
-                        borderColor: plan.highlighted
-                          ? "rgba(6, 182, 212, 0.5)"
-                          : "rgba(55, 65, 81, 0.5)",
-                      }
+                      minHeight: plan.highlighted ? "607.36px" : "555.26px",
+                      paddingTop: "44.33px",
+                      paddingBottom: "44.33px",
+                      paddingLeft: "44.33px",
+                      paddingRight: "44.33px",
+                      borderRadius: "26.6px",
+                      borderWidth: "1.23px",
+                      borderStyle: "solid" as const,
+                      borderColor: plan.highlighted
+                        ? "rgba(6, 182, 212, 0.5)"
+                        : "rgba(55, 65, 81, 0.5)",
+                    }
                     : {
-                        maxWidth: "340px",
-                        padding: "24px",
-                        borderRadius: "16px",
-                        borderWidth: "1px",
-                        borderStyle: "solid" as const,
-                        borderColor: plan.highlighted
-                          ? "rgba(6, 182, 212, 0.5)"
-                          : "rgba(55, 65, 81, 0.5)",
-                      }
+                      maxWidth: "340px",
+                      padding: "24px",
+                      borderRadius: "16px",
+                      borderWidth: "1px",
+                      borderStyle: "solid" as const,
+                      borderColor: plan.highlighted
+                        ? "rgba(6, 182, 212, 0.5)"
+                        : "rgba(55, 65, 81, 0.5)",
+                    }
                 }
               >
                 {plan.badge && (
@@ -228,11 +225,10 @@ export default function PricingCards({
                           <X className="w-4 h-4 text-gray-600" />
                         )}
                         <span
-                          className={`text-sm ${
-                            feature.included
+                          className={`text-sm ${feature.included
                               ? "text-gray-700 dark:text-gray-300"
                               : "text-gray-400 dark:text-gray-600"
-                          }`}
+                            }`}
                         >
                           {feature.text}
                         </span>
@@ -243,11 +239,10 @@ export default function PricingCards({
                   <div className={isSection ? "mt-auto" : "mt-6"}>
                     <button
                       onClick={() => handleSelectPlan(plan.name)}
-                      className={`w-full py-3 font-medium transition text-sm ${
-                        plan.highlighted
+                      className={`w-full py-3 font-medium transition text-sm ${plan.highlighted
                           ? "bg-cyan-500 hover:bg-cyan-400 text-white"
                           : "bg-transparent border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-cyan-500 hover:text-white hover:border-cyan-500"
-                      }`}
+                        }`}
                       style={{ borderRadius: "12px" }}
                     >
                       {plan.button}
@@ -276,11 +271,10 @@ export default function PricingCards({
                     aria-label={`Go to pricing page ${index + 1}`}
                   >
                     <div
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        index === safePageIndex
+                      className={`h-2 rounded-full transition-all duration-300 ${index === safePageIndex
                           ? "bg-cyan-400 w-6"
                           : "bg-gray-500/50 hover:bg-gray-400/70 w-2"
-                      }`}
+                        }`}
                     />
                   </button>
                 ))}

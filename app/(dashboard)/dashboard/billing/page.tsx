@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { CreditCard, ArrowLeft } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -89,16 +89,24 @@ function BillingPageContent() {
     }
   }, [isPaymentSuccess, userId, refetchCredits]);
 
+  // Use a ref for authUser to avoid infinite loop:
+  // dispatch(setUser) → authUser ref changes → effect re-runs → dispatch again
+  const authUserRef = useRef(authUser);
+  useEffect(() => {
+    authUserRef.current = authUser;
+  }, [authUser]);
+
   // Sync updated credit balance back to Redux user state
   useEffect(() => {
-    if (typeof creditBalance === "number" && authUser && creditBalance !== authUser.credits) {
-      const updatedUser: AuthUser = { ...authUser, credits: creditBalance };
+    const currentUser = authUserRef.current;
+    if (typeof creditBalance === "number" && currentUser && creditBalance !== currentUser.credits) {
+      const updatedUser: AuthUser = { ...currentUser, credits: creditBalance };
       dispatch(setUser(updatedUser));
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(updatedUser));
       }
     }
-  }, [creditBalance, authUser, dispatch]);
+  }, [creditBalance, dispatch]);
 
   const activePlans = useMemo(
     () => (subscriptions ?? []).filter((plan) => plan.plan_status?.toLowerCase() === "active"),

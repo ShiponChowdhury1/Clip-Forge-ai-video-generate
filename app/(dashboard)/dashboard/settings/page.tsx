@@ -22,7 +22,8 @@ export default function SettingsPage() {
 
   return (
     <div>
-      {view === "profile" && (
+      {/* Render all views but control visibility - prevents hook count mismatch */}
+      <div className={view === "profile" ? "block" : "hidden"}>
         <ProfileSection
           onNavigate={(v) => {
             if (v === "password") {
@@ -32,18 +33,18 @@ export default function SettingsPage() {
             }
           }}
         />
-      )}
+      </div>
 
-      {view === "wallet" && (
+      <div className={view === "wallet" ? "block" : "hidden"}>
         <CreditWalletDetail
           onBack={() => setView("profile")}
           onBuyCredits={handleBuyCredits}
         />
-      )}
+      </div>
 
-      {view === "notifications" && (
+      <div className={view === "notifications" ? "block" : "hidden"}>
         <NotificationSettings onBack={() => setView("profile")} />
-      )}
+      </div>
 
       {showChangePassword && (
         <ChangePassword onClose={() => setShowChangePassword(false)} />

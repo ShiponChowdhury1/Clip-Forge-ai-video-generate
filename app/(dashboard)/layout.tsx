@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useGetMeQuery } from "@/lib/redux/features/auth/authApi";
@@ -44,12 +44,20 @@ export default function DashboardLayout({
     () => typeof window !== "undefined" && localStorage.getItem("sidebar-collapsed") === "true"
   );
 
+  // Use a ref to avoid including `user` in the dependency array,
+  // which would cause an infinite loop: setUser -> user changes -> effect re-runs -> setUser...
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
   useEffect(() => {
     if (!profile) return;
 
+    const currentUser = userRef.current;
     const normalizedProfilePlan = profile.subscription_plan?.trim();
-    const resolvedPlan = normalizedProfilePlan || user?.subscription_plan || "Free";
-    const resolvedPicture = resolveProfileImageUrl(profile.profile_image_url, user?.picture);
+    const resolvedPlan = normalizedProfilePlan || currentUser?.subscription_plan || "Free";
+    const resolvedPicture = resolveProfileImageUrl(profile.profile_image_url, currentUser?.picture);
 
     const freshUser = {
       id: profile.id,
@@ -62,13 +70,13 @@ export default function DashboardLayout({
     };
 
     const isSameUser =
-      user?.id === freshUser.id &&
-      user?.name === freshUser.name &&
-      user?.email === freshUser.email &&
-      user?.credits === freshUser.credits &&
-      (user?.subscription_plan || "Free") === freshUser.subscription_plan &&
-      user?.role === freshUser.role &&
-      user?.picture === freshUser.picture;
+      currentUser?.id === freshUser.id &&
+      currentUser?.name === freshUser.name &&
+      currentUser?.email === freshUser.email &&
+      currentUser?.credits === freshUser.credits &&
+      (currentUser?.subscription_plan || "Free") === freshUser.subscription_plan &&
+      currentUser?.role === freshUser.role &&
+      currentUser?.picture === freshUser.picture;
 
     if (isSameUser) return;
 
@@ -76,7 +84,7 @@ export default function DashboardLayout({
     if (typeof window !== "undefined") {
       localStorage.setItem("user", JSON.stringify(freshUser));
     }
-  }, [dispatch, profile, user]);
+  }, [dispatch, profile]);
 
   useEffect(() => {
     if (!token) {
