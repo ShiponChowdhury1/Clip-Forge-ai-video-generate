@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function formatApiDetail(detail: unknown): string {
   if (!detail && detail !== 0) return "";
   if (typeof detail === "string") return detail;

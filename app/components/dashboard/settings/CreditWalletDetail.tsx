@@ -153,16 +153,16 @@ export default function CreditWalletDetail({
       </button>
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Credit Wallet</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Credit Wallet</h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
             Track your credits, purchases, and usage
           </p>
         </div>
         <button
           onClick={onBuyCredits}
-          className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-lg font-medium transition-colors text-sm"
+          className="flex items-center justify-center sm:justify-start gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 sm:px-5 py-2.5 rounded-lg font-medium transition-colors text-sm whitespace-nowrap w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           Buy Credits
@@ -236,35 +236,25 @@ export default function CreditWalletDetail({
       </div>
 
       {/* Transaction History */}
-      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 mb-6">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Transaction History</h3>
-          <span className="text-gray-500 text-sm">
+      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-4 sm:p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-5">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Transaction History</h3>
+          <span className="text-gray-500 text-xs sm:text-sm">
             {walletData?.total_transactions ?? transactions.length} transactions
           </span>
         </div>
 
-        {/* Table Header */}
-        <div className="grid grid-cols-[120px_1.2fr_110px_1.6fr_100px] gap-4 pb-3 border-b border-gray-200 dark:border-[#1A2332] mb-1">
-          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
-            Date
-          </span>
-          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
-            Action
-          </span>
-          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
-            Type
-          </span>
-          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
-            Reference ID
-          </span>
-          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider text-right">
-            Credits
-          </span>
+        {/* Desktop Table Header */}
+        <div className="hidden sm:grid grid-cols-[120px_1.2fr_110px_1.6fr_100px] gap-4 pb-3 border-b border-gray-200 dark:border-[#1A2332] mb-1">
+          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Date</span>
+          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Action</span>
+          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Type</span>
+          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Reference ID</span>
+          <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider text-right">Credits</span>
         </div>
 
-        {/* Rows */}
-        <div className="divide-y divide-gray-200 dark:divide-[#1A2332]">
+        {/* Transactions Container */}
+        <div className="space-y-3 sm:space-y-0 sm:divide-y sm:divide-gray-200 dark:sm:divide-[#1A2332]">
           {(isLoading || isFetching) && (
             <div className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">Loading transactions...</div>
           )}
@@ -281,10 +271,7 @@ export default function CreditWalletDetail({
             !isFetching &&
             !isError &&
             transactions.map((tx) => (
-              <div
-                key={tx.id}
-                className="grid grid-cols-[120px_1.2fr_110px_1.6fr_100px] gap-4 py-4 items-center"
-              >
+              <div key={tx.id} className="hidden sm:grid sm:grid-cols-[120px_1.2fr_110px_1.6fr_100px] gap-4 py-4 items-center">
                 <span className="text-gray-600 dark:text-gray-400 text-sm">{tx.date}</span>
                 <div className="flex items-center gap-3">
                   {getActionIcon(tx.type)}
@@ -292,19 +279,44 @@ export default function CreditWalletDetail({
                     <p className="text-gray-900 dark:text-white text-sm font-medium">{tx.action}</p>
                   </div>
                 </div>
-                <span className="text-gray-500 dark:text-gray-400 text-sm capitalize">
-                  {tx.rawType}
-                </span>
-                <span className="text-gray-500 dark:text-gray-400 text-sm break-all">
-                  {tx.referenceId || "—"}
-                </span>
-                <span
-                  className={`text-sm font-semibold text-right ${
-                    tx.credits > 0 ? "text-green-400" : "text-gray-900 dark:text-white"
-                  }`}
-                >
+                <span className="text-gray-500 dark:text-gray-400 text-sm capitalize">{tx.rawType}</span>
+                <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm break-all">{tx.referenceId || "—"}</span>
+                <span className={`text-sm font-semibold text-right ${tx.credits > 0 ? "text-green-400" : "text-gray-900 dark:text-white"}`}>
                   {tx.credits > 0 ? `+${tx.credits}` : tx.credits}
                 </span>
+              </div>
+            ))}
+
+          {/* Mobile Card View */}
+          {!isLoading &&
+            !isFetching &&
+            !isError &&
+            transactions.map((tx) => (
+              <div key={tx.id} className="sm:hidden bg-gray-50 dark:bg-[#161D28] border border-gray-200 dark:border-[#2A3655] rounded-lg p-4">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex items-start gap-3 flex-1">
+                    {getActionIcon(tx.type)}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-gray-900 dark:text-white text-sm font-semibold truncate">{tx.action}</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">{tx.date}</p>
+                    </div>
+                  </div>
+                  <span className={`text-sm font-bold whitespace-nowrap ${tx.credits > 0 ? "text-green-400" : "text-gray-900 dark:text-white"}`}>
+                    {tx.credits > 0 ? `+${tx.credits}` : tx.credits}
+                  </span>
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 dark:text-gray-400">Type:</span>
+                    <span className="text-gray-900 dark:text-white font-medium capitalize">{tx.rawType}</span>
+                  </div>
+                  {tx.referenceId && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500 dark:text-gray-400">Txn ID:</span>
+                      <span className="text-gray-600 dark:text-gray-400 font-mono truncate">{tx.referenceId}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
         </div>
@@ -352,17 +364,17 @@ export default function CreditWalletDetail({
       </div>
 
       {/* Bottom Buttons */}
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-center gap-3 sm:gap-4">
         <button
           onClick={onBuyCredits}
-          className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-3 rounded-xl font-medium transition-colors text-sm"
+          className="flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 sm:px-6 py-3 rounded-xl font-medium transition-colors text-sm whitespace-nowrap order-2 sm:order-1"
         >
           <Plus className="w-4 h-4" />
           Buy Credits
         </button>
         <button
           onClick={onBack}
-          className="flex items-center gap-2 bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] border border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white px-6 py-3 rounded-xl font-medium transition-colors text-sm"
+          className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] border border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white px-4 sm:px-6 py-3 rounded-xl font-medium transition-colors text-sm whitespace-nowrap order-1 sm:order-2"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Profile

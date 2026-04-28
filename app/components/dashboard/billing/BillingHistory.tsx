@@ -91,36 +91,50 @@ export default function BillingHistory({
       {!isLoading && !isError && invoices.length === 0 && (
         <p className="text-sm text-gray-500 dark:text-gray-400 py-3">No billing history found.</p>
       )}
-      <div className="space-y-0 divide-y divide-gray-200 dark:divide-[#1A2332]">
+      <div className="space-y-3">
         {!isLoading && !isError && invoices.map((invoice, idx) => (
           <div
             key={idx}
-            className="flex items-center justify-between py-4 first:pt-0 last:pb-0"
+            className="bg-gray-50 dark:bg-[#161D28] border border-gray-200 dark:border-[#2A3655] rounded-lg p-3 sm:p-4 hover:bg-gray-100 dark:hover:bg-[#1A2330] transition-colors"
           >
-            <div>
-              <p className="text-gray-900 dark:text-white text-sm font-semibold">{invoice.id}</p>
-              <p className="text-gray-500 text-xs">{invoice.date}</p>
-              <p className="text-gray-500 text-xs capitalize mt-0.5">
-                {invoice.paymentType?.replace("_", " ") || "payment"}
+            {/* Top Row: ID and Date */}
+            <div className="flex items-baseline justify-between gap-2 mb-2.5">
+              <p className="text-gray-900 dark:text-white text-sm font-bold truncate">{invoice.id}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-xs whitespace-nowrap">{invoice.date}</p>
+            </div>
+
+            {/* Middle Row: Badges and Amount (Mobile Stack, Desktop Horizontal) */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 mb-2.5">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-gray-600 dark:text-gray-400 text-xs capitalize px-2.5 py-1 bg-gray-200 dark:bg-[#2A3655] rounded-md whitespace-nowrap">
+                  {invoice.paymentType?.replace("_", " ") || "payment"}
+                </span>
+                {invoice.credits !== undefined && (
+                  <span className="text-xs px-2.5 py-1 bg-blue-500/10 text-blue-500 rounded-md whitespace-nowrap">
+                    {invoice.credits} Credits
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+                <span className="text-gray-900 dark:text-white text-sm sm:text-base font-bold">{invoice.amount}</span>
+                {getStatusBadge(invoice.status)}
+                <button
+                  onClick={() => handleDownloadInvoice(invoice)}
+                  className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-200 dark:bg-[#2A3655] text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-[#3A4565] hover:text-gray-900 dark:hover:text-white transition-colors shrink-0"
+                  aria-label={`Download invoice ${invoice.id}`}
+                  title="Download PDF"
+                >
+                  <Download className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Bottom Row: Transaction ID */}
+            {invoice.transactionId && (
+              <p className="text-gray-500 dark:text-gray-400 text-xs break-all">
+                <span className="font-semibold">Txn:</span> <span className="font-mono text-[10px]">{invoice.transactionId}</span>
               </p>
-              {invoice.transactionId && (
-                <p className="text-gray-400 text-[11px] mt-0.5 break-all">Txn: {invoice.transactionId}</p>
-              )}
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-900 dark:text-white text-sm font-medium">
-                {invoice.amount}
-              </span>
-              {getStatusBadge(invoice.status)}
-              <button
-                onClick={() => handleDownloadInvoice(invoice)}
-                className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                aria-label={`Download invoice ${invoice.id}`}
-                title="Download PDF"
-              >
-                <Download className="w-4 h-4" />
-              </button>
-            </div>
+            )}
           </div>
         ))}
       </div>
