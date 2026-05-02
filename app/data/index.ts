@@ -65,20 +65,21 @@ export const steps = [
   },
 ];
 
-// Pricing Section Data
+// Pricing Section Data – Subscription Plans
 export const plans = [
   {
     name: "Starter",
     price: "$0",
-    period: "One-time",
-    credits: "50 Credits Included",
+    period: "/month",
+    credits: "50 Credits / month",
     features: [
       { text: "1080p Export", included: true },
       { text: "Standard Voices", included: true },
       { text: "Basic Support", included: true },
       { text: "No Watermark", included: true },
+      { text: "Commercial Usage", included: false },
     ],
-    button: "Buy 50 Credits",
+    button: "Get Started",
     highlighted: false,
     cardStyle: {
       width: "396.78px",
@@ -92,15 +93,16 @@ export const plans = [
   {
     name: "Growth",
     price: "$10",
-    period: "/one-time",
-    credits: "3000 Credits Included",
+    period: "/month",
+    credits: "3,000 Credits / month",
     features: [
       { text: "4K Export", included: true },
       { text: "Premium AI Voices", included: true },
       { text: "Priority Support", included: true },
       { text: "Unlimited Assets", included: true },
+      { text: "Commercial Usage", included: true },
     ],
-    button: "Buy 200 Credits",
+    button: "Choose Plan",
     highlighted: true,
     badge: "MOST POPULAR",
     cardStyle: {
@@ -115,15 +117,16 @@ export const plans = [
   {
     name: "Pro",
     price: "$25",
-    period: "/one-time",
-    credits: "6000 Credits Included",
+    period: "/month",
+    credits: "6,000 Credits / month",
     features: [
       { text: "API Access", included: true },
       { text: "Custom Branding", included: true },
       { text: "Dedicated Manager", included: true },
       { text: "Bulk Generation", included: true },
+      { text: "Commercial Usage", included: true },
     ],
-    button: "Buy 600 Credits",
+    button: "Choose Plan",
     highlighted: false,
     cardStyle: {
       width: "396.78px",

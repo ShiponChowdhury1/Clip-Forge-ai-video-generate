@@ -3,9 +3,8 @@
 import { Check, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useGetCreditPackagesQuery } from "@/lib/redux/features/admin/adminApi";
+import { useGetSubscriptionsQuery } from "@/lib/redux/features/admin/adminApi";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { plans } from "@/app/data";
 
 type DisplayPlan = {
   name: string;
@@ -25,6 +24,56 @@ interface PricingCardsProps {
   onSelectPlan?: (planName: string) => void;
 }
 
+/* ── Static fallback plans (shown when API has no data) ───────────── */
+const fallbackPlans: DisplayPlan[] = [
+  {
+    name: "Starter",
+    price: "$0",
+    period: "/month",
+    credits: "50 Credits / month",
+    features: [
+      { text: "1080p Export", included: true },
+      { text: "Standard Voices", included: true },
+      { text: "Basic Support", included: true },
+      { text: "No Watermark", included: true },
+      { text: "Commercial Usage", included: false },
+    ],
+    button: "Get Started",
+    highlighted: false,
+  },
+  {
+    name: "Growth",
+    price: "$10",
+    period: "/month",
+    credits: "3,000 Credits / month",
+    features: [
+      { text: "4K Export", included: true },
+      { text: "Premium AI Voices", included: true },
+      { text: "Priority Support", included: true },
+      { text: "Unlimited Assets", included: true },
+      { text: "Commercial Usage", included: true },
+    ],
+    button: "Choose Plan",
+    highlighted: true,
+    badge: "MOST POPULAR",
+  },
+  {
+    name: "Pro",
+    price: "$25",
+    period: "/month",
+    credits: "6,000 Credits / month",
+    features: [
+      { text: "API Access", included: true },
+      { text: "Custom Branding", included: true },
+      { text: "Dedicated Manager", included: true },
+      { text: "Bulk Generation", included: true },
+      { text: "Commercial Usage", included: true },
+    ],
+    button: "Choose Plan",
+    highlighted: false,
+  },
+];
+
 export default function PricingCards({
   variant = "section",
   onSelectPlan,
@@ -34,44 +83,35 @@ export default function PricingCards({
   const token = useAppSelector((state) => state.auth.token);
   const userRole = useAppSelector((state) => state.auth.user?.role);
   const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const { data: creditPackages = [] } = useGetCreditPackagesQuery();
+  const { data: subscriptionPlans = [] } = useGetSubscriptionsQuery();
   const isSection = variant === "section";
 
   const displayPlans = useMemo<DisplayPlan[]>(() => {
-    const activePackages = creditPackages
-      .filter((pkg) => (pkg.status || "active").toLowerCase() === "active")
-      .sort((a, b) => a.price - b.price);
+    const activePlans = subscriptionPlans
+      .filter((p) => (p.plan_status || "active").toLowerCase() === "active")
+      .sort((a, b) => a.monthly_price - b.monthly_price);
 
-    if (!activePackages.length) {
-      return plans.map((plan, idx) => ({
-        name: plan.name,
-        price: plan.price.startsWith("$") ? plan.price : `$${plan.price}`,
-        period: plan.period.startsWith("/") ? plan.period : `/${plan.period.toLowerCase()}`,
-        credits: plan.credits,
-        features: plan.features,
-        button: "Buy Credits",
-        highlighted: !!plan.highlighted,
-        badge: idx === 1 ? "MOST POPULAR" : undefined,
-      }));
-    }
+    if (!activePlans.length) return fallbackPlans;
 
-    const highlightedIndex = activePackages.length > 1 ? 1 : 0;
+    const highlightedIndex = activePlans.length > 1 ? 1 : 0;
 
-    return activePackages.map((pkg, idx) => ({
-      name: pkg.name,
-      price: `$${Number(pkg.price).toFixed(2)}`,
-      period: "/one-time",
-      credits: `${Number(pkg.credits).toLocaleString()} Credits Included`,
+    return activePlans.map((plan, idx) => ({
+      name: plan.name,
+      price: plan.monthly_price === 0 ? "Free" : `$${Number(plan.monthly_price).toFixed(0)}`,
+      period: plan.monthly_price === 0 ? "" : "/month",
+      credits: `${Number(plan.monthly_credits).toLocaleString()} Credits / month`,
       features: [
-        { text: "One-time purchase", included: true },
-        { text: "Instant credit top-up", included: true },
-        { text: "No recurring charge", included: true },
+        { text: `Up to ${plan.video_limit_per_month} videos/month`, included: true },
+        { text: `Max ${plan.max_video_duration}s video duration`, included: true },
+        { text: `${plan.max_concurrent_jobs} concurrent job${plan.max_concurrent_jobs > 1 ? "s" : ""}`, included: true },
+        { text: `Priority Level ${plan.priority_level}`, included: true },
+        { text: "Commercial Usage", included: plan.commercial_usage_allowed },
       ],
-      button: "Buy Credits",
+      button: plan.monthly_price === 0 ? "Get Started" : "Choose Plan",
       highlighted: idx === highlightedIndex,
       badge: idx === highlightedIndex ? "MOST POPULAR" : undefined,
     }));
-  }, [creditPackages]);
+  }, [subscriptionPlans]);
 
   const cardsPerPage = 3;
   const totalPages = Math.max(1, Math.ceil(displayPlans.length / cardsPerPage));
@@ -123,7 +163,7 @@ export default function PricingCards({
     }
 
     if (effectiveRole === "user" || effectiveRole === "super_admin") {
-      router.push(`/dashboard/billing?checkout=1&package=${encodeURIComponent(planName)}`);
+      router.push(`/dashboard/billing?checkout=1&plan=${encodeURIComponent(planName)}`);
       return;
     }
 
@@ -139,7 +179,7 @@ export default function PricingCards({
             : "text-2xl sm:text-3xl mb-2"
           }`}
       >
-        Simple, credit-based pricing
+        Choose Your Subscription Plan
       </h2>
       <p
         className={`text-center text-gray-600 dark:text-gray-400 ${isSection
@@ -147,13 +187,13 @@ export default function PricingCards({
             : "text-sm mb-8"
           }`}
       >
-        Each video generation uses 1 credit. No hidden fees.
+        Scale your video creation with a plan that matches your needs.
       </p>
 
       {/* Cards Grid */}
       {displayPlans.length === 0 ? (
         <p className="text-center text-gray-600 dark:text-gray-400 text-sm py-8">
-          No active credit packages available right now.
+          No active plans available right now.
         </p>
       ) : (
         <div className="space-y-6">
@@ -211,7 +251,9 @@ export default function PricingCards({
                     <h3 className="text-lg font-semibold mb-1">{plan.name}</h3>
                     <div className="mb-1">
                       <span className="text-3xl font-bold">{plan.price}</span>
-                      <span className="text-gray-500 text-sm ml-2">{plan.period}</span>
+                      {plan.period && (
+                        <span className="text-gray-500 text-sm ml-2">{plan.period}</span>
+                      )}
                     </div>
                     <p className="text-cyan-400 text-xs">{plan.credits}</p>
                   </div>
