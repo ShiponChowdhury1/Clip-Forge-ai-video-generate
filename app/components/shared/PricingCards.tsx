@@ -97,7 +97,7 @@ export default function PricingCards({
 
     return activePlans.map((plan, idx) => ({
       name: plan.name,
-      price: plan.monthly_price === 0 ? "Free" : `$${Number(plan.monthly_price).toFixed(0)}`,
+      price: plan.monthly_price === 0 ? "Free" : `$${Number(plan.monthly_price) % 1 === 0 ? Number(plan.monthly_price).toFixed(0) : Number(plan.monthly_price).toFixed(2)}`,
       period: plan.monthly_price === 0 ? "" : "/month",
       credits: `${Number(plan.monthly_credits).toLocaleString()} Credits / month`,
       features: [
