@@ -195,3 +195,15 @@ input[type="checkbox"]:checked::before {
   transform-origin: center;
   will-change: transform;
 }
+
+/* ── Force Google Sign-In iframe to fill its overlay container ────── */
+/* The GoogleLogin component renders an iframe; we stretch it so       */
+/* clicks always land on the real Google button in production.         */
+[data-google-btn-overlay] > div,
+[data-google-btn-overlay] > div > div,
+[data-google-btn-overlay] iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 48px !important;
+}
+

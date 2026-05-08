@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { useGoogleAuthMutation } from "@/lib/redux/features/auth/authApi";
 import { setCredentials, setUser } from "@/lib/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
@@ -22,6 +22,21 @@ export default function SocialButtons() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [error, setError] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(400);
+
+  // Measure the actual container width so the Google iframe fills it exactly
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(Math.floor(entry.contentRect.width));
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Decode Google JWT credential to extract user info
   const decodeGoogleJwt = (credential: string) => {
@@ -45,7 +60,7 @@ export default function SocialButtons() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     if (!credentialResponse.credential) {
       setError("Google sign-in failed. No credential received.");
       return;
@@ -116,12 +131,12 @@ export default function SocialButtons() {
         </div>
       )}
 
-      {/* Buttons */}
-      <div className="w-full flex gap-4">
+      {/* Google Sign-In Button — custom styled with real GoogleLogin on top */}
+      <div className="w-full flex gap-4" ref={containerRef}>
         <div className="w-full relative h-12">
-          {/* Custom styled button underneath */}
+          {/* Custom styled visual underneath */}
           <div
-            className="w-full h-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#1e2a30] border border-gray-300 dark:border-gray-700/50 text-gray-900 dark:text-white font-semibold text-sm"
+            className="w-full h-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#1e2a30] border border-gray-300 dark:border-gray-700/50 text-gray-900 dark:text-white font-semibold text-sm pointer-events-none"
             style={{ borderRadius: "16px", borderWidth: "1.11px" }}
           >
             <Image
@@ -133,13 +148,27 @@ export default function SocialButtons() {
             />
             Google
           </div>
-          {/* Invisible GoogleLogin overlay */}
-          <div className="absolute inset-0 opacity-0 overflow-hidden" style={{ borderRadius: "16px" }}>
+          {/*
+            Real GoogleLogin overlay — opacity:0.01 (not 0) so it stays
+            interactive. The iframe is stretched to fill the full container
+            via CSS so clicks always land on the real Google button.
+          */}
+          <div
+            className="absolute inset-0 overflow-hidden"
+            data-google-btn-overlay
+            style={{
+              borderRadius: "16px",
+              opacity: 0.01,
+              cursor: "pointer",
+            }}
+          >
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => setError("Google sign-in was cancelled.")}
-              width="400"
+              width={containerWidth}
+              size="large"
               shape="pill"
+              type="standard"
             />
           </div>
         </div>
@@ -147,3 +176,4 @@ export default function SocialButtons() {
     </div>
   );
 }
+
