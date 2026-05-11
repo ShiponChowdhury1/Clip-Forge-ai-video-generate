@@ -23,6 +23,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import {
   useUpdateProfileMutation,
   useGetMySubscriptionQuery,
+  useGetCreditWalletQuery,
 } from "@/lib/redux/features/auth/authApi";
 import { setUser } from "@/lib/redux/features/auth/authSlice";
 
@@ -43,6 +44,23 @@ export default function ProfileSection({
   const { data: subscription } = useGetMySubscriptionQuery(undefined, {
     skip: !token,
   });
+  const { data: walletData } = useGetCreditWalletQuery(
+    { page: 1, page_size: 1 },
+    { skip: !token }
+  );
+
+  // Sync fresh credit balance from API to Redux state & localStorage
+  useEffect(() => {
+    if (!user || !walletData) return;
+    const freshCredits = walletData.user_credits;
+    if (freshCredits !== user.credits) {
+      const updatedUser = { ...user, credits: freshCredits };
+      dispatch(setUser(updatedUser));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+    }
+  }, [walletData, user, dispatch]);
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [editName, setEditName] = useState(user?.name || "");
