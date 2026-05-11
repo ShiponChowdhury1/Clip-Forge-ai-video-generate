@@ -355,11 +355,11 @@ export default function CreateVideoPage() {
     const subtitleId = subtitlesEnabled && subtitleStyle !== "none"
       ? (selectedSubtitle?.id ?? null)
       : null;
-    const parsedMusicId = backgroundMusic === "no-music" ? 0 : Number(backgroundMusic);
+    const parsedMusicId = backgroundMusic === "no-music" ? null : Number(backgroundMusic);
     const validMusicIds = new Set(musicList.map((item) => item.id));
-    const musicId = Number.isFinite(parsedMusicId) && validMusicIds.has(parsedMusicId)
+    const musicId = parsedMusicId !== null && Number.isFinite(parsedMusicId) && validMusicIds.has(parsedMusicId)
       ? parsedMusicId
-      : 0;
+      : null;
 
     const createRequestBody = {
       title: videoTitle,

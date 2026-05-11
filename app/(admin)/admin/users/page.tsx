@@ -48,6 +48,7 @@ const perPage = 10;
 export default function AdminUsersPage() {
   const token = useAppSelector((state) => state.auth.token);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [optimisticStatuses, setOptimisticStatuses] = useState<Record<number, "active" | "suspended">>({});
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
@@ -62,6 +63,15 @@ export default function AdminUsersPage() {
   } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Debounce search — wait 400ms after user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -71,13 +81,30 @@ export default function AdminUsersPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  const skip = (currentPage - 1) * perPage;
-  const { data: users, isLoading, isFetching, refetch } = useGetAdminUsersQuery({
-    skip,
-    limit: perPage,
+
+  // Fetch ALL users in one batch (backend max limit is 100)
+  const { data: allUsers, isLoading, isFetching, refetch } = useGetAdminUsersQuery({
+    skip: 0,
+    limit: 100,
     time_filter: "all",
-    search: search || undefined,
   }, { skip: !token });
+
+  // Client-side filtering by name AND email
+  const filteredUsers = (allUsers ?? []).filter((user) => {
+    if (!debouncedSearch) return true;
+    const q = debouncedSearch.toLowerCase();
+    return (
+      user.name.toLowerCase().includes(q) ||
+      user.email.toLowerCase().includes(q)
+    );
+  });
+
+  // Client-side pagination on filtered results
+  const totalFiltered = filteredUsers.length;
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / perPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const skip = (safeCurrentPage - 1) * perPage;
+  const users = filteredUsers.slice(skip, skip + perPage);
 
   const [giveUserCredits, { isLoading: isGrantingCredits }] = useGiveUserCreditsMutation();
   const [updateUserStatus] = useUpdateUserStatusMutation();
@@ -147,15 +174,14 @@ export default function AdminUsersPage() {
     }
   };
 
-  const hasNextPage = (users?.length ?? 0) >= perPage;
-  const inferredTotalPages = hasNextPage ? currentPage + 1 : currentPage;
+  const hasNextPage = safeCurrentPage < totalPages;
   const maxVisiblePages = 3;
-  const tentativeStart = Math.max(1, currentPage - 1);
+  const tentativeStart = Math.max(1, safeCurrentPage - 1);
   const startPage = Math.min(
     tentativeStart,
-    Math.max(1, inferredTotalPages - maxVisiblePages + 1)
+    Math.max(1, totalPages - maxVisiblePages + 1)
   );
-  const endPage = Math.min(inferredTotalPages, startPage + maxVisiblePages - 1);
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
   const pageNumbers = Array.from(
     { length: endPage - startPage + 1 },
     (_, i) => startPage + i
@@ -167,10 +193,10 @@ export default function AdminUsersPage() {
 
       {/* Description and Search */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-         <div>
+        <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">User Management</h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-          Manage user accounts, credits, and platform access
+            Manage user accounts, credits, and platform access
           </p>
         </div>
 
@@ -180,12 +206,12 @@ export default function AdminUsersPage() {
             <input
               type="text"
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search users..."
               className="w-full bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-[#2563EB] transition-colors sm:w-80"
             />
           </div>
-        
+
         </div>
       </div>
 
@@ -216,8 +242,8 @@ export default function AdminUsersPage() {
                 <th className="py-4 px-5"></th>
               </tr>
             </thead>
-            <tbody>
-              {isLoading || isFetching ? (
+            <tbody className={isFetching && !isLoading ? "opacity-50 transition-opacity" : "transition-opacity"}>
+              {isLoading ? (
                 Array.from({ length: perPage }).map((_, i) => (
                   <tr key={i} className="border-b border-gray-100 dark:border-[#1A3155]/50">
                     {Array.from({ length: 7 }).map((__, j) => (
@@ -227,10 +253,10 @@ export default function AdminUsersPage() {
                     ))}
                   </tr>
                 ))
-              ) : !users?.length ? (
+              ) : !users.length ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-gray-500">
-                    No users found.
+                    {debouncedSearch ? `No users found matching "${debouncedSearch}"` : "No users found."}
                   </td>
                 </tr>
               ) : (
@@ -292,17 +318,17 @@ export default function AdminUsersPage() {
                               </div>
                             </div>
                             <div className="relative inline-flex group shrink-0">
-                            <button
-                              onClick={() => openCreditModal(user)}
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-colors"
-                              aria-label="Add credits"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                            <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-black">
-                              Add credits
+                              <button
+                                onClick={() => openCreditModal(user)}
+                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-colors"
+                                aria-label="Add credits"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                              <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2.5 py-1 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-black">
+                                Add credits
+                              </div>
                             </div>
-                          </div>
                           </div>
                           <div className="mt-2 h-1.5 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
                             <div
@@ -372,12 +398,14 @@ export default function AdminUsersPage() {
         {/* Pagination */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-5 py-3 sm:py-4 border-t border-gray-200 dark:border-[#1A3155]">
           <p className="text-xs sm:text-sm text-gray-500">
-            Page {currentPage} of {inferredTotalPages}
+            {debouncedSearch
+              ? `Showing ${totalFiltered} result${totalFiltered !== 1 ? "s" : ""} — Page ${safeCurrentPage} of ${totalPages}`
+              : `Page ${safeCurrentPage} of ${totalPages}`}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+              disabled={safeCurrentPage === 1}
               className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
@@ -386,11 +414,10 @@ export default function AdminUsersPage() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`min-w-8 px-2.5 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${
-                  currentPage === page
+                className={`min-w-8 px-2.5 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${safeCurrentPage === page
                     ? "bg-cyan-500 border-cyan-500 text-white"
                     : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
-                }`}
+                  }`}
               >
                 {page}
               </button>
