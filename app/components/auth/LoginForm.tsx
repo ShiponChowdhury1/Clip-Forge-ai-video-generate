@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthCard, AuthInput, AuthButton, SocialButtons } from "@/app/components/auth";
+import { getLowercaseEmailError } from "@/app/components/auth/emailValidation";
 import { useLoginMutation } from "@/lib/redux/features/auth/authApi";
 import { setCredentials, setUser } from "@/lib/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/lib/redux/hooks";
@@ -29,8 +30,15 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
 
+    const trimmedEmail = email.trim();
+    const emailError = getLowercaseEmailError(trimmedEmail);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+
     try {
-      const result = await login({ email, password }).unwrap();
+      const result = await login({ email: trimmedEmail, password }).unwrap();
       const normalizedUser = {
         ...result.user,
         subscription_plan: result.user.subscription_plan || "Free",
@@ -63,11 +71,11 @@ export default function LoginForm() {
           </div>
         )}
 
-        <AuthInput label="Email Address" type="email" placeholder="name@example.com" value={email} onChange={setEmail} />
+        <AuthInput label="Email Address" type="email" placeholder="Enter Your Email" value={email} onChange={setEmail} />
         <AuthInput
           label="Password"
           type="password"
-          placeholder="********"
+          placeholder="Enter Your Password"
           rightLabel="Forgot Password?"
           onRightLabelClick={() => router.push("/forgot-password")}
           value={password}

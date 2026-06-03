@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { AuthCard, AuthButton, AuthInput } from "@/app/components/auth";
+import { getLowercaseEmailError } from "@/app/components/auth/emailValidation";
 import { useForgotPasswordMutation } from "@/lib/redux/features/auth/authApi";
 import { formatApiDetail } from "@/lib/utils/formatApiError";
 import { setResetEmail } from "@/lib/redux/features/auth/authSlice";
@@ -24,10 +25,17 @@ export default function ForgotPasswordForm() {
     setError("");
     setSuccess("");
 
+    const trimmedEmail = email.trim();
+    const emailError = getLowercaseEmailError(trimmedEmail);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+
     try {
-      const result = await forgotPassword({ email }).unwrap();
+      const result = await forgotPassword({ email: trimmedEmail }).unwrap();
       setSuccess(result.message);
-      dispatch(setResetEmail(email));
+      dispatch(setResetEmail(trimmedEmail));
       // Navigate to verify-email page after short delay
       setTimeout(() => router.push("/verify-email"), 1500);
     } catch (err: unknown) {

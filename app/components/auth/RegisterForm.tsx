@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { AuthCard, AuthInput, AuthButton, SocialButtons, OtpInput } from "@/app/components/auth";
+import { getLowercaseEmailError } from "@/app/components/auth/emailValidation";
 import { useRegisterMutation, useVerifyRegisterOtpMutation, useResendOtpMutation } from "@/lib/redux/features/auth/authApi";
 import { formatApiDetail } from "@/lib/utils/formatApiError";
 
@@ -30,13 +31,20 @@ export default function RegisterForm() {
     e.preventDefault();
     setError("");
 
+    const trimmedEmail = email.trim();
+    const emailError = getLowercaseEmailError(trimmedEmail);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+
     if (!agreed) {
       setError("Please agree to the Terms and Conditions.");
       return;
     }
 
     try {
-      await register({ name, email, password }).unwrap();
+      await register({ name, email: trimmedEmail, password }).unwrap();
       // Registration successful, show OTP modal
       setShowOtpModal(true);
     } catch (err: unknown) {
@@ -45,7 +53,7 @@ export default function RegisterForm() {
       // If user exists but might be unverified, resend OTP and show modal
       if (detail.toLowerCase().includes("already exists")) {
         try {
-          await resendOtp({ email }).unwrap();
+          await resendOtp({ email: trimmedEmail }).unwrap();
           setShowOtpModal(true);
           setOtpSuccess("A verification code has been sent to your email.");
         } catch {
@@ -68,7 +76,7 @@ export default function RegisterForm() {
     }
 
     try {
-      await verifyRegisterOtp({ email, otp }).unwrap();
+      await verifyRegisterOtp({ email: email.trim(), otp }).unwrap();
       router.push("/login");
     } catch (err: unknown) {
       const apiError = err as { data?: { detail?: unknown } };
@@ -82,7 +90,7 @@ export default function RegisterForm() {
     setOtpSuccess("");
 
     try {
-      const result = await resendOtp({ email }).unwrap();
+      const result = await resendOtp({ email: email.trim() }).unwrap();
       setOtpSuccess(result.message || "A new OTP has been sent to your email.");
     } catch {
       setOtpError("Failed to resend OTP.");
@@ -99,9 +107,9 @@ export default function RegisterForm() {
             </div>
           )}
 
-          <AuthInput label="Full Name" type="text" placeholder="John Doe" value={name} onChange={setName} />
-          <AuthInput label="Email Address" type="email" placeholder="name@example.com" value={email} onChange={setEmail} />
-          <AuthInput label="Password" type="password" placeholder="********" value={password} onChange={setPassword} />
+          <AuthInput label="Full Name" type="text" placeholder="Enter Your Name" value={name} onChange={setName} />
+          <AuthInput label="Email Address" type="email" placeholder="Enter Your Email" value={email} onChange={setEmail} />
+          <AuthInput label="Password" type="password" placeholder="Enter Your Password" value={password} onChange={setPassword} />
        <div className="flex items-start gap-3">
             <input
               type="checkbox"

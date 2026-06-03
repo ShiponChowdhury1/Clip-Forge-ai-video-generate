@@ -79,6 +79,11 @@ export default function AuthInput({
           onChange={(e) => handleChange(e.target.value)}
           placeholder={placeholder}
           autoComplete="off"
+          autoCapitalize={type === "email" ? "none" : undefined}
+          autoCorrect={type === "email" ? "off" : undefined}
+          spellCheck={type === "email" ? false : undefined}
+          pattern={type === "email" ? "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$" : undefined}
+          title={type === "email" ? "Use a lowercase email address." : undefined}
           className="w-full h-full bg-transparent px-3 py-0 text-sm outline-none text-gray-900 dark:text-white/50 placeholder-gray-400 dark:placeholder-gray-500"
         />
         {type === "password" && (
