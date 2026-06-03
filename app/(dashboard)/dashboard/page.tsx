@@ -337,7 +337,7 @@ export default function DashboardHome() {
                   amazing video
                 </span>
               </h3>
-              <p className="text-sm text-[#8888bb] mb-4 max-w-xs leading-relaxed">
+              <p className="text-s text-[#8888bb] mb-4 max-w-xs leading-relaxed">
                 Turn your ideas into captivating videos with the power of AI.
               </p>
               <div className="flex items-center gap-3 flex-wrap">
