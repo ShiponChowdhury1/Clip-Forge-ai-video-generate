@@ -149,7 +149,7 @@ export default function AllVideosPage() {
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search your generated video"
-            className="w-full bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl pl-12 pr-4 py-3.5 text-gray-900 dark:text-white text-sm placeholder:text-gray-500 focus:border-[#3B82F6] focus:outline-none transition-colors"
+            className="w-full bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl pl-12 pr-4 py-3.5 text-gray-900 dark:text-white text-sm placeholder:text-gray-500 focus:border-[#3B82F6] focus:outline-none transition-colors"
           />
         </div>
         <DatePicker
@@ -171,19 +171,19 @@ export default function AllVideosPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-5">
+        <div className="bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl p-5">
           <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Total Videos</p>
           <p className="text-gray-900 dark:text-white text-3xl font-bold">{totalVideos}</p>
         </div>
-        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-5">
+        <div className="bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl p-5">
           <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Completed</p>
           <p className="text-[#009927] text-3xl font-bold">{completedCount}</p>
         </div>
-        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-5">
+        <div className="bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl p-5">
           <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Processing</p>
           <p className="text-[#F59E0B] text-3xl font-bold">{processingCount}</p>
         </div>
-        <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl p-5">
+        <div className="bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl p-5">
           <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Failed</p>
           <p className="text-[#E33629] text-3xl font-bold">{failedCount}</p>
         </div>
@@ -193,12 +193,12 @@ export default function AllVideosPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#1F1F1F] rounded-xl overflow-hidden animate-pulse">
-              <div className="aspect-video bg-gray-200 dark:bg-[#1A1A1A]" />
+            <div key={i} className="bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-xl overflow-hidden animate-pulse">
+              <div className="aspect-video bg-gray-200 dark:bg-[#0A0A0A]" />
               <div className="p-5 space-y-3">
-                <div className="h-5 bg-gray-200 dark:bg-[#1A1A1A] rounded w-3/4" />
-                <div className="h-4 bg-gray-200 dark:bg-[#1A1A1A] rounded w-1/2" />
-                <div className="h-3 bg-gray-200 dark:bg-[#1A1A1A] rounded w-1/3" />
+                <div className="h-5 bg-gray-200 dark:bg-[#0A0A0A] rounded w-3/4" />
+                <div className="h-4 bg-gray-200 dark:bg-[#0A0A0A] rounded w-1/2" />
+                <div className="h-3 bg-gray-200 dark:bg-[#0A0A0A] rounded w-1/3" />
               </div>
             </div>
           ))}
@@ -251,7 +251,7 @@ export default function AllVideosPage() {
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 dark:disabled:hover:border-[#1A3155] disabled:hover:text-gray-600 dark:disabled:hover:text-gray-400 transition-all"
+              className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 dark:disabled:hover:border-[#1A3155] disabled:hover:text-gray-600 dark:disabled:hover:text-gray-400 transition-all"
             >
               <ChevronLeft className="w-4 h-4" />
               <span className="hidden sm:inline">Prev</span>
@@ -269,8 +269,8 @@ export default function AllVideosPage() {
                   onClick={() => setCurrentPage(page)}
                   className={`min-w-[36px] h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${
                     currentPage === page
-                      ? "bg-[#3B82F6] text-white"
-                      : "bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6]"
+                            ? "bg-[#3B82F6] text-white"
+                            : "bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6]"
                   }`}
                 >
                   {page}
@@ -282,7 +282,7 @@ export default function AllVideosPage() {
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 dark:disabled:hover:border-[#1A3155] disabled:hover:text-gray-600 dark:disabled:hover:text-gray-400 transition-all"
+              className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 dark:disabled:hover:border-[#1A3155] disabled:hover:text-gray-600 dark:disabled:hover:text-gray-400 transition-all"
             >
               <span className="hidden sm:inline">Next</span>
               <ChevronRight className="w-4 h-4" />

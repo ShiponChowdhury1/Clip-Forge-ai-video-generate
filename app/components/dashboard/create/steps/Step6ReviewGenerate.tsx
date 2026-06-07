@@ -118,7 +118,7 @@ export default function Step6ReviewGenerate({
     <div className="space-y-4">
     
       {/* Main review card */}
-      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-6">
+      <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col items-start gap-2">
   
@@ -137,7 +137,7 @@ export default function Step6ReviewGenerate({
           </h4>
 
           {/* Script Preview */}
-          <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 mb-4">
+          <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4 mb-4">
             <h5 className="text-gray-900 dark:text-white text-sm font-semibold">Script Preview</h5>
             <p className="text-gray-600 dark:text-gray-400 text-xs mt-2 leading-relaxed">
               {scriptPreview
@@ -151,7 +151,7 @@ export default function Step6ReviewGenerate({
             {configCards.map((card) => (
               <div
                 key={card.label}
-                className="flex items-center gap-3 bg-gray-50 dark:bg-[#0B0E12] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4"
+                className="flex items-center gap-3 bg-gray-50 dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl p-4"
               >
                 <div
                   className={`w-9 h-9 rounded-lg ${card.iconBg} flex items-center justify-center shrink-0`}
@@ -169,7 +169,7 @@ export default function Step6ReviewGenerate({
       </div>
 
       {/* Credit Usage */}
-      <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6">
+      <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-gray-900 dark:text-white text-sm font-bold">Credit Usage</h4>
           <div className="flex items-center gap-1.5">

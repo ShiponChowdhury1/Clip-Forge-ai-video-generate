@@ -18,7 +18,7 @@ export default function Step5SubtitleSettings({
   setSubtitleStyle,
 }: Step5SubtitleSettingsProps) {
   return (
-    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-6">
+    <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6 space-y-6">
       {/* Header with toggle */}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -34,7 +34,7 @@ export default function Step5SubtitleSettings({
             className={`text-xs font-medium px-2 py-1 rounded-md border ${
               subtitlesEnabled
                 ? "text-emerald-600 dark:text-emerald-300 border-emerald-300/70 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10"
-                : "text-gray-600 dark:text-gray-400 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#1A2332]"
+                : "text-gray-600 dark:text-gray-400 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#0A0A0A]"
             }`}
           >
             {subtitlesEnabled ? "Enabled" : "Disabled"}
@@ -48,7 +48,7 @@ export default function Step5SubtitleSettings({
             aria-pressed={subtitlesEnabled}
             aria-label="Toggle subtitles"
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              subtitlesEnabled ? "bg-[#3B82F6]" : "bg-gray-300 dark:bg-[#1A2332]"
+              subtitlesEnabled ? "bg-[#3B82F6]" : "bg-gray-300 dark:bg-[#0A0A0A]"
             }`}
           >
             <div
@@ -62,7 +62,7 @@ export default function Step5SubtitleSettings({
 
       {/* Disabled message */}
       {!subtitlesEnabled && (
-        <p className="text-gray-500 text-sm bg-gray-100 dark:bg-[#1A2332] border border-gray-200 dark:border-[#1A3155] rounded-lg px-3 py-2">
+        <p className="text-gray-500 text-sm bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1A3155] rounded-lg px-3 py-2">
           Subtitles are disabled. Toggle on to choose a style.
         </p>
       )}
@@ -93,7 +93,7 @@ export default function Step5SubtitleSettings({
           >
             {/* Preview area */}
             <div
-              className="relative bg-gray-200 dark:bg-[#1A2332] overflow-hidden"
+              className="relative bg-gray-200 dark:bg-[#0A0A0A] overflow-hidden"
               style={{ aspectRatio: "16/9" }}
             >
               {style.value === "none" ? (
@@ -121,7 +121,7 @@ export default function Step5SubtitleSettings({
             </div>
 
             {/* Label + credits */}
-            <div className="bg-gray-50 dark:bg-[#0B0E12] px-3 py-2 flex items-center justify-between">
+            <div className="bg-gray-50 dark:bg-[#0A0A0A] px-3 py-2 flex items-center justify-between">
               <span className="text-gray-900 dark:text-white text-xs font-medium">
                 {style.label}
               </span>

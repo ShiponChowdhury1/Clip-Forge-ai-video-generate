@@ -206,7 +206,7 @@ export default function VideoDetailsPage() {
           <div className="flex items-start gap-3 min-w-0">
             <button
               onClick={() => router.back()}
-              className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-gray-300 dark:border-[#1A3155] bg-white/70 dark:bg-[#0D1117]/70 hover:bg-white dark:hover:bg-[#111a2c] transition-colors mt-0.5"
+              className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl border border-gray-300 dark:border-[#1A3155] bg-white/70 dark:bg-[#0A0A0A]/70 hover:bg-white dark:hover:bg-[#111a2c] transition-colors mt-0.5"
             >
               <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-white" />
             </button>
@@ -238,8 +238,8 @@ export default function VideoDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[60%_1fr] gap-6">
         {/* Left: Video Player */}
         <div>
-          <div className={`bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden ${isPortrait ? "min-h-160" : "min-h-180"} h-full flex flex-col shadow-[0_20px_50px_-30px_rgba(37,99,235,0.55)] dark:shadow-[0_20px_60px_-35px_rgba(59,130,246,0.45)]`}>
-            <div className="px-4 sm:px-5 pt-3 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0B1320]/55">
+          <div className={`bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden ${isPortrait ? "min-h-160" : "min-h-180"} h-full flex flex-col shadow-[0_20px_50px_-30px_rgba(37,99,235,0.55)] dark:shadow-[0_20px_60px_-35px_rgba(59,130,246,0.45)]`}>
+            <div className="px-4 sm:px-5 pt-3 pb-2 border-b border-gray-200/70 dark:border-[#1A3155]/60 bg-gray-50/70 dark:bg-[#0A0A0A]/55">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
                   Browse other videos
@@ -319,7 +319,7 @@ export default function VideoDetailsPage() {
               )}
             </div>
 
-            <div className="px-4 sm:px-5 py-3 flex-1 flex items-center justify-center bg-linear-to-b from-transparent to-gray-50/60 dark:to-[#091121]/35">
+              <div className="px-4 sm:px-5 py-3 flex-1 flex items-center justify-center bg-linear-to-b from-transparent to-gray-50/60 dark:to-[#0A0A0A]/35">
               <div
                 className={`relative ${isPortrait ? "max-h-140" : isSquare ? "max-h-120 max-w-120 mx-auto" : "max-h-180"} w-full bg-black rounded-2xl overflow-hidden ring-1 ring-black/10 dark:ring-white/10 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.9)]`}
                 style={{ aspectRatio: String(effectiveAspectRatio) }}
@@ -386,14 +386,14 @@ export default function VideoDetailsPage() {
             <div className="px-4 sm:px-5 pb-4 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
               <button
                 onClick={() => router.push("/dashboard/create")}
-                className="group relative overflow-hidden flex items-center justify-center gap-2.5 bg-white dark:bg-[#142238] border border-gray-300 dark:border-[#27456f] text-gray-900 dark:text-white rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-12px_rgba(59,130,246,0.55)] hover:bg-blue-50 dark:hover:bg-[#1b304e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0D1117]"
+                className="group relative overflow-hidden flex items-center justify-center gap-2.5 bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#27456f] text-gray-900 dark:text-white rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-12px_rgba(59,130,246,0.55)] hover:bg-blue-50 dark:hover:bg-[#1b304e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0A0A0A]"
                 aria-label="Create a new video"
               >
                 <PlusCircle className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
                 Create New
               </button>
               <button
-                className="group relative overflow-hidden flex items-center justify-center gap-2.5 bg-white dark:bg-[#142238] border border-gray-300 dark:border-[#27456f] text-gray-900 dark:text-white rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-12px_rgba(59,130,246,0.55)] hover:bg-blue-50 dark:hover:bg-[#1b304e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0D1117]"
+                className="group relative overflow-hidden flex items-center justify-center gap-2.5 bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#27456f] text-gray-900 dark:text-white rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_-12px_rgba(59,130,246,0.55)] hover:bg-blue-50 dark:hover:bg-[#1b304e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0A0A0A]"
                 onClick={handleEditRegenerate}
                 aria-label="Edit current video and regenerate"
               >
@@ -406,7 +406,7 @@ export default function VideoDetailsPage() {
                 className={`group relative overflow-hidden flex items-center justify-center gap-2.5 rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0D1117] ${
                   hasVideo
                     ? "bg-linear-to-r from-[#00A63E] to-[#009927] hover:from-[#00B144] hover:to-[#008a22] text-white hover:-translate-y-0.5 hover:shadow-[0_12px_22px_-12px_rgba(0,166,62,0.65)]"
-                    : "bg-gray-100 dark:bg-[#1A2332] text-gray-500 cursor-not-allowed border border-gray-300 dark:border-[#1A3155]"
+                    : "bg-gray-100 dark:bg-[#0A0A0A] text-gray-500 cursor-not-allowed border border-gray-300 dark:border-[#1A3155]"
                 }`}
                 aria-label="Download video"
               >
@@ -419,8 +419,8 @@ export default function VideoDetailsPage() {
 
         {/* Right: Details */}
         <div>
-          <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden min-h-180 h-full shadow-[0_18px_48px_-34px_rgba(2,132,199,0.55)] dark:shadow-[0_18px_52px_-34px_rgba(59,130,246,0.35)]">
-            <div className="p-4 pb-1 bg-gray-50/70 dark:bg-[#0B1320]/55">
+          <div className="bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-2xl overflow-hidden min-h-180 h-full shadow-[0_18px_48px_-34px_rgba(2,132,199,0.55)] dark:shadow-[0_18px_52px_-34px_rgba(59,130,246,0.35)]">
+            <div className="p-4 pb-1 bg-gray-50/70 dark:bg-[#0A0A0A]/55">
               <h2 className="text-gray-900 dark:text-white text-sm font-semibold tracking-wide m-2">Generation Details</h2>
             </div>
 
@@ -429,7 +429,7 @@ export default function VideoDetailsPage() {
                 {detailRows.map((row) => (
                   <div
                     key={row.label}
-                    className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-3"
+                    className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-3"
                   >
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1.5 min-w-0">
@@ -453,7 +453,7 @@ export default function VideoDetailsPage() {
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {video.keywords.split(",").map((kw) => kw.trim()).filter(Boolean).map((kw) => (
-                    <span key={kw} className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 text-gray-700 dark:text-gray-300 text-xs px-2.5 py-1 rounded-full">
+                    <span key={kw} className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1A3155]/50 text-gray-700 dark:text-gray-300 text-xs px-2.5 py-1 rounded-full">
                       {kw}
                     </span>
                   ))}
@@ -534,7 +534,7 @@ export default function VideoDetailsPage() {
                   })()}
                 </div>
               ) : (
-                <div className="bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-6 text-center">
+                <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1A3155]/50 rounded-xl p-6 text-center">
                   <FileText className="w-8 h-8 text-gray-600 mx-auto mb-2" />
                   <p className="text-gray-500 text-sm">No script available</p>
                 </div>

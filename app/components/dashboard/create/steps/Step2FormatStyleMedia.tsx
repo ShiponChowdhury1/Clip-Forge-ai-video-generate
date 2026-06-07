@@ -30,7 +30,7 @@ export default function Step2FormatStyleMedia({
   }, [sceneMedia, setSceneMedia]);
 
   return (
-    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-8">
+    <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6 space-y-8">
       {/* Video Format */}
       <div>
         <h3 className="text-gray-900 dark:text-white text-base font-semibold mb-4">
@@ -46,7 +46,7 @@ export default function Step2FormatStyleMedia({
               } ${
                 videoFormat === option.value
                   ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               {/* Device mockup */}
@@ -75,7 +75,7 @@ export default function Step2FormatStyleMedia({
 
       {/* Video Style */}
       <div>
-        <h3 className="text-gray-900 dark:text-white text-lg font-semibold mb-5">Video Style</h3>
+        <h3 className="text-gray-900 dark:text-white text-base font-semibold mb-4">Video Style</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {videoStyles.map((style) => (
             <button
@@ -116,7 +116,7 @@ export default function Step2FormatStyleMedia({
 
       {/* Scene Settings */}
       <div>
-        <h3 className="text-gray-900 dark:text-white text-sm font-semibold mb-4">
+        <h3 className="text-gray-900 dark:text-white text-base font-semibold mb-4">
           Scene Settings
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -127,13 +127,13 @@ export default function Step2FormatStyleMedia({
               className={`relative flex flex-col items-start p-4 rounded-xl border transition-all text-left ${
                 sceneMedia === option.value
                   ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               <span className="text-gray-900 dark:text-white text-sm font-medium">
                 {option.label}
               </span>
-              <span className="text-gray-500 dark:text-gray-400 text-[11px] mt-1 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-[#1A2332] border border-gray-200 dark:border-[#1A3155]">
+              <span className="text-gray-500 dark:text-gray-400 text-[11px] mt-1 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1A3155]">
                 {option.credits > 0 ? `+${option.credits} credits` : "No extra credits"}
               </span>
               {sceneMedia === option.value && (

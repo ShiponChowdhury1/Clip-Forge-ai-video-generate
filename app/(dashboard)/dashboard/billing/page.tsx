@@ -67,6 +67,7 @@ function BillingPageContent() {
       : null);
   const isPaymentSuccess = rawPaymentSuccess.split("?")[0].startsWith("true");
   const shouldOpenBuyModal = searchParams.get("buy") === "1";
+  const shouldOpenChangeModal = searchParams.get("change") === "1";
 
   useEffect(() => {
     const hasMalformedSuccessQuery = rawPaymentSuccess.includes("?") || rawPaymentSuccess.includes("session_id=");
@@ -207,8 +208,10 @@ function BillingPageContent() {
 
   const isForcedCheckout = shouldOpenCheckout && view === "main";
   const isForcedBuyModal = shouldOpenBuyModal && view === "main";
+  const isForcedChangeModal = shouldOpenChangeModal && view === "main";
+  const isForcedPricingModal = isForcedBuyModal || isForcedChangeModal;
   const effectiveView: BillingView = isForcedCheckout ? "checkout" : view;
-  const effectiveBillingModalType: BillingModalType = isForcedBuyModal ? "buy" : billingModalType;
+  const effectiveBillingModalType: BillingModalType = isForcedChangeModal ? "change" : isForcedBuyModal ? "buy" : billingModalType;
   const effectivePlan = isForcedCheckout
     ? forcedCheckoutSource === "package"
       ? querySelectedPackage
@@ -393,7 +396,7 @@ function BillingPageContent() {
       )}
 
       {/* Pricing Plans Modal */}
-      {(showPricingModal || isForcedBuyModal) && (
+      {(showPricingModal || isForcedPricingModal) && (
         <PricingPlans
           modalType={effectiveBillingModalType}
           plans={activePlans}
@@ -402,7 +405,7 @@ function BillingPageContent() {
           isCreditPackagesLoading={creditPackagesLoading}
           onSelectPlan={handleSelectPlan}
           onClose={() => {
-            if (isForcedBuyModal) {
+            if (isForcedPricingModal) {
               router.replace("/dashboard/billing");
               return;
             }

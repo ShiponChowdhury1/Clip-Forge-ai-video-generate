@@ -138,7 +138,7 @@ export const videosApi = createApi({
         try {
           await queryFulfilled;
           dispatch(videosApi.util.invalidateTags([{ type: "Videos", id }, { type: "Videos", id: "LIST" }]));
-        } catch {}
+        } catch { }
       },
     }),
 

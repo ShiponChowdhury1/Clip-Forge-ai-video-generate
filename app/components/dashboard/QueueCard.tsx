@@ -110,11 +110,10 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
 
   return (
     <div
-      className={`bg-white dark:bg-[#0D1117] border rounded-2xl overflow-hidden ${
-        isProcessing
+      className={`bg-white dark:bg-[#0D1117] border rounded-2xl overflow-hidden ${isProcessing
           ? "border-[#F59E0B]/30"
           : "border-gray-300 dark:border-[#1A3155]"
-      }`}
+        }`}
     >
       {/* Thumbnail area with spinner */}
       <div className="relative h-[230px] bg-gray-50 dark:bg-[#0A0E14] flex flex-col items-center justify-center gap-3">

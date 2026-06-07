@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
+import { useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
 import {
   LineChart,
   Line,
@@ -53,11 +54,6 @@ const overviewData = [
   { day: "30", videos: 9 },
 ];
 
-const recentVideos = [
-  { id: 1, title: "YouTube Explainer Video", duration: "02:15", date: "May 18, 2025", bg: "#1a1040" },
-  { id: 2, title: "Social Media Ad", duration: "00:30", date: "May 16, 2025", bg: "#0f2a10", label: "50% OFF" },
-  { id: 3, title: "Company Introduction", duration: "01:20", date: "May 15, 2025", bg: "#1a1a2a" },
-];
 
 const tutorials = [
   { id: 1, title: "Getting Started", duration: "0:52", desc: "A quick guide to get started with ClipForge." },
@@ -69,6 +65,25 @@ const tutorials = [
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function getInitials(name: string): string {
   return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+}
+
+function formatDuration(seconds: number): string {
+  if (!seconds) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
+}
+
+function formatDate(dateString: string): string {
+  try {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch (e) {
+    return dateString;
+  }
 }
 
 // ── Donut SVG ─────────────────────────────────────────────────────────────────
@@ -144,9 +159,9 @@ function StatCard({ icon, label, value, sub, subColor, chart, accent }: StatCard
       />
       <div className="relative z-10">
         <div className="flex items-center gap-2.5 text-[11px] text-[#6666a0] mb-3 font-semibold tracking-wide uppercase">
-          <span 
+          <span
             className="flex items-center justify-center w-7 h-7 rounded-lg border"
-            style={{ 
+            style={{
               color: accent || GRAD_FROM,
               backgroundColor: `${accent || GRAD_FROM}15`,
               borderColor: `${accent || GRAD_FROM}25`
@@ -193,6 +208,12 @@ export default function DashboardHome() {
 
   const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
 
+  const token = useAppSelector((state) => state.auth.token);
+  const { data: videos = [], isLoading: isVideosLoading } = useGetAllVideosQuery(
+    { skip: 0, limit: 3 },
+    { refetchOnMountOrArgChange: true, pollingInterval: 30000, skipPollingIfUnfocused: true, skip: !token }
+  );
+
   useEffect(() => {
     if (!showProfileMenu) return;
 
@@ -207,6 +228,7 @@ export default function DashboardHome() {
   }, [showProfileMenu]);
 
   const userName = user?.name || "User";
+  const userFirstName = userName.split(" ")[0];
   const userPicture = user?.picture;
   const userCredits = user?.credits ?? 1600;
   const displayTotalCredits = Math.max(CREDITS_TOTAL, userCredits);
@@ -233,7 +255,7 @@ export default function DashboardHome() {
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 lg:px-7 py-4 border-b border-white/[0.06] gap-3 sticky top-0 z-20 bg-[#0A0A0A]/95 backdrop-blur-md">
         <div>
           <h2 className="text-lg sm:text-xl font-bold tracking-tight">
-            Welcome back, <span>{userName}</span>! 👋
+            Welcome back, <span>{userFirstName}</span>! 👋
           </h2>
           <p className="text-xs text-[#6666a0] mt-0.5">Create stunning videos in minutes with AI.</p>
         </div>
@@ -241,7 +263,7 @@ export default function DashboardHome() {
         <div className="flex items-center gap-2 flex-wrap">
           {/* Upgrade */}
           <button
-            onClick={() => router.push("/dashboard/billing")}
+            onClick={() => router.push("/dashboard/billing?change=1")}
             className="flex items-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl border border-white/10 hover:opacity-90 active:scale-95 transition-all duration-150"
             style={{ background: btnGradient }}
           >
@@ -282,35 +304,60 @@ export default function DashboardHome() {
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-44 bg-[#0A0A0A] border border-white/[0.12] rounded-xl shadow-2xl overflow-hidden z-30">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    router.push("/dashboard/settings");
-                  }}
-                  className="w-full flex items-center gap-2 px-3.5 py-2.5 text-sm text-[#d7d7ff] hover:bg-white/[0.06] transition-colors"
-                >
-                  <Settings size={14} />
-                  Settings
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    setShowLogoutModal(true);
-                  }}
-                  disabled={isLoggingOut}
-                  className="w-full flex items-center gap-2 px-3.5 py-2.5 text-sm text-red-300 hover:bg-red-500/10 transition-colors disabled:opacity-70"
-                >
-                  <LogOut size={14} />
-                  Logout
-                </button>
+              <div className="absolute right-0 mt-2 w-56 bg-[#0D0D1A] border border-white/[0.10] rounded-2xl shadow-2xl shadow-black/60 overflow-hidden z-30">
+                {/* User Info Section */}
+                <div className="px-4 py-3.5 flex items-center gap-3 border-b border-white/[0.06]">
+                  {userPicture ? (
+                    <Image
+                      src={userPicture} alt={userName}
+                      width={36} height={36} unoptimized referrerPolicy="no-referrer"
+                      className="rounded-full object-cover w-9 h-9 shrink-0 ring-2 ring-white/10"
+                    />
+                  ) : (
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0 ring-2 ring-white/10"
+                      style={{ background: btnGradient }}
+                    >
+                      {getInitials(userName)}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-white truncate">{userName}</div>
+                    <div className="text-[11px] text-[#7070a0] truncate">{user?.email || "user@email.com"}</div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="py-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      router.push("/dashboard/settings");
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#ccccee] hover:bg-white/[0.05] transition-colors"
+                  >
+                    <Settings size={15} className="text-[#7070a0]" />
+                    Settings
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      setShowLogoutModal(true);
+                    }}
+                    disabled={isLoggingOut}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-70"
+                  >
+                    <LogOut size={15} />
+                    Logout
+                  </button>
+                </div>
               </div>
             )}
           </div>
 
-        
+
         </div>
       </header>
 
@@ -330,7 +377,7 @@ export default function DashboardHome() {
             <div className="absolute -right-4 -bottom-8 w-32 h-32 rounded-full opacity-10" style={{ background: GRAD_TO }} />
 
             <div className="relative z-10">
-      
+
               <h3 className="text-2xl sm:text-3xl font-semibold leading-snug text-white mb-2">
                 Create your next<br />
                 <span>
@@ -350,14 +397,14 @@ export default function DashboardHome() {
                   Create Video
                 </button>
 
-                <button
+                {/* <button
                   // onClick={() => router.push("/dashboard/create")}
                   className="h-11 flex items-center gap-2 text-white text-sm font-bold px-5 rounded-xl hover:opacity-90 active:scale-95 transition-all duration-150 shadow-lg"
                   style={{ background: "#1e1255", boxShadow: "0 4px 20px rgba(30,18,85,0.55)" }}
                 >
                   <Plus size={14} />
                   Choose a Template
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -409,7 +456,7 @@ export default function DashboardHome() {
             </div>
 
             <button
-              onClick={() => router.push("/dashboard/billing")}
+              onClick={() => router.push("/dashboard/billing?buy=1")}
               className="w-full h-11 flex items-center justify-center gap-2 text-white text-sm font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all mt-auto"
               style={{ background: btnGradient }}
             >
@@ -510,27 +557,85 @@ export default function DashboardHome() {
             </div>
 
             <div className="flex flex-col flex-1 divide-y divide-white/[0.05]">
-              {recentVideos.map((v) => (
-                <div key={v.id} className="flex items-center gap-3 py-3 group cursor-pointer">
-                  <div
-                    className="w-14 h-10 rounded-lg shrink-0 flex items-center justify-center border border-white/[0.06]"
-                    style={{ background: v.bg }}
+              {isVideosLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((n) => (
+                    <div key={n} className="flex items-center gap-3 py-3 animate-pulse">
+                      <div className="w-14 h-10 rounded-lg bg-white/[0.04] shrink-0" />
+                      <div className="flex-1 space-y-1.5 min-w-0">
+                        <div className="h-3 bg-white/[0.04] rounded w-3/4" />
+                        <div className="h-2.5 bg-white/[0.04] rounded w-1/2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : videos.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <Video size={20} className="text-[#5a5a8a] mb-2 opacity-55" />
+                  <p className="text-xs text-[#5a5a8a]">No generated videos yet.</p>
+                  <button
+                    onClick={() => router.push("/dashboard/create")}
+                    className="mt-3 text-[11px] font-bold text-white px-3 py-1.5 rounded-lg hover:opacity-90 active:scale-95 transition-all"
+                    style={{ background: btnGradient }}
                   >
-                    {v.label ? (
-                      <span className="text-[8px] font-bold text-green-400 text-center leading-tight px-1">{v.label}</span>
-                    ) : (
-                      <Play size={12} fill="rgba(255,255,255,0.4)" className="text-transparent" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold truncate text-[#ddddff] group-hover:text-white transition-colors">{v.title}</div>
-                    <div className="text-[10px] text-[#4a4a70] mt-0.5">{v.duration} · {v.date}</div>
-                  </div>
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity text-[#5a5a8a] hover:text-white p-1 rounded-lg hover:bg-white/10">
-                    <MoreVertical size={14} />
+                    Create Your First Video
                   </button>
                 </div>
-              ))}
+              ) : (
+                videos.map((v) => {
+                  const status = v.status?.toLowerCase();
+                  const isCompleted = status === "completed";
+                  const isFailed = status === "failed";
+                  const isProcessing = !isCompleted && !isFailed;
+                  const bg = isCompleted ? "#1a1040" : isFailed ? "#2a0f0f" : "#2a1e0f";
+
+                  return (
+                    <div
+                      key={v.id}
+                      onClick={() => router.push("/dashboard/videos")}
+                      className="flex items-center gap-3 py-3 group cursor-pointer hover:bg-white/[0.02] px-2 rounded-xl transition-colors"
+                    >
+                      <div
+                        className="w-14 h-10 rounded-lg shrink-0 flex items-center justify-center border border-white/[0.06] relative overflow-hidden"
+                        style={{ background: bg }}
+                      >
+                        {isCompleted ? (
+                          <Play size={12} fill="white" className="text-white" />
+                        ) : isProcessing ? (
+                          <div className="w-3.5 h-3.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <AlertTriangle size={12} className="text-red-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-semibold truncate text-[#ddddff] group-hover:text-white transition-colors">
+                          {v.title || "Untitled Video"}
+                        </div>
+                        <div className="text-[10px] text-[#4a4a70] mt-0.5 flex items-center gap-1.5">
+                          {isCompleted && <span>{formatDuration(v.duration)}</span>}
+                          {isCompleted && <span>·</span>}
+                          <span>{formatDate(v.created_at)}</span>
+                        </div>
+                      </div>
+                      <div>
+                        {isCompleted ? (
+                          <span className="text-[9px] font-semibold text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded-md">
+                            Ready
+                          </span>
+                        ) : isProcessing ? (
+                          <span className="text-[9px] font-semibold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md animate-pulse">
+                            Running
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-semibold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded-md">
+                            Failed
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
 
             <button
@@ -648,7 +753,7 @@ export default function DashboardHome() {
               Confirm Logout
             </h3>
             <p className="text-[#8888bb] text-sm text-center mb-8">
-              Are you sure you want to sign out of your account? 
+              Are you sure you want to sign out of your account?
             </p>
 
             {/* Buttons */}

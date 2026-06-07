@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
+// Use native <img> for local voice assets to avoid Next.js image optimizer URLs
 import { Check, Volume2 } from "lucide-react";
 import { voices } from "@/app/data/createVideoOptions";
 import type { VoiceId } from "@/types/createVideo";
@@ -74,7 +74,7 @@ export default function Step4VoiceNarration({
   }, [stopPreview]);
 
   return (
-    <div className="bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-2xl p-6 space-y-8">
+    <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6 space-y-8">
       {/* Voice Type */}
       <div>
         <h3 className="text-gray-900 dark:text-white text-lg font-semibold mb-5">Voice Type</h3>
@@ -94,17 +94,22 @@ export default function Step4VoiceNarration({
               className={`relative flex items-center gap-3 p-3 rounded-xl border transition-all text-left cursor-pointer outline-none ${
                 selectedVoice === voice.id
                   ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5 shadow-sm ring-1 ring-[#3B82F6]/20"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0B0E12] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
+                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               {/* Avatar */}
               <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 self-center">
-                <Image
+                <img
                   src={voice.image}
                   alt={voice.name}
                   width={64}
                   height={64}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    try {
+                      (e.target as HTMLImageElement).src = "/logo/video.png";
+                    } catch {}
+                  }}
                 />
               </div>
 
@@ -114,12 +119,17 @@ export default function Step4VoiceNarration({
                   {voice.name} - {voice.description}
                 </p>
                 <div className="flex items-center gap-1.5 mt-1.5">
-                  <Image
+                  <img
                     src={voice.flag}
                     alt={voice.accent}
                     width={32}
                     height={32}
                     className="shrink-0"
+                    onError={(e) => {
+                      try {
+                        (e.target as HTMLImageElement).src = "/logo/video.png";
+                      } catch {}
+                    }}
                   />
                   <span className="text-gray-500 text-[10px]">
                     {voice.accent}
