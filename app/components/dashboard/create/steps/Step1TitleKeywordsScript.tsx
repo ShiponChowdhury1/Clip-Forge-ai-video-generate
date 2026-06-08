@@ -54,7 +54,7 @@ export default function Step1TitleKeywordsScript({
           placeholder="Write your video title here..."
           className={`w-full bg-gray-50 dark:bg-[#0A0A0A] border rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none transition-colors ${
             showErrors && !videoTitle.trim()
-              ? "border-red-500 focus:border-red-500"
+              ? "border-red-500/60 focus:border-red-500/80"
               : "border-gray-300 dark:border-[#1A3155] focus:border-[#3B82F6]"
           }`}
         />
@@ -142,7 +142,7 @@ export default function Step1TitleKeywordsScript({
           rows={6}
           className={`w-full bg-gray-50 dark:bg-[#0A0A0A] border rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm leading-relaxed placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none transition-colors resize-none overflow-hidden ${
             showErrors && !script.trim()
-              ? "border-red-500 focus:border-red-500"
+              ? "border-red-500/60 focus:border-red-500/80"
               : "border-gray-300 dark:border-[#1A3155] focus:border-[#3B82F6]"
           }`}
           style={{ overflow: "hidden" }}
