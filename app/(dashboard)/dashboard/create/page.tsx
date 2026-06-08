@@ -39,6 +39,7 @@ function getStepIndexFromMessage(message: string): number {
 export default function CreateVideoPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [showStep1Errors, setShowStep1Errors] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generationComplete, setGenerationComplete] = useState(false);
@@ -168,7 +169,9 @@ export default function CreateVideoPage() {
 
               // ── failed ──
               if (status === "failed" || status === "error") {
-                setGenerationError(data?.error || "Video generation failed. Please try again.");
+                const errMsg = data?.error || "Video generation failed. Please try again.";
+                setGenerationError(errMsg);
+                toast.error(errMsg);
                 if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
                 return;
               }
@@ -208,7 +211,9 @@ export default function CreateVideoPage() {
                 setGenerationSteps((prev) => prev.map((s) => ({ ...s, completed: true, active: false })));
                 if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
               } else if (status === "failed") {
-                setGenerationError("Video generation failed. Please try again.");
+                const errMsg = "Video generation failed. Please try again.";
+                setGenerationError(errMsg);
+                toast.error(errMsg);
                 if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
               }
             }
@@ -273,14 +278,24 @@ export default function CreateVideoPage() {
   };
 
   const handleContinue = () => {
-    if (currentStep === 1 && (!videoTitle.trim() || !script.trim())) {
-      toast.error("Please add Video Title and Script before continuing.");
-      return;
+    if (currentStep === 1) {
+      const isTitleEmpty = !videoTitle.trim();
+      const isScriptEmpty = !script.trim();
+
+      if (isTitleEmpty || isScriptEmpty) {
+        setShowStep1Errors(true);
+        if (isTitleEmpty && isScriptEmpty) {
+          toast.error("Video Title and Script are required.");
+        } else if (isTitleEmpty) {
+          toast.error("Video Title is required.");
+        } else {
+          toast.error("Video Script is required.");
+        }
+        return;
+      }
     }
     if (currentStep < TOTAL_STEPS) setCurrentStep((prev) => prev + 1);
   };
-
-  const isStep1Ready = videoTitle.trim().length > 0 && script.trim().length > 0;
 
   const selectedMusicLabel =
     backgroundMusic === "no-music"
@@ -359,7 +374,7 @@ export default function CreateVideoPage() {
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1: return <Step1TitleKeywordsScript videoTitle={videoTitle} setVideoTitle={setVideoTitle} keywords={keywords} setKeywords={setKeywords} negativeKeywords={negativeKeywords} setNegativeKeywords={setNegativeKeywords} script={script} setScript={setScript} />;
+      case 1: return <Step1TitleKeywordsScript videoTitle={videoTitle} setVideoTitle={setVideoTitle} keywords={keywords} setKeywords={setKeywords} negativeKeywords={negativeKeywords} setNegativeKeywords={setNegativeKeywords} script={script} setScript={setScript} showErrors={showStep1Errors} />;
       case 2: return <Step2FormatStyleMedia videoFormat={videoFormat} setVideoFormat={setVideoFormat} videoStyle={videoStyle} setVideoStyle={setVideoStyle} sceneMedia={sceneMedia} setSceneMedia={setSceneMedia} />;
       case 3: return <Step3BackgroundMusic backgroundMusic={backgroundMusic} setBackgroundMusic={setBackgroundMusic} />;
       case 4: return <Step4VoiceNarration selectedVoice={selectedVoice} setSelectedVoice={setSelectedVoice} />;
@@ -382,7 +397,7 @@ export default function CreateVideoPage() {
           {renderStep()}
         </Suspense>
         {currentStep < TOTAL_STEPS && (
-          <StepNavigation currentStep={currentStep} totalSteps={TOTAL_STEPS} onBack={handleBack} onContinue={handleContinue} isContinueDisabled={currentStep === 1 && !isStep1Ready} />
+          <StepNavigation currentStep={currentStep} totalSteps={TOTAL_STEPS} onBack={handleBack} onContinue={handleContinue} />
         )}
       </div>
     </div>

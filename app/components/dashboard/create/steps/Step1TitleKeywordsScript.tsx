@@ -13,6 +13,7 @@ interface Step1TitleKeywordsScriptProps {
   setNegativeKeywords: (value: string) => void;
   script: string;
   setScript: (value: string) => void;
+  showErrors?: boolean;
 }
 
 export default function Step1TitleKeywordsScript({
@@ -24,6 +25,7 @@ export default function Step1TitleKeywordsScript({
   setNegativeKeywords,
   script,
   setScript,
+  showErrors = false,
 }: Step1TitleKeywordsScriptProps) {
   const remainingCharacters = Math.max(MAX_SCRIPT_CHARACTERS - script.length, 0);
 
@@ -33,7 +35,7 @@ export default function Step1TitleKeywordsScript({
       <div>
         <label className="flex items-center gap-2 text-gray-900 dark:text-white text-sm font-semibold mb-3">
           Video Title
-          <span className="text-[#3B82F6]">*</span>
+          <span className="text-[#3B82F6] text-xs font-normal">(required)</span>
           <span className="group relative">
             <Info className="w-4 h-4 text-[#3B82F6] cursor-help" />
             <span
@@ -49,9 +51,16 @@ export default function Step1TitleKeywordsScript({
           value={videoTitle}
           onChange={(e) => setVideoTitle(e.target.value)}
           required
-          placeholder="Write your video title"
-          className="w-full bg-gray-50 dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors"
+          placeholder="Write your video title here..."
+          className={`w-full bg-gray-50 dark:bg-[#0A0A0A] border rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none transition-colors ${
+            showErrors && !videoTitle.trim()
+              ? "border-red-500 focus:border-red-500"
+              : "border-gray-300 dark:border-[#1A3155] focus:border-[#3B82F6]"
+          }`}
         />
+        {showErrors && !videoTitle.trim() && (
+          <p className="text-red-500 text-xs mt-1.5 font-medium">Video Title is required.</p>
+        )}
       </div>
 
       {/* Keywords */}
@@ -105,7 +114,7 @@ export default function Step1TitleKeywordsScript({
         <div className="flex items-center justify-between mb-3">
           <label className="flex items-center gap-2 text-gray-900 dark:text-white text-sm font-semibold">
             Script
-            <span className="text-[#3B82F6]">*</span>
+            <span className="text-[#3B82F6] text-xs font-normal">(required)</span>
             <span className="group relative">
               <Info className="w-4 h-4 text-[#3B82F6] cursor-help" />
               <span
@@ -129,9 +138,13 @@ export default function Step1TitleKeywordsScript({
             setScript(nextValue.slice(0, MAX_SCRIPT_CHARACTERS));
           }}
           required
-          placeholder="Write your script here or use AI to generate one..."
+          placeholder="Write your script here... (max 800 characters)"
           rows={6}
-          className="w-full bg-gray-50 dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm leading-relaxed placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors resize-none overflow-hidden"
+          className={`w-full bg-gray-50 dark:bg-[#0A0A0A] border rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm leading-relaxed placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none transition-colors resize-none overflow-hidden ${
+            showErrors && !script.trim()
+              ? "border-red-500 focus:border-red-500"
+              : "border-gray-300 dark:border-[#1A3155] focus:border-[#3B82F6]"
+          }`}
           style={{ overflow: "hidden" }}
           onInput={(e) => {
             const el = e.currentTarget;
@@ -139,6 +152,9 @@ export default function Step1TitleKeywordsScript({
             el.style.height = el.scrollHeight + "px";
           }}
         />
+        {showErrors && !script.trim() && (
+          <p className="text-red-500 text-xs mt-1.5 font-medium">Video Script is required.</p>
+        )}
         <div className="flex justify-end mt-2">
           <span className="text-gray-500 text-xs">
             {remainingCharacters} characters
