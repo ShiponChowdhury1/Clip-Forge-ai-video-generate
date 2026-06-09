@@ -93,8 +93,8 @@ export default function Step4VoiceNarration({
               }}
               className={`relative flex items-center gap-3 p-3 rounded-xl border transition-all text-left cursor-pointer outline-none ${
                 selectedVoice === voice.id
-                  ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5 shadow-sm ring-1 ring-[#3B82F6]/20"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
+                  ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
+                  : "border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               {/* Avatar */}

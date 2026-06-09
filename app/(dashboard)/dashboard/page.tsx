@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
-import { useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
+import { useGetDashboardQuery, useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
 import {
   LineChart,
   Line,
@@ -86,6 +86,83 @@ function formatDate(dateString: string): string {
   }
 }
 
+function buildVideoUrl(path: string | null | undefined): string {
+  if (!path || typeof path !== "string" || path.trim() === "") return "";
+  if (path.startsWith("http")) return path;
+  const match = path.match(/outputs\/.+$/);
+  const relativePath = match ? `/${match[0]}` : path;
+  return `/api/video-proxy?path=${encodeURIComponent(relativePath)}`;
+}
+
+interface RecentVideoRowThumbnailProps {
+  v: {
+    id: number;
+    title: string;
+    thumbnail_path: string | null;
+    status: string;
+    duration: number;
+    created_at: string;
+  };
+  videoUrl: string;
+  bg: string;
+  isCompleted: boolean;
+  isProcessing: boolean;
+  isFailed: boolean;
+}
+
+function RecentVideoRowThumbnail({
+  v,
+  videoUrl,
+  bg,
+  isCompleted,
+  isProcessing,
+  isFailed,
+}: RecentVideoRowThumbnailProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  return (
+    <div
+      className="w-14 h-10 rounded-lg shrink-0 flex items-center justify-center border border-gray-200 dark:border-[#1F1F1F] relative overflow-hidden"
+      style={{ background: bg }}
+    >
+      {isCompleted && videoUrl ? (
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          poster={v.thumbnail_path ? buildVideoUrl(v.thumbnail_path) : undefined}
+          className="absolute inset-0 w-full h-full object-cover z-10"
+          muted
+          loop
+          autoPlay
+          playsInline
+          onTimeUpdate={(e) => {
+            const video = e.currentTarget;
+            if (video.currentTime >= 10) {
+              video.currentTime = 0;
+              video.play().catch(() => {});
+            }
+          }}
+        />
+      ) : isCompleted && v.thumbnail_path ? (
+        <Image
+          src={buildVideoUrl(v.thumbnail_path)}
+          alt={v.title || "video thumbnail"}
+          fill
+          sizes="56px"
+          className="object-cover group-hover:scale-110 transition-transform duration-300"
+          unoptimized
+        />
+      ) : isCompleted ? (
+        <Play size={12} fill="white" className="text-white" />
+      ) : isProcessing ? (
+        <div className="w-3.5 h-3.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+      ) : (
+        <AlertTriangle size={12} className="text-red-400" />
+      )}
+    </div>
+  );
+}
+
 // ── Donut SVG ─────────────────────────────────────────────────────────────────
 function DonutChart({ pct, total }: { pct: number; total: number }) {
   const r = 30;
@@ -93,7 +170,7 @@ function DonutChart({ pct, total }: { pct: number; total: number }) {
   const filled = (pct / 100) * circ;
   return (
     <svg width="80" height="80" viewBox="0 0 80 80" aria-label={`${pct}% of credits used`} role="img">
-      <circle cx="40" cy="40" r={r} fill="none" stroke="#1e1e3a" strokeWidth="10" />
+      <circle cx="40" cy="40" r={r} fill="none" className="stroke-gray-200 dark:stroke-[#1e1e3a]" strokeWidth="10" />
       <circle
         cx="40" cy="40" r={r} fill="none"
         stroke={PROGRESS_COLOR} strokeWidth="10"
@@ -101,7 +178,7 @@ function DonutChart({ pct, total }: { pct: number; total: number }) {
         strokeDashoffset={circ * 0.25}
         strokeLinecap="round"
       />
-      <text x="40" y="37" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="700">{pct}%</text>
+      <text x="40" y="37" textAnchor="middle" className="fill-gray-900 dark:fill-white" fontSize="13" fontWeight="700">{pct}%</text>
       <text x="40" y="50" textAnchor="middle" fill="#5a5a8a" fontSize="7">of {total.toLocaleString()}</text>
     </svg>
   );
@@ -151,16 +228,16 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, sub, subColor, chart, accent }: StatCardProps) {
   return (
-    <div className="group relative bg-[#0A0A0A] rounded-2xl px-5 py-6 min-h-[130px] flex items-center justify-between border border-white/[0.06] hover:border-white/[0.12] transition-all duration-200 hover:bg-[#161638] overflow-hidden">
+    <div className="group relative bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl px-5 py-6 min-h-[130px] flex items-center justify-between border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all duration-200 hover:bg-gray-100 dark:hover:bg-[#161638] overflow-hidden">
       {/* accent glow */}
       <div
         className="absolute -top-6 -left-6 w-20 h-20 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"
         style={{ background: accent || GRAD_FROM }}
       />
       <div className="relative z-10">
-        <div className="flex items-center gap-2.5 text-[11px] text-[#6666a0] mb-3 font-semibold tracking-wide uppercase">
+        <div className="flex items-center gap-2.5 text-[11px] text-gray-500 dark:text-[#6666a0] mb-3 font-semibold tracking-wide uppercase">
           <span
-            className="flex items-center justify-center w-7 h-7 rounded-lg border"
+            className="flex items-center justify-center w-7 h-7 rounded-lg border border-gray-200/50 dark:border-[#1F1F1F]"
             style={{
               color: accent || GRAD_FROM,
               backgroundColor: `${accent || GRAD_FROM}15`,
@@ -171,7 +248,7 @@ function StatCard({ icon, label, value, sub, subColor, chart, accent }: StatCard
           </span>
           {label}
         </div>
-        <div className="text-2xl font-bold text-white leading-none mb-1.5">{value}</div>
+        <div className="text-2xl font-bold text-gray-900 dark:text-white leading-none mb-1.5">{value}</div>
         <div className="text-[11px] font-medium" style={{ color: subColor || "#4a4a7a" }}>{sub}</div>
       </div>
       <div className="relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">{chart}</div>
@@ -182,7 +259,7 @@ function StatCard({ icon, label, value, sub, subColor, chart, accent }: StatCard
 // ── Tutorial Thumb ────────────────────────────────────────────────────────────
 function TutThumb({ duration }: { duration: string }) {
   return (
-    <div className="relative rounded-xl bg-gradient-to-br from-[#1a1040] to-[#2a1860] aspect-video flex items-center justify-center mb-2 cursor-pointer group overflow-hidden border border-white/[0.06] hover:border-white/[0.15] transition-all">
+    <div className="relative rounded-xl bg-gradient-to-br from-[#1a1040] to-[#2a1860] aspect-video flex items-center justify-center mb-2 cursor-pointer group overflow-hidden border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all">
       <div
         className="w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 duration-200"
         style={{ background: `linear-gradient(135deg, ${GRAD_FROM}, ${GRAD_TO})` }}
@@ -209,9 +286,13 @@ export default function DashboardHome() {
   const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   const token = useAppSelector((state) => state.auth.token);
-  const { data: videos = [], isLoading: isVideosLoading } = useGetAllVideosQuery(
-    { skip: 0, limit: 3 },
+  const { data: dashboardData, isLoading: isDashboardLoading } = useGetDashboardQuery(
+    undefined,
     { refetchOnMountOrArgChange: true, pollingInterval: 30000, skipPollingIfUnfocused: true, skip: !token }
+  );
+  const { data: allVideos = [] } = useGetAllVideosQuery(
+    { skip: 0, limit: 100 },
+    { skip: !token }
   );
 
   useEffect(() => {
@@ -230,10 +311,37 @@ export default function DashboardHome() {
   const userName = user?.name || "User";
   const userFirstName = userName.split(" ")[0];
   const userPicture = user?.picture;
-  const userCredits = user?.credits ?? 1600;
-  const displayTotalCredits = Math.max(CREDITS_TOTAL, userCredits);
-  const creditsUsed = Math.max(0, displayTotalCredits - userCredits);
+
+  const userCredits = dashboardData ? dashboardData.credits_remaining : (user?.credits ?? 1600);
+  const creditsUsed = dashboardData ? dashboardData.credits_used : 0;
+  const displayTotalCredits = dashboardData ? (creditsUsed + userCredits) : Math.max(CREDITS_TOTAL, userCredits);
   const creditsPct = displayTotalCredits > 0 ? Math.round((creditsUsed / displayTotalCredits) * 100) : 0;
+  const resetDate = dashboardData?.credits_reset_date ? formatDate(dashboardData.credits_reset_date) : RESET_DATE;
+
+  const recentVideos = dashboardData?.recent_videos || [];
+
+  const chartData = useMemo(() => {
+    if (!dashboardData) return [];
+    const isThisMonth = overviewRange === "This Month";
+    const overview = isThisMonth ? dashboardData.credits_overview_this_month : dashboardData.credits_overview_all_time;
+    if (!overview || !overview.data) return [];
+    return overview.data.map((item) => {
+      let label = item.date;
+      if (isThisMonth) {
+        const parts = item.date.split("-");
+        label = parts[2] ? String(parseInt(parts[2], 10)) : item.date;
+      } else {
+        const parts = item.date.split("-");
+        const monthNum = parseInt(parts[1], 10);
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        label = monthNum && months[monthNum - 1] ? `${months[monthNum - 1]} ${parts[0].slice(2)}` : item.date;
+      }
+      return {
+        name: label,
+        credits: item.credits_used,
+      };
+    });
+  }, [dashboardData, overviewRange]);
 
   const btnGradient = `linear-gradient(135deg, ${GRAD_FROM}, ${GRAD_TO})`;
 
@@ -249,15 +357,15 @@ export default function DashboardHome() {
   };
 
   return (
-    <div className="bg-[#0A0A0A] text-white min-h-screen flex flex-col">
+    <div className="bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-white min-h-screen flex flex-col">
 
       {/* ── Top Bar ── */}
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 lg:px-7 py-4 border-b border-white/[0.06] gap-3 sticky top-0 z-20 bg-[#0A0A0A]/95 backdrop-blur-md">
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 lg:px-7 py-4 border-b border-gray-200 dark:border-[#1F1F1F] gap-3 sticky top-0 z-20 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md">
         <div>
           <h2 className="text-lg sm:text-xl font-bold tracking-tight">
             Welcome back, <span>{userFirstName}</span>! 👋
           </h2>
-          <p className="text-xs text-[#6666a0] mt-0.5">Create stunning videos in minutes with AI.</p>
+          <p className="text-xs text-gray-500 dark:text-[#6666a0] mt-0.5">Create stunning videos in minutes with AI.</p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -273,8 +381,8 @@ export default function DashboardHome() {
           </button>
 
           {/* Bell */}
-          <button className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] hover:bg-white/10 transition-colors">
-            <Bell size={16} className="text-[#9090c0]" />
+          <button className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+            <Bell size={16} className="text-gray-600 dark:text-[#9090c0]" />
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
           </button>
 
@@ -283,7 +391,7 @@ export default function DashboardHome() {
             <button
               type="button"
               onClick={() => setShowProfileMenu((prev) => !prev)}
-              className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] rounded-xl pl-1 pr-3 py-1.5 cursor-pointer hover:bg-white/10 transition-colors"
+              className="flex items-center gap-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] rounded-xl pl-1 pr-3 py-1.5 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
             >
               {userPicture ? (
                 <Image
@@ -299,14 +407,14 @@ export default function DashboardHome() {
                   {getInitials(userName)}
                 </div>
               )}
-              <span className="text-xs font-medium text-[#ccccee] hidden sm:inline">{userName}</span>
-              <ChevronDown size={14} className={`text-[#9090c0] transition-transform ${showProfileMenu ? "rotate-180" : ""}`} />
+              <span className="text-xs font-medium text-gray-700 dark:text-[#ccccee] hidden sm:inline">{userName}</span>
+              <ChevronDown size={14} className={`text-gray-500 dark:text-[#9090c0] transition-transform ${showProfileMenu ? "rotate-180" : ""}`} />
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-56 bg-[#0D0D1A] border border-white/[0.10] rounded-2xl shadow-2xl shadow-black/60 overflow-hidden z-30">
+              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#0D0D1A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/60 overflow-hidden z-30">
                 {/* User Info Section */}
-                <div className="px-4 py-3.5 flex items-center gap-3 border-b border-white/[0.06]">
+                <div className="px-4 py-3.5 flex items-center gap-3 border-b border-gray-200 dark:border-[#1F1F1F]">
                   {userPicture ? (
                     <Image
                       src={userPicture} alt={userName}
@@ -322,8 +430,8 @@ export default function DashboardHome() {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <div className="text-sm font-semibold text-white truncate">{userName}</div>
-                    <div className="text-[11px] text-[#7070a0] truncate">{user?.email || "user@email.com"}</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">{userName}</div>
+                    <div className="text-[11px] text-gray-500 dark:text-[#7070a0] truncate">{user?.email || "user@email.com"}</div>
                   </div>
                 </div>
 
@@ -335,9 +443,9 @@ export default function DashboardHome() {
                       setShowProfileMenu(false);
                       router.push("/dashboard/settings");
                     }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#ccccee] hover:bg-white/[0.05] transition-colors"
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-[#ccccee] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
                   >
-                    <Settings size={15} className="text-[#7070a0]" />
+                    <Settings size={15} className="text-gray-500 dark:text-[#7070a0]" />
                     Settings
                   </button>
                   <button
@@ -369,8 +477,7 @@ export default function DashboardHome() {
 
           {/* Banner */}
           <div
-            className="relative rounded-2xl p-6 sm:p-8 flex items-center justify-between overflow-hidden border border-white/[0.07] min-h-[160px]"
-            style={{ background: "#0A0A0A" }}
+            className="relative rounded-2xl p-6 sm:p-8 flex items-center justify-between overflow-hidden border border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] min-h-[160px]"
           >
             {/* decorative circles */}
             <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full opacity-10" style={{ background: btnGradient }} />
@@ -378,13 +485,13 @@ export default function DashboardHome() {
 
             <div className="relative z-10">
 
-              <h3 className="text-2xl sm:text-3xl font-semibold leading-snug text-white mb-2">
+              <h3 className="text-2xl sm:text-3xl font-semibold leading-snug text-gray-900 dark:text-white mb-2">
                 Create your next<br />
                 <span>
                   amazing video
                 </span>
               </h3>
-              <p className="text-s text-[#8888bb] mb-4 max-w-xs leading-relaxed">
+              <p className="text-s text-gray-600 dark:text-[#8888bb] mb-4 max-w-xs leading-relaxed">
                 Turn your ideas into captivating videos with the power of AI.
               </p>
               <div className="flex items-center gap-3 flex-wrap">
@@ -418,9 +525,9 @@ export default function DashboardHome() {
           </div>
 
           {/* Credits Card */}
-          <div className="bg-[#0A0A0A] rounded-2xl p-5 flex flex-col border border-white/[0.07] hover:border-white/[0.12] transition-colors">
+          <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 flex flex-col border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-colors">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-bold text-white">Credits Used</span>
+              <span className="text-sm font-bold text-gray-900 dark:text-white">Credits Used</span>
               <button
                 onClick={() => router.push("/dashboard/billing")}
                 className="text-[11px] font-semibold hover:underline transition-colors"
@@ -432,23 +539,23 @@ export default function DashboardHome() {
 
             {/* Donut + rows */}
             <div className="flex items-center gap-4 mb-4">
-              <DonutChart pct={creditsPct} total={CREDITS_TOTAL} />
+              <DonutChart pct={creditsPct} total={displayTotalCredits} />
               <div className="flex-1 space-y-2">
                 {[
                   { lbl: "Used", val: creditsUsed.toLocaleString() },
                   { lbl: "Remaining", val: userCredits.toLocaleString() },
-                  { lbl: "Reset Date", val: RESET_DATE, muted: true },
+                  { lbl: "Reset Date", val: resetDate, muted: true },
                 ].map((r) => (
                   <div key={r.lbl} className="flex justify-between items-center">
-                    <span className="text-[11px] text-[#5a5a8a]">{r.lbl}</span>
-                    <span className={`text-[11px] font-semibold ${r.muted ? "text-[#7070a0]" : "text-white"}`}>{r.val}</span>
+                    <span className="text-[11px] text-gray-500 dark:text-[#5a5a8a]">{r.lbl}</span>
+                    <span className={`text-[11px] font-semibold ${r.muted ? "text-gray-400 dark:text-[#7070a0]" : "text-gray-900 dark:text-white"}`}>{r.val}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Progress bar */}
-            <div className="w-full bg-[#1e1e3a] rounded-full h-1.5 mb-4 overflow-hidden">
+            <div className="w-full bg-gray-200 dark:bg-[#1e1e3a] rounded-full h-1.5 mb-4 overflow-hidden">
               <div
                 className="h-1.5 rounded-full transition-all duration-700"
                 style={{ width: `${creditsPct}%`, background: PROGRESS_COLOR }}
@@ -476,7 +583,7 @@ export default function DashboardHome() {
             accent={GRAD_FROM}
             chart={
               (() => {
-                const pct = 82; // Set to 82% as requested, where 100% will be fully filled
+                const pct = displayTotalCredits > 0 ? Math.round((userCredits / displayTotalCredits) * 100) : 100;
                 const r = 24;
                 const circ = 2 * Math.PI * r;
                 const filled = (pct / 100) * circ;
@@ -497,8 +604,8 @@ export default function DashboardHome() {
           <StatCard
             icon={<Video size={16} />}
             label="Videos Created"
-            value="38"
-            sub="+6 this month"
+            value={String(dashboardData?.total_videos ?? 0)}
+            sub={`+${dashboardData?.videos_this_month ?? 0} this month`}
             subColor="#1D9E75"
             accent="#1D9E75"
             chart={<SparkLine color="#1D9E75" />}
@@ -506,8 +613,8 @@ export default function DashboardHome() {
           <StatCard
             icon={<Clock size={16} />}
             label="Render Time"
-            value="14.2 hrs"
-            sub="+2.5 hrs this month"
+            value={`${dashboardData ? Math.round((dashboardData.total_videos * 0.4) * 10) / 10 : 14.2} hrs`}
+            sub={`+${dashboardData ? Math.round((dashboardData.videos_this_month * 0.4) * 10) / 10 : 2.5} hrs this month`}
             subColor="#EF9F27"
             accent="#EF9F27"
             chart={<SparkLine color="#EF9F27" />}
@@ -515,8 +622,8 @@ export default function DashboardHome() {
           <StatCard
             icon={<BarChart2 size={16} />}
             label="Monthly Usage"
-            value="72%"
-            sub="3,600 of 5,000 credits"
+            value={`${creditsPct}%`}
+            sub={`${creditsUsed.toLocaleString()} of ${displayTotalCredits.toLocaleString()} credits`}
             accent={GRAD_TO}
             chart={<SparkBars />}
           />
@@ -526,7 +633,7 @@ export default function DashboardHome() {
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-4">
 
           {/* Tutorials */}
-          <div className="bg-[#0A0A0A] rounded-2xl p-5 border border-white/[0.07]">
+          <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 border border-gray-200 dark:border-[#1F1F1F]">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <Play size={14} style={{ color: GRAD_FROM }} />
@@ -540,15 +647,15 @@ export default function DashboardHome() {
               {tutorials.map((t) => (
                 <div key={t.id} className="group cursor-pointer">
                   <TutThumb duration={t.duration} />
-                  <div className="text-[11px] font-semibold text-[#ddddff] group-hover:text-white transition-colors">{t.title}</div>
-                  <div className="text-[10px] text-[#4a4a70] mt-0.5 leading-relaxed">{t.desc}</div>
+                  <div className="text-[11px] font-semibold text-gray-700 dark:text-[#ddddff] group-hover:text-gray-950 dark:group-hover:text-white transition-colors">{t.title}</div>
+                  <div className="text-[10px] text-gray-500 dark:text-[#4a4a70] mt-0.5 leading-relaxed">{t.desc}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Recent Videos */}
-          <div className="bg-[#0A0A0A] rounded-2xl p-5 border border-white/[0.07] flex flex-col">
+          <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 border border-gray-200 dark:border-[#1F1F1F] flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <Video size={14} style={{ color: GRAD_FROM }} />
@@ -556,8 +663,8 @@ export default function DashboardHome() {
               </div>
             </div>
 
-            <div className="flex flex-col flex-1 divide-y divide-white/[0.05]">
-              {isVideosLoading ? (
+            <div className="flex flex-col flex-1 divide-y divide-gray-200 dark:divide-[#1F1F1F]">
+              {isDashboardLoading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((n) => (
                     <div key={n} className="flex items-center gap-3 py-3 animate-pulse">
@@ -569,7 +676,7 @@ export default function DashboardHome() {
                     </div>
                   ))}
                 </div>
-              ) : videos.length === 0 ? (
+              ) : recentVideos.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-6 text-center">
                   <Video size={20} className="text-[#5a5a8a] mb-2 opacity-55" />
                   <p className="text-xs text-[#5a5a8a]">No generated videos yet.</p>
@@ -582,7 +689,7 @@ export default function DashboardHome() {
                   </button>
                 </div>
               ) : (
-                videos.map((v) => {
+                recentVideos.map((v) => {
                   const status = v.status?.toLowerCase();
                   const isCompleted = status === "completed";
                   const isFailed = status === "failed";
@@ -593,25 +700,21 @@ export default function DashboardHome() {
                     <div
                       key={v.id}
                       onClick={() => router.push("/dashboard/videos")}
-                      className="flex items-center gap-3 py-3 group cursor-pointer hover:bg-white/[0.02] px-2 rounded-xl transition-colors"
+                      className="flex items-center gap-3 py-3 group cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/[0.02] px-2 rounded-xl transition-colors"
                     >
-                      <div
-                        className="w-14 h-10 rounded-lg shrink-0 flex items-center justify-center border border-white/[0.06] relative overflow-hidden"
-                        style={{ background: bg }}
-                      >
-                        {isCompleted ? (
-                          <Play size={12} fill="white" className="text-white" />
-                        ) : isProcessing ? (
-                          <div className="w-3.5 h-3.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <AlertTriangle size={12} className="text-red-400" />
-                        )}
-                      </div>
+                      <RecentVideoRowThumbnail
+                        v={v}
+                        videoUrl={allVideos.find((item) => item.id === v.id)?.path ? buildVideoUrl(allVideos.find((item) => item.id === v.id)!.path) : ""}
+                        bg={bg}
+                        isCompleted={isCompleted}
+                        isProcessing={isProcessing}
+                        isFailed={isFailed}
+                      />
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-semibold truncate text-[#ddddff] group-hover:text-white transition-colors">
+                        <div className="text-xs font-semibold truncate text-gray-800 dark:text-[#ddddff] group-hover:text-gray-950 dark:group-hover:text-white transition-colors">
                           {v.title || "Untitled Video"}
                         </div>
-                        <div className="text-[10px] text-[#4a4a70] mt-0.5 flex items-center gap-1.5">
+                        <div className="text-[10px] text-gray-500 dark:text-[#4a4a70] mt-0.5 flex items-center gap-1.5">
                           {isCompleted && <span>{formatDuration(v.duration)}</span>}
                           {isCompleted && <span>·</span>}
                           <span>{formatDate(v.created_at)}</span>
@@ -640,7 +743,7 @@ export default function DashboardHome() {
 
             <button
               onClick={() => router.push("/dashboard/videos")}
-              className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold pt-3 border-t border-white/[0.05] hover:underline transition-colors"
+              className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold pt-3 border-t border-gray-200 dark:border-[#1F1F1F] hover:underline transition-colors"
               style={{ color: PROGRESS_COLOR }}
             >
               <Video size={12} /> Go to My Videos
@@ -652,119 +755,118 @@ export default function DashboardHome() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           {/* Overview */}
-          <div className="bg-[#0A0A0A] rounded-2xl p-5 border border-white/[0.07]">
+          <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 border border-gray-200 dark:border-[#1F1F1F]">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <TrendingUp size={14} style={{ color: GRAD_FROM }} />
                 <span className="text-sm font-bold">Overview</span>
-              </div>
-              <div className="relative">
-                <select
-                  value={overviewRange}
-                  onChange={(e) => setOverviewRange(e.target.value)}
-                  className="appearance-none bg-[#1e1e3a] border border-white/10 text-[#9090c0] rounded-lg pl-3 pr-7 py-1.5 text-[11px] font-medium outline-none cursor-pointer hover:border-white/20 transition-colors"
-                >
-                  <option>This Month</option>
-                  <option>Last Month</option>
-                </select>
-                <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#9090c0] pointer-events-none" />
-              </div>
-            </div>
-            <ResponsiveContainer
-              width="100%"
-              height={140}
-              className="outline-none focus:outline-none [&_.recharts-wrapper]:outline-none [&_.recharts-wrapper]:focus:outline-none [&_.recharts-wrapper_svg]:outline-none [&_.recharts-wrapper_svg]:focus:outline-none"
-              style={{ outline: "none" }}
-            >
-              <LineChart
-                data={overviewData}
-                margin={{ top: 4, right: 4, bottom: 0, left: -20 }}
-                className="outline-none focus:outline-none [&_svg]:outline-none [&_svg]:focus:outline-none"
-                style={{ outline: "none" }}
-              >
-                <XAxis dataKey="day" tick={{ fill: "#4a4a70", fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#4a4a70", fontSize: 10 }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ background: "#1a1a30", border: `1px solid ${GRAD_FROM}44`, borderRadius: 10, fontSize: 12, color: "#fff" }}
-                  labelStyle={{ color: "#8888aa" }}
-                  itemStyle={{ color: PROGRESS_COLOR }}
-                  cursor={{ stroke: `${GRAD_FROM}33`, strokeWidth: 1 }}
-                />
-                <Line
-                  type="monotone" dataKey="videos"
-                  stroke={PROGRESS_COLOR} strokeWidth={2.5}
-                  dot={false} activeDot={{ r: 4, fill: PROGRESS_COLOR, strokeWidth: 0 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+               </div>
+               <div className="relative">
+                 <select
+                   value={overviewRange}
+                   onChange={(e) => setOverviewRange(e.target.value)}
+                   className="appearance-none bg-white dark:bg-[#1e1e3a] border border-gray-200 dark:border-[#1F1F1F] text-gray-600 dark:text-[#9090c0] rounded-lg pl-3 pr-7 py-1.5 text-[11px] font-medium outline-none cursor-pointer hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-colors"
+                 >
+                   <option>This Month</option>
+                   <option>All Time</option>
+                 </select>
+                 <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#9090c0] pointer-events-none" />
+               </div>
+             </div>
+             <ResponsiveContainer
+               width="100%"
+               height={140}
+               className="outline-none focus:outline-none [&_.recharts-wrapper]:outline-none [&_.recharts-wrapper]:focus:outline-none [&_.recharts-wrapper_svg]:outline-none [&_.recharts-wrapper_svg]:focus:outline-none"
+               style={{ outline: "none" }}
+             >
+               <LineChart
+                 data={chartData}
+                 margin={{ top: 4, right: 4, bottom: 0, left: -20 }}
+                 className="outline-none focus:outline-none [&_svg]:outline-none [&_svg]:focus:outline-none"
+                 style={{ outline: "none" }}
+               >
+                 <XAxis dataKey="name" tick={{ fill: "#4a4a70", fontSize: 10 }} axisLine={false} tickLine={false} />
+                 <YAxis tick={{ fill: "#4a4a70", fontSize: 10 }} axisLine={false} tickLine={false} />
+                 <Tooltip
+                   contentStyle={{ background: "rgba(26, 26, 48, 0.95)", border: `1px solid ${GRAD_FROM}44`, borderRadius: 10, fontSize: 12, color: "#fff" }}
+                   labelStyle={{ color: "#8888aa" }}
+                   itemStyle={{ color: PROGRESS_COLOR }}
+                   cursor={{ stroke: `${GRAD_FROM}33`, strokeWidth: 1 }}
+                 />
+                 <Line
+                   type="monotone" dataKey="credits"
+                   stroke={PROGRESS_COLOR} strokeWidth={2.5}
+                   dot={false} activeDot={{ r: 4, fill: PROGRESS_COLOR, strokeWidth: 0 }}
+                 />
+               </LineChart>
+             </ResponsiveContainer>
+           </div>
 
-          {/* Tips & Inspiration */}
-          <div
-            className="rounded-2xl p-6 flex items-center gap-5 border border-white/[0.07] relative overflow-hidden"
-            style={{ background: "#0A0A0A" }}
-          >
-            <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-15" style={{ background: GRAD_TO }} />
-            <div className="flex-1 relative z-10">
-              <div className="flex items-center gap-2 mb-2">
-                <Lightbulb size={14} style={{ color: GRAD_FROM }} />
-                <h4 className="text-sm font-bold">Tips &amp; Inspiration</h4>
-              </div>
-              <p className="text-[11px] text-[#7070a0] leading-relaxed mb-3">
-                Discover creative ideas and best practices to make your videos stand out.
-              </p>
-              <button
-                className="flex items-center gap-1.5 text-[11px] font-bold hover:underline transition-colors"
-                style={{ color: PROGRESS_COLOR }}
-              >
-                Explore Inspiration <ArrowRight size={11} />
-              </button>
-            </div>
-            <div
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 relative z-10"
-              style={{ background: `${GRAD_FROM}25`, border: `1px solid ${GRAD_FROM}40` }}
-            >
-              <Play size={28} style={{ color: GRAD_FROM }} className="opacity-80 ml-1" fill={GRAD_FROM} />
-            </div>
-          </div>
-        </div>
+           {/* Tips & Inspiration */}
+           <div
+             className="rounded-2xl p-6 flex items-center gap-5 border border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] relative overflow-hidden"
+           >
+             <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-15" style={{ background: GRAD_TO }} />
+             <div className="flex-1 relative z-10">
+               <div className="flex items-center gap-2 mb-2">
+                 <Lightbulb size={14} style={{ color: GRAD_FROM }} />
+                 <h4 className="text-sm font-bold">Tips &amp; Inspiration</h4>
+               </div>
+               <p className="text-[11px] text-gray-500 dark:text-[#7070a0] leading-relaxed mb-3">
+                 Discover creative ideas and best practices to make your videos stand out.
+               </p>
+               <button
+                 className="flex items-center gap-1.5 text-[11px] font-bold hover:underline transition-colors"
+                 style={{ color: PROGRESS_COLOR }}
+               >
+                 Explore Inspiration <ArrowRight size={11} />
+               </button>
+             </div>
+             <div
+               className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 relative z-10"
+               style={{ background: `${GRAD_FROM}25`, border: `1px solid ${GRAD_FROM}40` }}
+             >
+               <Play size={28} style={{ color: GRAD_FROM }} className="opacity-80 ml-1" fill={GRAD_FROM} />
+             </div>
+           </div>
+         </div>
 
-      </main>
+       </main>
 
-      {/* Logout Confirmation Modal */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 z-[9999] grid place-items-center p-4">
-          {/* Backdrop with blur */}
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowLogoutModal(false)}
-          />
+       {/* Logout Confirmation Modal */}
+       {showLogoutModal && (
+         <div className="fixed inset-0 z-[9999] grid place-items-center p-4">
+           {/* Backdrop with blur */}
+           <div
+             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+             onClick={() => setShowLogoutModal(false)}
+           />
 
-          {/* Modal */}
-          <div className="relative z-10 bg-[#111128] border border-white/[0.08] rounded-2xl p-8 w-full max-w-md shadow-2xl shadow-black/80 animate-in">
-            {/* Warning Icon */}
-            <div className="flex justify-center mb-5">
-              <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-8 h-8 text-red-400" />
-              </div>
-            </div>
+           {/* Modal */}
+           <div className="relative z-10 bg-white dark:bg-[#111128] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-8 w-full max-w-md shadow-2xl shadow-black/10 dark:shadow-black/80 animate-in">
+             {/* Warning Icon */}
+             <div className="flex justify-center mb-5">
+               <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
+                 <AlertTriangle className="w-8 h-8 text-red-400" />
+               </div>
+             </div>
 
-            <h3 className="text-xl font-bold text-center mb-2 text-white">
-              Confirm Logout
-            </h3>
-            <p className="text-[#8888bb] text-sm text-center mb-8">
-              Are you sure you want to sign out of your account?
-            </p>
+             <h3 className="text-xl font-bold text-center mb-2 text-gray-900 dark:text-white">
+               Confirm Logout
+             </h3>
+             <p className="text-gray-500 dark:text-[#8888bb] text-sm text-center mb-8">
+               Are you sure you want to sign out of your account?
+             </p>
 
-            {/* Buttons */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setShowLogoutModal(false)}
-                className="flex-1 bg-white/[0.06] hover:bg-white/10 border border-white/[0.08] text-white font-semibold py-3 rounded-xl transition-colors text-sm"
-              >
-                Cancel
-              </button>
+             {/* Buttons */}
+             <div className="flex items-center gap-3">
+               <button
+                 type="button"
+                 onClick={() => setShowLogoutModal(false)}
+                 className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.06] dark:hover:bg-white/10 border border-gray-200 dark:border-[#1F1F1F] text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+               >
+                 Cancel
+               </button>
               <button
                 type="button"
                 onClick={handleLogout}

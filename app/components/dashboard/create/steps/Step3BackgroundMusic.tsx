@@ -183,7 +183,7 @@ export default function Step3BackgroundMusic({
               } ${
                 backgroundMusic === option.value
                   ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
+                  : "border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               <div className="w-full min-w-0">
@@ -203,7 +203,7 @@ export default function Step3BackgroundMusic({
                       className={`text-xs font-medium px-2 py-1 rounded-md border shrink-0 ${
                         option.credits > 0
                           ? "text-[#3B82F6] border-[#3B82F6]/40 bg-[#3B82F6]/10"
-                          : "text-gray-500 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#0A0A0A]"
+                          : "text-gray-500 border-gray-200 dark:border-[#1F1F1F] bg-gray-100 dark:bg-[#0A0A0A]"
                       }`}
                     >
                       {option.credits > 0 ? `+${option.credits} credits` : "0 credits"}
@@ -213,7 +213,7 @@ export default function Step3BackgroundMusic({
                         className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                           playingId === option.value
                             ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
-                            : "bg-gray-100 dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155]"
+                            : "bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F]"
                         }`}
                       >
                         {playingId === option.value ? (
@@ -243,7 +243,7 @@ export default function Step3BackgroundMusic({
                       className={`text-xs font-medium px-2 py-1 rounded-md border ${
                         option.credits > 0
                           ? "text-[#3B82F6] border-[#3B82F6]/40 bg-[#3B82F6]/10"
-                          : "text-gray-500 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#0A0A0A]"
+                          : "text-gray-500 border-gray-200 dark:border-[#1F1F1F] bg-gray-100 dark:bg-[#0A0A0A]"
                       }`}
                     >
                       {option.credits > 0 ? `+${option.credits} credits` : "0 credits"}
@@ -253,7 +253,7 @@ export default function Step3BackgroundMusic({
                         className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                           playingId === option.value
                             ? "bg-[#3B82F6]/20 border border-[#3B82F6]"
-                            : "bg-gray-100 dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155]"
+                            : "bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F]"
                         }`}
                       >
                         {playingId === option.value ? (

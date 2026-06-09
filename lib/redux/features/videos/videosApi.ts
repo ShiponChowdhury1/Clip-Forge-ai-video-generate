@@ -8,6 +8,7 @@ import type {
   Video,
   JobStatus,
   QueueResponse,
+  DashboardResponse,
 } from "@/types/video";
 
 const API_BASE_URL =
@@ -146,6 +147,12 @@ export const videosApi = createApi({
     getQueue: builder.query<QueueResponse, void>({
       query: () => "/videos/queue",
     }),
+
+    // GET /api/v1/users/dashboard
+    getDashboard: builder.query<DashboardResponse, void>({
+      query: () => "/users/dashboard",
+      providesTags: [{ type: "Videos", id: "DASHBOARD" }, { type: "Videos", id: "LIST" }],
+    }),
   }),
 });
 
@@ -165,6 +172,7 @@ export type {
   QueueVideoData,
   QueueItem,
   QueueResponse,
+  DashboardResponse,
 } from "@/types/video";
 
 export const {
@@ -175,4 +183,5 @@ export const {
   useDeleteVideoMutation,
   useUpdateVideoMutation,
   useGetQueueQuery,
+  useGetDashboardQuery,
 } = videosApi;

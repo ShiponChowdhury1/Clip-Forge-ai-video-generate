@@ -207,3 +207,10 @@ input[type="checkbox"]:checked::before {
   min-height: 48px !important;
 }
 
+/* Disable native browser invalid outlines/shadows */
+input:invalid,
+textarea:invalid {
+  box-shadow: none !important;
+  outline: none !important;
+}
+

@@ -72,41 +72,45 @@ function WaitingTimer({ createdAt }: { createdAt: string }) {
 
 export default function QueueCard({ item, position, type }: QueueCardProps) {
   const isProcessing = type === "processing";
-  const [progressState, setProgressState] = useState({
-    id: item.id,
-    value: item.progress,
-  });
+  const [displayProgress, setDisplayProgress] = useState(item.progress || 0);
 
-  const displayProgress =
-    !isProcessing
-      ? item.progress
-      : progressState.id === item.id
-        ? Math.max(progressState.value, item.progress)
-        : item.progress;
+  // Sync with backend progress if it is higher
+  useEffect(() => {
+    if (item.progress > displayProgress) {
+      setDisplayProgress(item.progress);
+    }
+  }, [item.progress, displayProgress]);
+
+  // Reset progress state if item ID changes
+  useEffect(() => {
+    setDisplayProgress(item.progress || 0);
+  }, [item.id, item.progress]);
 
   useEffect(() => {
-    if (!isProcessing) return;
+    if (!isProcessing || item.progress >= 100) return;
 
-    const targetCap = 99;
+    const FAST_SECONDS = 60;  // 0→50% in 60s
+    const SLOW_SECONDS = 600; // 50→99% over 600s
+
     const interval = setInterval(() => {
-      setProgressState((prev) => {
-        const previousValue = prev.id === item.id ? prev.value : item.progress;
-        const syncedValue = Math.max(previousValue, item.progress);
-
+      setDisplayProgress((prev) => {
         if (item.progress >= 100) {
-          return { id: item.id, value: 100 };
+          return 100;
         }
-
-        if (syncedValue >= targetCap) {
-          return { id: item.id, value: syncedValue };
+        const current = Math.max(prev, item.progress);
+        if (current < 50) {
+          return Math.min(current + (50 / FAST_SECONDS), 50);
+        } else if (current < 99) {
+          return Math.min(current + (49 / SLOW_SECONDS), 99);
         }
-
-        return { id: item.id, value: syncedValue + 1 };
+        return current;
       });
-    }, 900);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [isProcessing, item.id, item.progress]);
+
+  const roundedProgress = Math.floor(displayProgress);
 
   return (
     <div
@@ -123,7 +127,7 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
             <div className="relative">
               <div className="w-16 h-16 border-4 border-[#1A3155] border-t-[#F59E0B] rounded-full animate-spin" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[#F59E0B] text-xs font-bold">{displayProgress}%</span>
+                <span className="text-[#F59E0B] text-xs font-bold">{roundedProgress}%</span>
               </div>
             </div>
             {/* Status message */}
@@ -199,7 +203,7 @@ export default function QueueCard({ item, position, type }: QueueCardProps) {
             <div className="w-full h-1.5 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#F59E0B] to-[#F97316] rounded-full transition-all duration-500"
-                style={{ width: `${displayProgress}%` }}
+                style={{ width: `${roundedProgress}%` }}
               />
             </div>
           </div>

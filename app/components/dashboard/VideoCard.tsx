@@ -19,6 +19,7 @@ interface VideoCardProps {
   title: string;
   style: string;
   path: string;
+  thumbnail_path?: string | null;
   created_at: string;
   status?: string;
 }
@@ -63,6 +64,7 @@ export default function VideoCard({
   title,
   style,
   path,
+  thumbnail_path,
   created_at,
 }: VideoCardProps) {
   const router = useRouter();
@@ -131,11 +133,19 @@ export default function VideoCard({
     if (previewVideoRef.current) previewVideoRef.current.muted = !isMuted;
   };
 
+  useEffect(() => {
+    if (isHovered && videoLoaded && previewVideoRef.current) {
+      previewVideoRef.current.muted = isMuted;
+      previewVideoRef.current.play().catch(() => {});
+    }
+  }, [isHovered, videoLoaded, isMuted]);
+
   // Play preview on hover — lazy load video src
   const handleMouseEnter = () => {
     setIsHovered(true);
-    if (!videoLoaded) setVideoLoaded(true);
-    if (previewVideoRef.current) {
+    if (!videoLoaded) {
+      setVideoLoaded(true);
+    } else if (previewVideoRef.current) {
       previewVideoRef.current.currentTime = 0;
       previewVideoRef.current.muted = isMuted;
       previewVideoRef.current.play().catch(() => {});
@@ -166,11 +176,19 @@ export default function VideoCard({
           <video
             ref={previewVideoRef}
             src={videoLoaded && videoUrl ? videoUrl : undefined}
+            poster={thumbnail_path ? buildVideoUrl(thumbnail_path) : undefined}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             preload="none"
             muted
             loop
             playsInline
+            onTimeUpdate={(e) => {
+              const video = e.currentTarget;
+              if (video.currentTime >= 10) {
+                video.currentTime = 0;
+                video.play().catch(() => {});
+              }
+            }}
             onLoadedMetadata={(e) => {
               const d = (e.target as HTMLVideoElement).duration;
               if (d && isFinite(d)) setDuration(d);

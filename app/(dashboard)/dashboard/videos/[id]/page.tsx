@@ -306,6 +306,7 @@ export default function VideoDetailsPage() {
                       >
                         <video
                           src={thumbUrl}
+                          poster={item.thumbnail_path ? buildVideoUrl(item.thumbnail_path) : undefined}
                           className="h-full w-full object-contain"
                           muted
                           loop
@@ -329,6 +330,7 @@ export default function VideoDetailsPage() {
                     <video
                       ref={videoRef}
                       src={videoUrl}
+                      poster={video.thumbnail_path ? buildVideoUrl(video.thumbnail_path) : undefined}
                       className="w-full h-full object-contain"
                       preload="metadata"
                       controls={isPlaying}

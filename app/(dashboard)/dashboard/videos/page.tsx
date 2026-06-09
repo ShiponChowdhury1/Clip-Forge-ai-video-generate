@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import VideoCard from "@/app/components/dashboard/VideoCard";
 import QueueCard from "@/app/components/dashboard/QueueCard";
 import { useState, forwardRef, useMemo } from "react";
 import { useGetAllVideosQuery, useGetQueueQuery } from "@/lib/redux/features/videos/videosApi";
 import { useAppSelector } from "@/lib/redux/hooks";
-import { Calendar, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, X, ChevronLeft, ChevronRight, Video } from "lucide-react";
 import DatePicker from "react-datepicker";
 import { format, isSameDay } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
@@ -52,15 +51,25 @@ export default function AllVideosPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: videos = [], isLoading } = useGetAllVideosQuery(
-    { skip: 0, limit: 100 },
-    { refetchOnMountOrArgChange: true, pollingInterval: 60000, skipPollingIfUnfocused: true, skip: !token }
-  );
-  const { data: queue } = useGetQueueQuery(undefined, { pollingInterval: 10000, skipPollingIfUnfocused: true, skip: !token });
+  const { data: queue } = useGetQueueQuery(undefined, {
+    pollingInterval: 5000,
+    skipPollingIfUnfocused: true,
+    skip: !token
+  });
 
   const processingItems = queue?.processing ?? [];
   const queuedItems = queue?.queued ?? [];
   const hasQueueItems = processingItems.length > 0 || queuedItems.length > 0;
+
+  const { data: videos = [], isLoading } = useGetAllVideosQuery(
+    { skip: 0, limit: 100 },
+    {
+      refetchOnMountOrArgChange: true,
+      pollingInterval: hasQueueItems ? 4000 : 60000,
+      skipPollingIfUnfocused: true,
+      skip: !token
+    }
+  );
 
   const filteredVideos = useMemo(() => {
     return videos.filter((video) => {
@@ -119,13 +128,9 @@ export default function AllVideosPage() {
       {/* Header - Reusable */}
       <DashboardHeader
         icon={
-          <Image
-            src="/logo/video.png"
-            alt="All Videos"
-            width={48}
-            height={48}
-            className="w-12 h-12 rounded-xl object-cover"
-          />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#3B82F6] text-white shadow-sm shadow-cyan-500/20">
+            <Video className="h-6 w-6" />
+          </div>
         }
         title="All Generated Video"
         description="Manage & Review Your Generated Videos"

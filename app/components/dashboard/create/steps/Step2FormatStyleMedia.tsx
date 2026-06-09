@@ -46,16 +46,16 @@ export default function Step2FormatStyleMedia({
               } ${
                 videoFormat === option.value
                   ? "border-[#3B82F6] bg-blue-50 dark:bg-[#3B82F6]/5"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
+                  : "border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               {/* Device mockup */}
               <div className="flex-1 flex items-end justify-center">
                 <div
-                  className={`${option.innerWidth} ${option.innerHeight} rounded-lg border-2 ${
+                  className={`${option.innerWidth} ${option.innerHeight} rounded-lg border ${
                     videoFormat === option.value
                       ? "border-[#3B82F6]"
-                      : "border-gray-300 dark:border-[#2A3A50]"
+                      : "border-gray-200 dark:border-[#1F1F1F]"
                   } transition-colors`}
                 />
               </div>
@@ -86,7 +86,7 @@ export default function Step2FormatStyleMedia({
               }`}
             >
               <div
-                className={`w-full aspect-4/3 rounded-xl overflow-hidden border-2 transition-all ${
+                className={`w-full aspect-4/3 rounded-xl overflow-hidden border transition-all ${
                   videoStyle === style.value
                     ? "border-[#3B82F6] shadow-[0_0_12px_rgba(59,130,246,0.3)]"
                     : "border-transparent hover:border-blue-300 dark:hover:border-[#2A4A7A]"
@@ -127,13 +127,13 @@ export default function Step2FormatStyleMedia({
               className={`relative flex flex-col items-start p-4 rounded-xl border transition-all text-left ${
                 sceneMedia === option.value
                   ? "border-[#3B82F6] bg-[#3B82F6]/5"
-                  : "border-gray-300 dark:border-[#1A3155] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
+                  : "border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
               }`}
             >
               <span className="text-gray-900 dark:text-white text-sm font-medium">
                 {option.label}
               </span>
-              <span className="text-gray-500 dark:text-gray-400 text-[11px] mt-1 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1A3155]">
+              <span className="text-gray-500 dark:text-gray-400 text-[11px] mt-1 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F]">
                 {option.credits > 0 ? `+${option.credits} credits` : "No extra credits"}
               </span>
               {sceneMedia === option.value && (

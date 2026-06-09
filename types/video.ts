@@ -57,6 +57,7 @@ export interface Video {
   keywords: string | null;
   negative_keywords: string | null;
   path: string;
+  thumbnail_path: string | null;
   duration: number;
   music_id: number | null;
   subtitle_id: number | null;
@@ -106,4 +107,34 @@ export interface QueueResponse {
   processing: QueueItem[];
   total_queued: number;
   total_processing: number;
+}
+
+export interface RecentVideo {
+  id: number;
+  title: string;
+  thumbnail_path: string | null;
+  status: string;
+  duration: number;
+  created_at: string;
+}
+
+export interface CreditDataPoint {
+  date: string;
+  credits_used: number;
+}
+
+export interface CreditsOverview {
+  label: string;
+  data: CreditDataPoint[];
+}
+
+export interface DashboardResponse {
+  credits_used: number;
+  credits_remaining: number;
+  credits_reset_date: string | null;
+  total_videos: number;
+  videos_this_month: number;
+  recent_videos: RecentVideo[];
+  credits_overview_this_month: CreditsOverview;
+  credits_overview_all_time: CreditsOverview;
 }

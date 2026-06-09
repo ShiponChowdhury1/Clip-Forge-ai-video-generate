@@ -34,7 +34,7 @@ export default function Step5SubtitleSettings({
             className={`text-xs font-medium px-2 py-1 rounded-md border ${
               subtitlesEnabled
                 ? "text-emerald-600 dark:text-emerald-300 border-emerald-300/70 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10"
-                : "text-gray-600 dark:text-gray-400 border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#0A0A0A]"
+                : "text-gray-600 dark:text-gray-400 border-gray-200 dark:border-[#1F1F1F] bg-gray-100 dark:bg-[#0A0A0A]"
             }`}
           >
             {subtitlesEnabled ? "Enabled" : "Disabled"}
@@ -62,7 +62,7 @@ export default function Step5SubtitleSettings({
 
       {/* Disabled message */}
       {!subtitlesEnabled && (
-        <p className="text-gray-500 text-sm bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1A3155] rounded-lg px-3 py-2">
+        <p className="text-gray-500 text-sm bg-gray-100 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-lg px-3 py-2">
           Subtitles are disabled. Toggle on to choose a style.
         </p>
       )}
@@ -87,8 +87,8 @@ export default function Step5SubtitleSettings({
             }}
             className={`flex flex-col rounded-xl border transition-all overflow-hidden ${
               subtitleStyle === style.value
-                ? "border-[#3B82F6] ring-1 ring-[#3B82F6]/30 shadow-sm"
-                : "border-gray-300 dark:border-[#1A3155] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
+                ? "border-[#3B82F6]"
+                : "border-gray-200 dark:border-[#1F1F1F] hover:border-blue-300 dark:hover:border-[#2A4A7A]"
             }`}
           >
             {/* Preview area */}
