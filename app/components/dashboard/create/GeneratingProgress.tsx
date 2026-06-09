@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { ArrowLeft, Check, Loader2, AlertTriangle } from "lucide-react";
+import { Check, Loader2, AlertTriangle, Video, Sparkles, Eye, RotateCcw } from "lucide-react";
 
 interface GenerationStep {
   label: string;
@@ -83,145 +83,207 @@ export default function GeneratingProgress({
   const roundedProgress = Math.floor(displayProgress);
 
   return (
-    <div className="bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1.5 text-[#3B82F6] hover:text-[#2563EB] transition-colors px-3 py-2 rounded-lg hover:bg-[#3B82F6]/8"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="text-sm font-medium">Back</span>
-        </button>
-        <h2 className="text-gray-900 dark:text-white text-lg font-bold">Create New Video</h2>
-      </div>
-
-      {/* Status heading */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h3 className="text-gray-900 dark:text-white text-base font-semibold">
-            {error ? "Generation Failed" : isComplete ? "Generation Complete!" : "Generating..."}
-          </h3>
-          {isProcessing && <Loader2 className="w-4 h-4 text-[#3B82F6] animate-spin" />}
+    <div className="w-full">
+      {/* Header — full width, matches CreateVideoHeader */}
+      <div className="bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6 mb-6 w-full">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className={`flex h-12 w-12 items-center justify-center rounded-xl text-white shadow-sm ${
+              error ? "bg-[#E33629] shadow-red-500/20" : isComplete ? "bg-[#22C55E] shadow-green-500/20" : "bg-[#3B82F6] shadow-cyan-500/20"
+            }`}>
+              {error ? (
+                <AlertTriangle className="h-6 w-6" />
+              ) : isComplete ? (
+                <Check className="h-6 w-6" />
+              ) : (
+                <Video className="h-6 w-6" />
+              )}
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                {error ? "Generation Failed" : isComplete ? "Video Ready!" : "Creating Your Video"}
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {error ? "Something went wrong during generation" : isComplete ? "Your video has been generated successfully" : "Please wait while we craft your video"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-sm">
+            <Sparkles className="w-4 h-4" />
+            <span>
+              {isProcessing && `${formatTime(elapsed)} elapsed`}
+              {isComplete && `Done in ${formatTime(elapsed)}`}
+              {error && "Stopped"}
+            </span>
+          </div>
         </div>
-
-        {/* Elapsed time */}
-        {isProcessing && (
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {formatTime(elapsed)} elapsed
-          </span>
-        )}
-        {isComplete && (
-          <span className="text-xs text-[#22C55E]">
-            Done in {formatTime(elapsed)}
-          </span>
-        )}
       </div>
 
-      {/* Progress bar */}
-      <div>
-        <div className="relative w-full h-2 bg-gray-200 dark:bg-[#1A2332] rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full ${
-              error ? "bg-[#E33629]" : isComplete ? "bg-[#22C55E]" : "bg-[#3B82F6]"
-            }`}
-            style={{
-              width: `${roundedProgress}%`,
-              transition: "width 1000ms linear",
-            }}
-          />
-          {/* Thumb */}
-          {!error && (
+      {/* Content — constrained like other steps */}
+      <div className="w-full max-w-277 mx-auto">
+      <div className="bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-6 space-y-6">
+
+        {/* Progress bar section */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-gray-900 dark:text-white text-sm font-semibold">
+              Progress
+            </p>
+            <span className={`text-sm font-bold tabular-nums ${
+              error ? "text-[#E33629]" : isComplete ? "text-[#22C55E]" : "text-[#3B82F6]"
+            }`}>
+              {roundedProgress}%
+            </span>
+          </div>
+
+          <div className="relative w-full h-2.5 bg-gray-100 dark:bg-[#111111] rounded-full overflow-hidden">
             <div
-              className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white border-2 ${
-                isComplete ? "border-[#22C55E]" : "border-[#3B82F6]"
+              className={`h-full rounded-full ${
+                error ? "bg-[#E33629]" : isComplete ? "bg-[#22C55E]" : "bg-gradient-to-r from-[#2563EB] to-[#3B82F6]"
               }`}
               style={{
-                left: `calc(${roundedProgress}% - 7px)`,
-                transition: "left 1000ms linear",
+                width: `${roundedProgress}%`,
+                transition: "width 1000ms linear",
               }}
             />
-          )}
-        </div>
-
-        {/* % text */}
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
-            {roundedProgress}% Completed
-          </p>
-        
-        </div>
-      </div>
-
-      {/* Steps */}
-      <div className="space-y-3">
-        {steps.map((step, index) => (
-          <div
-            key={index}
-            className={`flex items-center gap-3 p-4 rounded-xl border transition-all duration-500 ${
-              step.completed
-                ? "bg-[#22C55E] border-[#22C55E] text-white"
-                : step.active
-                ? "bg-gray-50 dark:bg-[#0A0A0A] border-[#3B82F6] text-gray-900 dark:text-white"
-                : "bg-gray-50 dark:bg-[#0A0A0A] border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-400"
-            }`}
-          >
-            <div
-              className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 ${
-                step.completed
-                  ? "bg-white/20 border-white/40"
-                  : step.active
-                  ? "border-[#3B82F6] bg-transparent"
-                  : "border-gray-600 bg-transparent"
-              }`}
-            >
-              {step.completed ? (
-                <Check className="w-3 h-3 text-white" />
-              ) : step.active ? (
-                <Loader2 className="w-3 h-3 text-[#3B82F6] animate-spin" />
-              ) : null}
-            </div>
-            <span className="text-sm font-medium">{step.label}</span>
+            {/* Animated shimmer on processing */}
+            {isProcessing && (
+              <div
+                className="absolute top-0 h-full w-1/3 rounded-full"
+                style={{
+                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
+                  animation: "shimmer 2s infinite",
+                  left: `${Math.max(0, roundedProgress - 33)}%`,
+                }}
+              />
+            )}
           </div>
-        ))}
-      </div>
 
-      {/* Completion message */}
-      {isComplete && (
-        <div className="bg-[#22C55E]/10 border border-[#22C55E]/30 rounded-xl p-4 text-center">
-          <p className="text-[#22C55E] text-sm font-semibold">
-            Video generation complete!
+          <p className="text-gray-500 dark:text-gray-400 text-xs">
+            {error ? "Generation stopped due to an error" : isComplete ? "All steps completed successfully" : "This may take a few minutes..."}
           </p>
         </div>
-      )}
 
-      {/* Error */}
-      {error && (
-        <div className="bg-[#E33629]/10 border border-[#E33629]/30 rounded-xl p-4 flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-[#E33629] shrink-0" />
-          <p className="text-[#E33629] text-sm font-medium">{error}</p>
+        {/* Steps */}
+        <div className="space-y-2.5">
+          <p className="text-gray-900 dark:text-white text-sm font-semibold">Steps</p>
+          <div className="space-y-2">
+            {steps.map((step, index) => (
+              <div
+                key={index}
+                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl border transition-all duration-500 ${
+                  step.completed
+                    ? "bg-[#22C55E]/5 border-[#22C55E]/20"
+                    : step.active
+                    ? "bg-[#3B82F6]/5 border-[#3B82F6]/30"
+                    : "bg-gray-50 dark:bg-[#111111] border-gray-200 dark:border-[#1F1F1F]"
+                }`}
+              >
+                <div
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                    step.completed
+                      ? "bg-[#22C55E] text-white"
+                      : step.active
+                      ? "bg-[#3B82F6]/10 border border-[#3B82F6]/30"
+                      : "bg-gray-100 dark:bg-[#1A1A1A] border border-gray-200 dark:border-[#1F1F1F]"
+                  }`}
+                >
+                  {step.completed ? (
+                    <Check className="w-3.5 h-3.5" />
+                  ) : step.active ? (
+                    <Loader2 className="w-3.5 h-3.5 text-[#3B82F6] animate-spin" />
+                  ) : (
+                    <span className="text-gray-400 dark:text-gray-500 text-[11px] font-semibold">
+                      {index + 1}
+                    </span>
+                  )}
+                </div>
+                <span className={`text-sm font-medium ${
+                  step.completed
+                    ? "text-[#22C55E]"
+                    : step.active
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-400 dark:text-gray-500"
+                }`}>
+                  {step.label}
+                </span>
+                {step.completed && (
+                  <span className="ml-auto text-[10px] font-semibold text-[#22C55E] bg-[#22C55E]/10 px-2 py-0.5 rounded-full">
+                    Done
+                  </span>
+                )}
+                {step.active && (
+                  <span className="ml-auto text-[10px] font-semibold text-[#3B82F6] bg-[#3B82F6]/10 px-2 py-0.5 rounded-full animate-pulse">
+                    In Progress
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      )}
 
-      {/* Navigation */}
-      <div className="grid grid-cols-2 gap-3 pt-2">
+        {/* Completion message */}
+        {isComplete && (
+          <div className="bg-[#22C55E]/5 border border-[#22C55E]/20 rounded-xl p-5 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[#22C55E]/10 flex items-center justify-center shrink-0">
+              <Check className="w-5 h-5 text-[#22C55E]" />
+            </div>
+            <div>
+              <p className="text-[#22C55E] text-sm font-semibold">
+                Video generation complete!
+              </p>
+              <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">
+                Your video is ready to preview and download.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="bg-[#E33629]/5 border border-[#E33629]/20 rounded-xl p-5 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[#E33629]/10 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-5 h-5 text-[#E33629]" />
+            </div>
+            <div>
+              <p className="text-[#E33629] text-sm font-semibold">Generation Failed</p>
+              <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">{error}</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Navigation — matches StepNavigation style */}
+      <div className="flex items-center justify-between mt-6">
         <button
           onClick={onBack}
-          className="bg-[#EFF6FF] dark:bg-[#0A0A0A] hover:bg-[#DBEAFE] dark:hover:bg-[#10253F] text-[#2563EB] dark:text-[#93C5FD] font-medium text-sm py-3 rounded-xl transition-colors border border-[#BFDBFE] dark:border-[#1A3155]"
+          className="flex items-center gap-2 text-[#3B82F6] hover:text-[#2563EB] font-medium text-sm py-3 px-5 rounded-xl transition-colors hover:bg-[#3B82F6]/5"
         >
+          <RotateCcw className="w-4 h-4" />
           {error ? "Try Again" : "Create New Video"}
         </button>
         <button
           onClick={onNext}
           disabled={!isComplete}
-          className={`font-medium text-sm py-3 rounded-xl transition-colors ${
+          className={`flex items-center gap-2 font-medium text-sm py-3 px-8 rounded-xl transition-all ${
             isComplete
-              ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-              : "bg-gray-100 dark:bg-[#0A0A0A] text-gray-500 cursor-not-allowed border border-gray-300 dark:border-[#1A3155]"
+              ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+              : "bg-gray-100 dark:bg-[#111111] text-gray-400 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-[#1F1F1F]"
           }`}
         >
-          {isComplete ? "View Video" : "Generating..."}
+          {isComplete ? (
+            <>
+              <Eye className="w-4 h-4" />
+              View Video
+            </>
+          ) : (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Generating...
+            </>
+          )}
         </button>
+      </div>
       </div>
     </div>
   );
