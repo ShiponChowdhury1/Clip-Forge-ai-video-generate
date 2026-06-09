@@ -273,7 +273,7 @@ export default function CreateVideoPage() {
   }, []);
 
   const handleBack = () => {
-    if (isGenerating) { setIsGenerating(false); return; }
+    if (isGenerating) { setCurrentStep(1); resetGenerating(); return; }
     if (currentStep > 1) setCurrentStep((prev) => prev - 1);
   };
 
@@ -347,9 +347,11 @@ export default function CreateVideoPage() {
   const resetGenerating = () => {
     if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
     setIsGenerating(false);
+    setCurrentStep(1);
     setGenerationProgress(0);
     setGenerationComplete(false);
     setGenerationError(null);
+    setShowStep1Errors(false);
     setGenerationSteps([
       { label: "Generating Prompts", completed: false, active: true },
       { label: "Creating Image",     completed: false, active: false },

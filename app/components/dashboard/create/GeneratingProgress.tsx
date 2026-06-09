@@ -68,7 +68,8 @@ export default function GeneratingProgress({
   useEffect(() => {
     if (isComplete) {
       if (timerRef.current) clearInterval(timerRef.current);
-      setDisplayProgress(100);
+      const frame = requestAnimationFrame(() => setDisplayProgress(100));
+      return () => cancelAnimationFrame(frame);
     }
   }, [isComplete]);
 
@@ -208,7 +209,7 @@ export default function GeneratingProgress({
           onClick={onBack}
           className="bg-[#EFF6FF] dark:bg-[#0A0A0A] hover:bg-[#DBEAFE] dark:hover:bg-[#10253F] text-[#2563EB] dark:text-[#93C5FD] font-medium text-sm py-3 rounded-xl transition-colors border border-[#BFDBFE] dark:border-[#1A3155]"
         >
-          {error ? "Try Again" : "Back"}
+          {error ? "Try Again" : "Create New Video"}
         </button>
         <button
           onClick={onNext}
