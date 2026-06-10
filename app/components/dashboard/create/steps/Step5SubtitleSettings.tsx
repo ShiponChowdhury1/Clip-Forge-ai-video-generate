@@ -97,43 +97,55 @@ export default function Step5SubtitleSettings({
                   setSubtitlesEnabled(true);
                 }
               }}
-              className={`group flex flex-col rounded-xl border transition-all duration-200 overflow-hidden cursor-pointer ${
+              className={`group flex flex-col rounded-2xl border-2 transition-all duration-200 overflow-hidden cursor-pointer ${
                 isSelected
-                  ? "border-[#3B82F6] shadow-[0_0_0_1px_rgba(59,130,246,0.3)]"
-                  : "border-gray-200 dark:border-[#1F1F1F] hover:border-[#3B82F6]/50 dark:hover:border-[#3B82F6]/30 hover:shadow-md dark:hover:shadow-black/20"
+                  ? "border-[#3B82F6] ring-4 ring-[#3B82F6]/10 scale-[1.02]"
+                  : "border-gray-200 dark:border-[#1A1A1A] hover:border-[#3B82F6]/40 dark:hover:border-[#3B82F6]/30 hover:shadow-lg dark:hover:shadow-black/30 hover:scale-[1.01]"
               }`}
             >
-              {/* Preview area */}
+              {/* Preview area — simulated video frame */}
               <div
-                className={`relative overflow-hidden ${
-                  isNone
-                    ? "bg-gray-100 dark:bg-[#111111]"
-                    : "bg-gradient-to-b from-gray-300 via-gray-200 to-gray-100 dark:from-[#1A1A1A] dark:via-[#141414] dark:to-[#111111]"
-                }`}
+                className="relative overflow-hidden"
                 style={{ aspectRatio: "16/9" }}
               >
                 {isNone ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                    <Ban className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                  /* "None" style — clean empty state */
+                  <div className="absolute inset-0 bg-gray-100 dark:bg-[#0E0E0E] flex flex-col items-center justify-center gap-2.5">
+                    <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-[#1A1A1A] flex items-center justify-center">
+                      <Ban className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                    </div>
                     <span className="text-gray-400 dark:text-gray-500 text-xs font-medium">
-                      {style.previewText}
+                      No Subtitles
                     </span>
                   </div>
                 ) : (
-                  <div className="absolute left-[5%] right-[5%] bottom-[8%] flex justify-center">
-                    <p
-                      className={`${style.previewStyle} max-w-full text-center whitespace-normal wrap-break-word leading-tight`}
-                    >
-                      {style.previewText}
-                    </p>
-                  </div>
+                  <>
+                    {/* Realistic dark video scene background */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+                      {/* Simulated scene elements */}
+                      <div className="absolute top-[12%] left-[8%] w-[35%] h-[18%] rounded-lg bg-white/[0.04]" />
+                      <div className="absolute top-[10%] right-[6%] w-[22%] h-[22%] rounded-full bg-yellow-400/[0.06]" />
+                      <div className="absolute bottom-[30%] left-[15%] w-[25%] h-[12%] rounded bg-white/[0.03]" />
+                      <div className="absolute bottom-[35%] right-[10%] w-[30%] h-[15%] rounded-lg bg-white/[0.04]" />
+                      {/* Cinematic letterbox gradient */}
+                      <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                    </div>
+
+                    {/* Subtitle text preview */}
+                    <div className="absolute left-[6%] right-[6%] bottom-[10%] flex justify-center">
+                      <p
+                        className={`${style.previewStyle} max-w-full text-center whitespace-normal break-words leading-snug`}
+                      >
+                        The world is full of stories
+                      </p>
+                    </div>
+                  </>
                 )}
 
-                {/* Selected badge */}
+                {/* Selected checkmark badge */}
                 {isSelected && (
-                  <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-[#3B82F6] text-white text-[10px] font-semibold px-2 py-1 shadow-lg shadow-blue-500/20">
-                    <Check className="w-3 h-3" />
-                    Selected
+                  <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-[#3B82F6] flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                   </div>
                 )}
 
@@ -143,17 +155,21 @@ export default function Step5SubtitleSettings({
                 )}
               </div>
 
-              {/* Label + credits */}
-              <div className={`px-4 py-3 flex items-center justify-between border-t ${
-                isSelected
-                  ? "bg-[#3B82F6]/5 border-[#3B82F6]/20"
-                  : "bg-gray-50 dark:bg-[#0A0A0A] border-gray-100 dark:border-[#1F1F1F]"
-              }`}>
-                <span className={`text-sm font-medium ${
+              {/* Label + credits footer */}
+              <div
+                className={`px-4 py-3 flex items-center justify-between border-t ${
                   isSelected
-                    ? "text-[#3B82F6]"
-                    : "text-gray-800 dark:text-gray-200"
-                }`}>
+                    ? "bg-[#3B82F6]/5 border-[#3B82F6]/20"
+                    : "bg-gray-50 dark:bg-[#0A0A0A] border-gray-100 dark:border-[#1A1A1A]"
+                }`}
+              >
+                <span
+                  className={`text-sm font-semibold ${
+                    isSelected
+                      ? "text-[#3B82F6]"
+                      : "text-gray-800 dark:text-gray-200"
+                  }`}
+                >
                   {style.label}
                 </span>
                 <span
