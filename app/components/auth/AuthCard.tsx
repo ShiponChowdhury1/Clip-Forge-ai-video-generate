@@ -35,7 +35,7 @@ export default function AuthCard({
 
   return (
     <div
-      className="w-full mx-auto bg-white dark:bg-[#161D21] border border-gray-200 dark:border-gray-700/50 flex flex-col items-center gap-[10px]"
+      className="w-full mx-auto bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#1F1F1F] flex flex-col items-center gap-[10px]"
       style={{
         maxWidth: style.maxWidth,
         minHeight: style.minHeight,

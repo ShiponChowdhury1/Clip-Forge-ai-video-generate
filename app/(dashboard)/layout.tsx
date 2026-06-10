@@ -110,7 +110,7 @@ export default function DashboardLayout({
     <MuteProvider>
       <div className="min-h-screen bg-white dark:bg-black">
         <Sidebar onCollapsedChange={setSidebarCollapsed} />
-        <main className={`min-h-screen p-4 pt-18 lg:pt-6 lg:p-6 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-26" : "lg:ml-77"}`}>
+        <main className={`min-h-screen p-4 pr-0 pt-18 lg:pt-6 lg:pb-6 lg:pl-6 lg:pr-0 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-26" : "lg:ml-77"}`}>
           {children}
         </main>
       </div>

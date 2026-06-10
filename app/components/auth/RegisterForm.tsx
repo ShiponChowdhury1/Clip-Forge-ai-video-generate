@@ -100,25 +100,49 @@ export default function RegisterForm() {
   return (
     <>
       <AuthCard title="Create your account" variant="register">
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4" autoComplete="off">
+          {/* Dummy hidden inputs to prevent browser autofill */}
+          <input type="text" name="chrome-email-dummy" style={{ display: "none" }} tabIndex={-1} autoComplete="new-password" />
+          <input type="password" name="chrome-password-dummy" style={{ display: "none" }} tabIndex={-1} autoComplete="new-password" />
+
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
               {error}
             </div>
           )}
 
-          <AuthInput label="Full Name" type="text" placeholder="Enter Your Name" value={name} onChange={setName} />
-          <AuthInput label="Email Address" type="email" placeholder="Enter Your Email" value={email} onChange={setEmail} />
-          <AuthInput label="Password" type="password" placeholder="Enter Your Password" value={password} onChange={setPassword} />
+          <AuthInput
+            label="Full Name"
+            type="text"
+            placeholder="Enter Your Name"
+            value={name}
+            onChange={setName}
+            autoComplete="new-password"
+          />
+          <AuthInput
+            label="Email Address"
+            type="email"
+            placeholder="Enter Your Email"
+            value={email}
+            onChange={setEmail}
+            autoComplete="new-password"
+          />
+          <AuthInput
+            label="Password"
+            type="password"
+            placeholder="Enter Your Password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="new-password"
+          />
        <div className="flex items-start gap-3">
-            <input
-              type="checkbox"
-              id="terms"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="w-5 h-5 mt-0.5 rounded border-gray-600 cursor-pointer accent-[#00A6F4]"
-              style={{ backgroundColor: "#2D3235" }}
-            />
+             <input
+               type="checkbox"
+               id="terms"
+               checked={agreed}
+               onChange={(e) => setAgreed(e.target.checked)}
+               className="w-5 h-5 mt-0.5 rounded border border-gray-300 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] cursor-pointer accent-[#00A6F4]"
+             />
             <label htmlFor="terms" className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
               I&apos;ve read and agree with the{" "}
               <Link href="/terms-of-service" className="text-[#00A6F4] font-semibold hover:underline">
@@ -150,7 +174,7 @@ export default function RegisterForm() {
       {/* OTP Verification Modal */}
       {showOtpModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-          <div className="bg-white dark:bg-[#0A0F1A] border border-gray-200 dark:border-[#1A3155] rounded-2xl w-full max-w-md p-6 sm:p-8 relative">
+          <div className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl w-full max-w-md p-6 sm:p-8 relative">
             {/* Close button */}
             <button
               onClick={() => setShowOtpModal(false)}

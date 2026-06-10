@@ -73,10 +73,9 @@ export default function Step1TitleKeywordsScript({
           <span className="group relative">
             <Info className="w-4 h-4 text-[#3B82F6] cursor-help" />
             <span
-              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#0A0A0A] text-gray-700 dark:text-gray-300 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-200 dark:border-[#1F1F1F]"
-              style={{ whiteSpace: "nowrap" }}
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-100 dark:bg-[#0A0A0A] text-gray-700 dark:text-gray-300 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-200 dark:border-[#1F1F1F] w-64 text-center leading-relaxed"
             >
-              Keywords help AI find relevant media for your scenes
+              Keywords help AI find relevant media. Enter comma-separated terms (e.g. nature, cinematic, slow-motion).
             </span>
           </span>
         </label>
@@ -84,7 +83,7 @@ export default function Step1TitleKeywordsScript({
           type="text"
           value={keywords}
           onChange={(e) => setKeywords(e.target.value)}
-          placeholder="Positive keywords"
+          placeholder="Keywords (comma-separated, e.g. nature, cinematic)"
           className="w-full bg-gray-50 dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors"
         />
       </div>
@@ -96,10 +95,9 @@ export default function Step1TitleKeywordsScript({
           <span className="group relative">
             <Info className="w-4 h-4 text-[#3B82F6] cursor-help" />
             <span
-              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-100 dark:bg-[#0A0A0A] text-gray-700 dark:text-gray-300 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-200 dark:border-[#1F1F1F]"
-              style={{ whiteSpace: "nowrap" }}
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-100 dark:bg-[#0A0A0A] text-gray-700 dark:text-gray-300 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none border border-gray-200 dark:border-[#1F1F1F] w-64 text-center leading-relaxed"
             >
-              Exclude unwanted elements from generated media
+              Exclude unwanted elements from media. Enter comma-separated terms (e.g. text, logo, blurry).
             </span>
           </span>
         </label>
@@ -107,7 +105,7 @@ export default function Step1TitleKeywordsScript({
           type="text"
           value={negativeKeywords}
           onChange={(e) => setNegativeKeywords(e.target.value)}
-          placeholder="Negative keywords"
+          placeholder="Negative keywords (comma-separated, e.g. text, logo, blurry)"
           className="w-full bg-gray-50 dark:bg-[#0B0E12] border border-gray-200 dark:border-[#1F1F1F] rounded-xl px-4 py-3 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#3B82F6] focus:outline-none transition-colors "
         />
       </div>

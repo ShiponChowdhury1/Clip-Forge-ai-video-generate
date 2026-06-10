@@ -15,19 +15,19 @@
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,
 .dark input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 9999px #0d1117 inset !important;
-  box-shadow: 0 0 0 9999px #0d1117 inset !important;
-  -webkit-text-fill-color: rgba(255, 255, 255, 0.5) !important;
-  background-color: #0d1117 !important;
-  color: rgba(255, 255, 255, 0.5) !important;
+  -webkit-box-shadow: 0 0 0 9999px #0A0A0A inset !important;
+  box-shadow: 0 0 0 9999px #0A0A0A inset !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.7) !important;
+  background-color: #0A0A0A !important;
+  color: rgba(255, 255, 255, 0.7) !important;
   transition: background-color 600000s 0s, color 600000s 0s;
-  caret-color: rgba(255, 255, 255, 0.5);
+  caret-color: rgba(255, 255, 255, 0.7);
 }
 .dark input:-moz-autofill,
 .dark input:-moz-autofill:hover,
 .dark input:-moz-autofill:focus {
-  background-color: #0d1117 !important;
-  color: rgba(255, 255, 255, 0.5) !important;
+  background-color: #0A0A0A !important;
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 /* Light mode autofill */
 input:-webkit-autofill,

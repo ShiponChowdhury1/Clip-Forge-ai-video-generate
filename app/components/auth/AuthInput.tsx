@@ -11,6 +11,7 @@ interface AuthInputProps {
   onRightLabelClick?: () => void;
   value?: string;
   onChange?: (value: string) => void;
+  autoComplete?: string;
 }
 
 const iconMap = {
@@ -27,6 +28,7 @@ export default function AuthInput({
   onRightLabelClick,
   value: controlledValue,
   onChange,
+  autoComplete,
 }: AuthInputProps) {
   const [internalValue, setInternalValue] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -69,7 +71,7 @@ export default function AuthInput({
       </div>
 
       {/* Input Field */}
-      <div className="relative flex items-center w-full h-12 bg-gray-50 dark:bg-[#0d1117] border border-gray-300 dark:border-gray-700/50 rounded-xl overflow-hidden focus-within:border-[#00A6F4]/50 transition">
+      <div className="relative flex items-center w-full h-12 bg-gray-50 dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1F1F1F] rounded-xl overflow-hidden focus-within:border-[#00A6F4]/50 transition">
         <div className="pl-4 flex items-center">
           <Icon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         </div>
@@ -78,7 +80,7 @@ export default function AuthInput({
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           placeholder={placeholder}
-          autoComplete="off"
+          autoComplete={autoComplete || (type === "password" ? "new-password" : "off")}
           autoCapitalize={type === "email" ? "none" : undefined}
           autoCorrect={type === "email" ? "off" : undefined}
           spellCheck={type === "email" ? false : undefined}

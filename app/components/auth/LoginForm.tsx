@@ -64,14 +64,25 @@ export default function LoginForm() {
 
   return (
     <AuthCard title="Welcome back" variant="login">
-      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
+      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5" autoComplete="off">
+        {/* Dummy hidden inputs to prevent browser autofill */}
+        <input type="text" name="chrome-email-dummy" style={{ display: "none" }} tabIndex={-1} autoComplete="new-password" />
+        <input type="password" name="chrome-password-dummy" style={{ display: "none" }} tabIndex={-1} autoComplete="new-password" />
+
         {error && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
             {error}
           </div>
         )}
 
-        <AuthInput label="Email Address" type="email" placeholder="Enter Your Email" value={email} onChange={setEmail} />
+        <AuthInput
+          label="Email Address"
+          type="email"
+          placeholder="Enter Your Email"
+          value={email}
+          onChange={setEmail}
+          autoComplete="new-password"
+        />
         <AuthInput
           label="Password"
           type="password"
@@ -80,6 +91,7 @@ export default function LoginForm() {
           onRightLabelClick={() => router.push("/forgot-password")}
           value={password}
           onChange={setPassword}
+          autoComplete="new-password"
         />
 
         <AuthButton text="Log In" loading={isLoading} />

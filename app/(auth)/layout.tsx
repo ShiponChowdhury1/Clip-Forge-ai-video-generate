@@ -24,14 +24,14 @@ export default function AuthLayout({
 
   if (token) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#0A0A0A] flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-gray-300 dark:border-[#1A3155] border-t-[#3B82F6] rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-[#0A0A0A] flex flex-col">
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4 py-3 sm:py-4">
         {children}

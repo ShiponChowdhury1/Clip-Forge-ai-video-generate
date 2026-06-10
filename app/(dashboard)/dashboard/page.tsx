@@ -139,7 +139,7 @@ function RecentVideoRowThumbnail({
             const video = e.currentTarget;
             if (video.currentTime >= 10) {
               video.currentTime = 0;
-              video.play().catch(() => {});
+              video.play().catch(() => { });
             }
           }}
         />
@@ -165,21 +165,21 @@ function RecentVideoRowThumbnail({
 
 // ── Donut SVG ─────────────────────────────────────────────────────────────────
 function DonutChart({ pct, total }: { pct: number; total: number }) {
-  const r = 30;
+  const r = 25;
   const circ = 2 * Math.PI * r;
   const filled = (pct / 100) * circ;
   return (
-    <svg width="80" height="80" viewBox="0 0 80 80" aria-label={`${pct}% of credits used`} role="img">
-      <circle cx="40" cy="40" r={r} fill="none" className="stroke-gray-200 dark:stroke-[#1e1e3a]" strokeWidth="10" />
+    <svg width="68" height="68" viewBox="0 0 68 68" aria-label={`${pct}% of credits used`} role="img">
+      <circle cx="34" cy="34" r={r} fill="none" className="stroke-gray-200 dark:stroke-[#1e1e3a]" strokeWidth="7" />
       <circle
-        cx="40" cy="40" r={r} fill="none"
-        stroke={PROGRESS_COLOR} strokeWidth="10"
+        cx="34" cy="34" r={r} fill="none"
+        stroke={PROGRESS_COLOR} strokeWidth="7"
         strokeDasharray={`${filled} ${circ - filled}`}
         strokeDashoffset={circ * 0.25}
         strokeLinecap="round"
       />
-      <text x="40" y="37" textAnchor="middle" className="fill-gray-900 dark:fill-white" fontSize="13" fontWeight="700">{pct}%</text>
-      <text x="40" y="50" textAnchor="middle" fill="#5a5a8a" fontSize="7">of {total.toLocaleString()}</text>
+      <text x="34" y="32" textAnchor="middle" className="fill-gray-900 dark:fill-white" fontSize="12" fontWeight="700">{pct}%</text>
+      <text x="34" y="44" textAnchor="middle" fill="#5a5a8a" fontSize="6.5">of {total.toLocaleString()}</text>
     </svg>
   );
 }
@@ -187,10 +187,10 @@ function DonutChart({ pct, total }: { pct: number; total: number }) {
 // ── Spark Line ────────────────────────────────────────────────────────────────
 function SparkLine({ color = "#1D9E75" }: { color?: string }) {
   return (
-    <svg width="56" height="32" viewBox="0 0 56 32" aria-hidden="true">
+    <svg width="72" height="40" viewBox="0 0 72 40" aria-hidden="true">
       <polyline
-        points="0,26 9,20 18,22 27,12 36,15 46,6 56,9"
-        fill="none" stroke={color} strokeWidth="2"
+        points="0,32 12,25 24,28 36,15 48,19 60,8 72,12"
+        fill="none" stroke={color} strokeWidth="2.5"
         strokeLinecap="round" strokeLinejoin="round"
       />
     </svg>
@@ -199,16 +199,16 @@ function SparkLine({ color = "#1D9E75" }: { color?: string }) {
 
 function SparkBars() {
   const bars = [
-    { x: 2, y: 18, h: 14 },
-    { x: 13, y: 12, h: 20 },
-    { x: 24, y: 6, h: 26 },
-    { x: 35, y: 14, h: 18 },
-    { x: 46, y: 8, h: 24 },
+    { x: 2, y: 22, h: 18 },
+    { x: 16, y: 14, h: 26 },
+    { x: 30, y: 6, h: 34 },
+    { x: 44, y: 18, h: 22 },
+    { x: 58, y: 10, h: 30 },
   ];
   return (
-    <svg width="56" height="32" viewBox="0 0 56 32" aria-hidden="true">
+    <svg width="72" height="40" viewBox="0 0 72 40" aria-hidden="true">
       {bars.map((b, i) => (
-        <rect key={i} x={b.x} y={b.y} width="8" height={b.h} rx="2"
+        <rect key={i} x={b.x} y={b.y} width="10" height={b.h} rx="2.5"
           fill={PROGRESS_COLOR} opacity={0.4 + i * 0.12} />
       ))}
     </svg>
@@ -228,10 +228,10 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, sub, subColor, chart, accent }: StatCardProps) {
   return (
-    <div className="group relative bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl px-5 py-6 min-h-[130px] flex items-center justify-between border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all duration-200 hover:bg-gray-100 dark:hover:bg-[#161638] overflow-hidden">
+    <div className="group relative bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl px-5 py-5 min-h-[130px] flex items-center justify-between border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all duration-200 hover:bg-gray-100 dark:hover:bg-[#161638] overflow-hidden">
       {/* accent glow */}
       <div
-        className="absolute -top-6 -left-6 w-20 h-20 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"
+        className="absolute -top-6 -left-6 w-24 h-24 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"
         style={{ background: accent || GRAD_FROM }}
       />
       <div className="relative z-10">
@@ -273,10 +273,98 @@ function TutThumb({ duration }: { duration: string }) {
   );
 }
 
+// ── Tips & Inspiration Constant ──────────────────────────────────────────────
+const TIPS = [
+  {
+    title: "Use Detailed Keywords for Better Results",
+    desc: "The more specific your keywords are, the more accurately the AI can match your intended subject, style, and visual theme. Detailed keywords often lead to stronger and more consistent scene generation."
+  },
+  {
+    title: "Include a Specific Historical Time Period",
+    desc: "When creating history videos, include a time period, civilization, or event. Terms like Ancient Rome, Victorian Era, or World War II help the AI generate visuals that better match your story."
+  },
+  {
+    title: "Specify the Exact Animal Breed",
+    desc: "For animal-related videos, include the specific breed whenever possible. Using 'Golden Retriever' instead of simply 'dog' will produce more relevant and consistent imagery throughout your video."
+  },
+  {
+    title: "Longer Scripts Create More Complete Stories",
+    desc: "Scripts closer to the 800-character limit typically result in videos around one minute long, giving the AI more context for scene generation and storytelling."
+  },
+  {
+    title: "Top 5 and List Videos Perform Well",
+    desc: "List-style content is popular because it is easy to follow and keeps viewers watching to the end. Consider topics like Top 5 Destinations, Top 5 Facts, or Top 5 Dog Breeds."
+  },
+  {
+    title: "Start with Proven Content Categories",
+    desc: "If you're unsure where to begin, consider creating videos about history, luxury travel, animals, business, or interesting facts. These categories consistently perform well across social media platforms."
+  },
+  {
+    title: "Use Negative Keywords to Refine Results",
+    desc: "Negative keywords help eliminate unwanted styles and elements from your video. This can improve visual consistency and help the AI focus on what matters most."
+  },
+  {
+    title: "Open with a Strong Hook",
+    desc: "The first few seconds of a video are critical. Starting with a question, surprising fact, or bold statement can help capture attention and improve viewer retention."
+  },
+  {
+    title: "Experiment with Different Voice Narrators",
+    desc: "Each voice has its own personality and tone. Testing different narrators can dramatically change how your content feels and help you connect with different audiences."
+  },
+  {
+    title: "Build Content Faster with Video Queues",
+    desc: "Instead of creating videos one at a time, use the queue system to prepare multiple videos in advance. This is a great way to maintain a consistent posting schedule."
+  },
+  {
+    title: "Focus on One Main Topic Per Video",
+    desc: "Videos that center around a single topic are often easier to follow and more engaging. Avoid trying to cover too many ideas within the same script."
+  },
+  {
+    title: "Educational Content Builds Trust",
+    desc: "People enjoy learning something new. Educational videos that combine storytelling with strong visuals can increase engagement and encourage viewers to follow your content."
+  },
+  {
+    title: "Consistent Posting Beats Perfection",
+    desc: "Many successful creators focus on publishing content regularly rather than chasing perfection. Consistency is one of the most important factors in long-term growth."
+  },
+  {
+    title: "Looking for Your Next Video Idea?",
+    desc: "Try creating content about unsolved mysteries, world records, luxury lifestyles, historical events, or fascinating animal facts. These topics often attract strong engagement."
+  },
+  {
+    title: "Every Great Video Starts with a Simple Idea",
+    desc: "You don't need a complex concept to create engaging content. Start with a topic you're curious about and let AI help transform it into a polished video."
+  }
+];
+
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function DashboardHome() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  
+  const [currentTip, setCurrentTip] = useState(TIPS[0]);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    // Shuffle on mount (client-side only to prevent hydration mismatch)
+    const randomTip = TIPS[Math.floor(Math.random() * TIPS.length)];
+    setCurrentTip(randomTip);
+  }, []);
+
+  const handleNextTip = () => {
+    setFade(false);
+    setTimeout(() => {
+      let nextIndex = Math.floor(Math.random() * TIPS.length);
+      const currentIndex = TIPS.findIndex(t => t.title === currentTip.title);
+      if (currentIndex !== -1) {
+        while (nextIndex === currentIndex) {
+          nextIndex = Math.floor(Math.random() * TIPS.length);
+        }
+      }
+      setCurrentTip(TIPS[nextIndex]);
+      setFade(true);
+    }, 150);
+  };
   const user = useAppSelector((state) => state.auth.user);
   const [overviewRange, setOverviewRange] = useState("This Month");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -360,7 +448,7 @@ export default function DashboardHome() {
     <div className="bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-white min-h-screen flex flex-col">
 
       {/* ── Top Bar ── */}
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 lg:px-7 py-4 border-b border-gray-200 dark:border-[#1F1F1F] gap-3 sticky top-0 z-20 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md">
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between pl-5 lg:pl-7 pr-5 lg:pr-5 py-4 border-b border-gray-200 dark:border-[#1F1F1F] gap-3 sticky top-0 z-20 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md">
         <div>
           <h2 className="text-lg sm:text-xl font-bold tracking-tight">
             Welcome back, <span>{userFirstName}</span>! 👋
@@ -470,28 +558,28 @@ export default function DashboardHome() {
       </header>
 
       {/* ── Page Content ── */}
-      <main className="px-5 lg:px-7 py-5 flex flex-col gap-4">
+      <main className="pl-5 lg:pl-7 pr-5 md:pr-[10%] lg:pr-[10%] py-5 flex flex-col gap-4">
 
-        {/* ── Row 1: Banner (70%) + Credits (30%) ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] gap-4">
+        {/* ── Row 1: Banner (60%) + Credits (25%) ── */}
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] gap-4">
 
           {/* Banner */}
           <div
-            className="relative rounded-2xl p-6 sm:p-8 flex items-center justify-between overflow-hidden border border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] min-h-[160px]"
+            className="relative rounded-2xl p-6 sm:p-8 flex items-center justify-between overflow-hidden border border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] min-h-[250px]"
           >
             {/* decorative circles */}
             <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full opacity-10" style={{ background: btnGradient }} />
             <div className="absolute -right-4 -bottom-8 w-32 h-32 rounded-full opacity-10" style={{ background: GRAD_TO }} />
 
-            <div className="relative z-10">
+            <div className="relative z-10 w-1/2 shrink-0">
 
               <h3 className="text-2xl sm:text-3xl font-semibold leading-snug text-gray-900 dark:text-white mb-2">
-                Create your next<br />
+                Create your next amazing<br />
                 <span>
-                  amazing video
+                 video
                 </span>
               </h3>
-              <p className="text-s text-gray-600 dark:text-[#8888bb] mb-4 max-w-xs leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-[#8888bb] mb-4 max-w-xs leading-relaxed">
                 Turn your ideas into captivating videos with the power of AI.
               </p>
               <div className="flex items-center gap-3 flex-wrap">
@@ -515,17 +603,20 @@ export default function DashboardHome() {
               </div>
             </div>
 
-            {/* Visual icon */}
-            <div
-              className="hidden sm:flex w-24 h-24 lg:w-28 lg:h-28 rounded-2xl items-center justify-center shrink-0 relative z-10 ml-4"
-              style={{ background: "rgba(132,54,217,0.18)", border: "1px solid rgba(132,54,217,0.3)" }}
-            >
-              <Clapperboard size={44} className="opacity-60" style={{ color: GRAD_FROM }} />
+            {/* Visual banner image */}
+            <div className="hidden sm:block absolute right-0 bottom-0 top-0 w-1/2 z-10">
+              <Image
+                src="/banner1.png"
+                alt="Banner Illustration"
+                fill
+                priority
+                className="object-cover object-right-bottom rounded-r-2xl"
+              />
             </div>
           </div>
 
           {/* Credits Card */}
-          <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 flex flex-col border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-colors">
+          <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 flex flex-col border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-colors min-h-[250px]">
             <div className="flex justify-between items-center mb-4">
               <span className="text-sm font-bold text-gray-900 dark:text-white">Credits Used</span>
               <button
@@ -540,7 +631,7 @@ export default function DashboardHome() {
             {/* Donut + rows */}
             <div className="flex items-center gap-4 mb-4">
               <DonutChart pct={creditsPct} total={displayTotalCredits} />
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 space-y-1">
                 {[
                   { lbl: "Used", val: creditsUsed.toLocaleString() },
                   { lbl: "Remaining", val: userCredits.toLocaleString() },
@@ -573,8 +664,10 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        {/* ── Row 2: 4 Stat Cards ── */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+
+
+        {/* ── Row 2: 3 Stat Cards ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <StatCard
             icon={<Star size={14} />}
             label="Credits Remaining"
@@ -589,11 +682,11 @@ export default function DashboardHome() {
                 const filled = (pct / 100) * circ;
                 return (
                   <svg width="68" height="68" viewBox="0 0 68 68" aria-hidden="true" className="shrink-0">
-                    <circle cx="34" cy="34" r={r} fill="none" stroke="##0A0A0A" strokeWidth="5.5" />
+                    <circle cx="34" cy="34" r={r} fill="none" className="stroke-gray-200 dark:stroke-[#1e1e3a]" strokeWidth="5.5" />
                     <circle cx="34" cy="34" r={r} fill="none" stroke={PROGRESS_COLOR} strokeWidth="5.5"
                       strokeDasharray={`${filled} ${circ - filled}`}
                       strokeDashoffset={circ * 0.25} strokeLinecap="round" />
-                    <text x="34" y="39" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700">
+                    <text x="34" y="38" textAnchor="middle" className="fill-gray-900 dark:fill-white" fontSize="11" fontWeight="700">
                       {pct}%
                     </text>
                   </svg>
@@ -610,15 +703,7 @@ export default function DashboardHome() {
             accent="#1D9E75"
             chart={<SparkLine color="#1D9E75" />}
           />
-          <StatCard
-            icon={<Clock size={16} />}
-            label="Render Time"
-            value={`${dashboardData ? Math.round((dashboardData.total_videos * 0.4) * 10) / 10 : 14.2} hrs`}
-            sub={`+${dashboardData ? Math.round((dashboardData.videos_this_month * 0.4) * 10) / 10 : 2.5} hrs this month`}
-            subColor="#EF9F27"
-            accent="#EF9F27"
-            chart={<SparkLine color="#EF9F27" />}
-          />
+
           <StatCard
             icon={<BarChart2 size={16} />}
             label="Monthly Usage"
@@ -630,7 +715,7 @@ export default function DashboardHome() {
         </div>
 
         {/* ── Row 3: Tutorials + Recent Videos ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-4">
 
           {/* Tutorials */}
           <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 border border-gray-200 dark:border-[#1F1F1F]">
@@ -752,7 +837,7 @@ export default function DashboardHome() {
         </div>
 
         {/* ── Row 4: Overview Chart + Inspiration ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,6.5fr)_minmax(0,3.5fr)] gap-4">
 
           {/* Overview */}
           <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 border border-gray-200 dark:border-[#1F1F1F]">
@@ -760,113 +845,119 @@ export default function DashboardHome() {
               <div className="flex items-center gap-2">
                 <TrendingUp size={14} style={{ color: GRAD_FROM }} />
                 <span className="text-sm font-bold">Overview</span>
-               </div>
-               <div className="relative">
-                 <select
-                   value={overviewRange}
-                   onChange={(e) => setOverviewRange(e.target.value)}
-                   className="appearance-none bg-white dark:bg-[#1e1e3a] border border-gray-200 dark:border-[#1F1F1F] text-gray-600 dark:text-[#9090c0] rounded-lg pl-3 pr-7 py-1.5 text-[11px] font-medium outline-none cursor-pointer hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-colors"
-                 >
-                   <option>This Month</option>
-                   <option>All Time</option>
-                 </select>
-                 <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#9090c0] pointer-events-none" />
-               </div>
-             </div>
-             <ResponsiveContainer
-               width="100%"
-               height={140}
-               className="outline-none focus:outline-none [&_.recharts-wrapper]:outline-none [&_.recharts-wrapper]:focus:outline-none [&_.recharts-wrapper_svg]:outline-none [&_.recharts-wrapper_svg]:focus:outline-none"
-               style={{ outline: "none" }}
-             >
-               <LineChart
-                 data={chartData}
-                 margin={{ top: 4, right: 4, bottom: 0, left: -20 }}
-                 className="outline-none focus:outline-none [&_svg]:outline-none [&_svg]:focus:outline-none"
-                 style={{ outline: "none" }}
-               >
-                 <XAxis dataKey="name" tick={{ fill: "#4a4a70", fontSize: 10 }} axisLine={false} tickLine={false} />
-                 <YAxis tick={{ fill: "#4a4a70", fontSize: 10 }} axisLine={false} tickLine={false} />
-                 <Tooltip
-                   contentStyle={{ background: "rgba(26, 26, 48, 0.95)", border: `1px solid ${GRAD_FROM}44`, borderRadius: 10, fontSize: 12, color: "#fff" }}
-                   labelStyle={{ color: "#8888aa" }}
-                   itemStyle={{ color: PROGRESS_COLOR }}
-                   cursor={{ stroke: `${GRAD_FROM}33`, strokeWidth: 1 }}
-                 />
-                 <Line
-                   type="monotone" dataKey="credits"
-                   stroke={PROGRESS_COLOR} strokeWidth={2.5}
-                   dot={false} activeDot={{ r: 4, fill: PROGRESS_COLOR, strokeWidth: 0 }}
-                 />
-               </LineChart>
-             </ResponsiveContainer>
-           </div>
+              </div>
+              <div className="relative">
+                <select
+                  value={overviewRange}
+                  onChange={(e) => setOverviewRange(e.target.value)}
+                  className="appearance-none bg-white dark:bg-[#1e1e3a] border border-gray-200 dark:border-[#1F1F1F] text-gray-600 dark:text-[#9090c0] rounded-lg pl-3 pr-7 py-1.5 text-[11px] font-medium outline-none cursor-pointer hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-colors"
+                >
+                  <option>This Month</option>
+                  <option>All Time</option>
+                </select>
+                <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[#9090c0] pointer-events-none" />
+              </div>
+            </div>
+            <ResponsiveContainer
+              width="100%"
+              height={180}
+              className="outline-none focus:outline-none [&_.recharts-wrapper]:outline-none [&_.recharts-wrapper]:focus:outline-none [&_.recharts-wrapper_svg]:outline-none [&_.recharts-wrapper_svg]:focus:outline-none"
+              style={{ outline: "none" }}
+            >
+              <LineChart
+                data={chartData}
+                margin={{ top: 4, right: 4, bottom: 0, left: -20 }}
+                className="outline-none focus:outline-none [&_svg]:outline-none [&_svg]:focus:outline-none"
+                style={{ outline: "none" }}
+              >
+                <XAxis dataKey="name" tick={{ fill: "#4a4a70", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#4a4a70", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ background: "rgba(26, 26, 48, 0.95)", border: `1px solid ${GRAD_FROM}44`, borderRadius: 10, fontSize: 12, color: "#fff" }}
+                  labelStyle={{ color: "#8888aa" }}
+                  itemStyle={{ color: PROGRESS_COLOR }}
+                  cursor={{ stroke: `${GRAD_FROM}33`, strokeWidth: 1 }}
+                />
+                <Line
+                  type="monotone" dataKey="credits"
+                  stroke={PROGRESS_COLOR} strokeWidth={2.5}
+                  dot={false} activeDot={{ r: 4, fill: PROGRESS_COLOR, strokeWidth: 0 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
 
-           {/* Tips & Inspiration */}
-           <div
-             className="rounded-2xl p-6 flex items-center gap-5 border border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] relative overflow-hidden"
-           >
-             <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-15" style={{ background: GRAD_TO }} />
-             <div className="flex-1 relative z-10">
-               <div className="flex items-center gap-2 mb-2">
-                 <Lightbulb size={14} style={{ color: GRAD_FROM }} />
-                 <h4 className="text-sm font-bold">Tips &amp; Inspiration</h4>
-               </div>
-               <p className="text-[11px] text-gray-500 dark:text-[#7070a0] leading-relaxed mb-3">
-                 Discover creative ideas and best practices to make your videos stand out.
-               </p>
-               <button
-                 className="flex items-center gap-1.5 text-[11px] font-bold hover:underline transition-colors"
-                 style={{ color: PROGRESS_COLOR }}
-               >
-                 Explore Inspiration <ArrowRight size={11} />
-               </button>
-             </div>
-             <div
-               className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 relative z-10"
-               style={{ background: `${GRAD_FROM}25`, border: `1px solid ${GRAD_FROM}40` }}
-             >
-               <Play size={28} style={{ color: GRAD_FROM }} className="opacity-80 ml-1" fill={GRAD_FROM} />
-             </div>
-           </div>
-         </div>
+          {/* Tips & Inspiration */}
+          <div
+            className="rounded-2xl p-6 flex items-center gap-5 border border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] relative overflow-hidden"
+          >
+            <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-15" style={{ background: GRAD_TO }} />
+            
+            <div className={`flex-1 relative z-10 transition-opacity duration-150 ${fade ? 'opacity-100' : 'opacity-0'}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <Lightbulb size={14} style={{ color: GRAD_FROM }} />
+                <h4 className="text-sm font-bold">Tips &amp; Inspiration</h4>
+              </div>
+              <h5 className="text-[12px] font-bold text-gray-900 dark:text-white mb-1 leading-snug">
+                {currentTip?.title}
+              </h5>
+              <p className="text-[11px] text-gray-500 dark:text-[#7070a0] leading-relaxed mb-3">
+                {currentTip?.desc}
+              </p>
+              <button
+                onClick={handleNextTip}
+                className="flex items-center gap-1.5 text-[11px] font-bold hover:underline transition-colors"
+                style={{ color: PROGRESS_COLOR }}
+              >
+                Next Tip <ArrowRight size={11} />
+              </button>
+            </div>
 
-       </main>
+            <div
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 relative z-10"
+              style={{ background: `${GRAD_FROM}25`, border: `1px solid ${GRAD_FROM}40` }}
+            >
+              <Lightbulb size={28} style={{ color: GRAD_FROM }} className="opacity-80" />
+            </div>
+          </div>
+        </div>
 
-       {/* Logout Confirmation Modal */}
-       {showLogoutModal && (
-         <div className="fixed inset-0 z-[9999] grid place-items-center p-4">
-           {/* Backdrop with blur */}
-           <div
-             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-             onClick={() => setShowLogoutModal(false)}
-           />
+      </main>
 
-           {/* Modal */}
-           <div className="relative z-10 bg-white dark:bg-[#111128] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-8 w-full max-w-md shadow-2xl shadow-black/10 dark:shadow-black/80 animate-in">
-             {/* Warning Icon */}
-             <div className="flex justify-center mb-5">
-               <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
-                 <AlertTriangle className="w-8 h-8 text-red-400" />
-               </div>
-             </div>
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-[9999] grid place-items-center p-4">
+          {/* Backdrop with blur */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowLogoutModal(false)}
+          />
 
-             <h3 className="text-xl font-bold text-center mb-2 text-gray-900 dark:text-white">
-               Confirm Logout
-             </h3>
-             <p className="text-gray-500 dark:text-[#8888bb] text-sm text-center mb-8">
-               Are you sure you want to sign out of your account?
-             </p>
+          {/* Modal */}
+          <div className="relative z-10 bg-white dark:bg-[#111128] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl p-8 w-full max-w-md shadow-2xl shadow-black/10 dark:shadow-black/80 animate-in">
+            {/* Warning Icon */}
+            <div className="flex justify-center mb-5">
+              <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-8 h-8 text-red-400" />
+              </div>
+            </div>
 
-             {/* Buttons */}
-             <div className="flex items-center gap-3">
-               <button
-                 type="button"
-                 onClick={() => setShowLogoutModal(false)}
-                 className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.06] dark:hover:bg-white/10 border border-gray-200 dark:border-[#1F1F1F] text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition-colors text-sm"
-               >
-                 Cancel
-               </button>
+            <h3 className="text-xl font-bold text-center mb-2 text-gray-900 dark:text-white">
+              Confirm Logout
+            </h3>
+            <p className="text-gray-500 dark:text-[#8888bb] text-sm text-center mb-8">
+              Are you sure you want to sign out of your account?
+            </p>
+
+            {/* Buttons */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.06] dark:hover:bg-white/10 border border-gray-200 dark:border-[#1F1F1F] text-gray-900 dark:text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+              >
+                Cancel
+              </button>
               <button
                 type="button"
                 onClick={handleLogout}

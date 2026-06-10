@@ -118,11 +118,11 @@ export default function SocialButtons() {
     <div className="w-full flex flex-col items-center gap-5">
       {/* Divider */}
       <div className="w-full flex items-center gap-4">
-        <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700/50" />
+        <div className="flex-1 h-px bg-gray-300 dark:bg-[#1F1F1F]" />
         <span className="text-gray-500 text-xs font-semibold tracking-[2px] uppercase">
           Or Continue With
         </span>
-        <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700/50" />
+        <div className="flex-1 h-px bg-gray-300 dark:bg-[#1F1F1F]" />
       </div>
 
       {error && (
@@ -136,7 +136,7 @@ export default function SocialButtons() {
         <div className="w-full relative h-12">
           {/* Custom styled visual underneath */}
           <div
-            className="w-full h-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#1e2a30] border border-gray-300 dark:border-gray-700/50 text-gray-900 dark:text-white font-semibold text-sm pointer-events-none"
+            className="w-full h-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1F1F1F] text-gray-900 dark:text-white font-semibold text-sm pointer-events-none"
             style={{ borderRadius: "16px", borderWidth: "1.11px" }}
           >
             <Image
