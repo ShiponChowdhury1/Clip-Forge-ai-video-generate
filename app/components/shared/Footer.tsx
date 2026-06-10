@@ -1,10 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Twitter, Github, Linkedin, Instagram } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const pathname = usePathname();
+
   const handleOpenSupportModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     if (typeof window !== "undefined") {
@@ -12,11 +19,44 @@ export default function Footer() {
     }
   };
 
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    setIsSubmitting(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    toast.success("Successfully joined the newsletter!");
+    setEmail("");
+    setIsSubmitting(false);
+  };
+
+  // Render a clean, compact, non-cluttered footer if inside the dashboard
+  const isDashboard = pathname?.startsWith("/dashboard");
+  if (isDashboard) {
+    return (
+      <footer className="w-full mt-12 border-t border-gray-200 dark:border-[#1F1F1F] py-6 bg-transparent">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500 dark:text-[#6666a0]">
+          <p>© 2026 Clipforge AI. All rights reserved.</p>
+          <div className="flex gap-5 flex-wrap justify-center font-medium">
+            <Link href="/privacy-policy" className="hover:text-gray-900 dark:hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-gray-900 dark:hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/refund-policy" className="hover:text-gray-900 dark:hover:text-white transition-colors">Refund &amp; Cancellation</Link>
+            <Link href="/dashboard/support" className="hover:text-gray-900 dark:hover:text-white transition-colors">Contact Support</Link>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+
   return (
     <footer className="w-full bg-gray-50 dark:bg-[#0d0d0d] mt-12 sm:mt-16 md:mt-20">
       {/* Main Footer Content */}
       <div className="px-4 sm:px-6 md:px-12 lg:px-24 py-10 sm:py-12 md:py-16">
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-16">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 lg:gap-16">
           {/* Logo & Description */}
           <div className="col-span-2 sm:col-span-2 lg:col-span-1 max-w-sm">
             <Link href="/" className="flex items-center gap-2 mb-4 sm:mb-5">
@@ -33,16 +73,16 @@ export default function Footer() {
               The world&lsquo;s most powerful AI video generation platform. Create faceless reels, cinematic shorts, and viral content in seconds with credit-based pricing that scales with you.
             </p>
             <div className="flex gap-2 sm:gap-3">
-              <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition border border-gray-200 dark:border-gray-800">
+              <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-[#2E6AF5] hover:border-[#2E6AF5] dark:hover:bg-[#2E6AF5] dark:hover:border-[#2E6AF5] transition border border-gray-200 dark:border-gray-800">
                 <Twitter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
-              <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition border border-gray-200 dark:border-gray-800">
+              <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-[#2E6AF5] hover:border-[#2E6AF5] dark:hover:bg-[#2E6AF5] dark:hover:border-[#2E6AF5] transition border border-gray-200 dark:border-gray-800">
                 <Github className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
-              <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition border border-gray-200 dark:border-gray-800">
+              <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-[#2E6AF5] hover:border-[#2E6AF5] dark:hover:bg-[#2E6AF5] dark:hover:border-[#2E6AF5] transition border border-gray-200 dark:border-gray-800">
                 <Linkedin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
-              <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition border border-gray-200 dark:border-gray-800">
+              <a href="#" className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 dark:bg-[#1a1a1a] rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-[#2E6AF5] hover:border-[#2E6AF5] dark:hover:bg-[#2E6AF5] dark:hover:border-[#2E6AF5] transition border border-gray-200 dark:border-gray-800">
                 <Instagram className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
             </div>
@@ -82,25 +122,29 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-2 lg:col-span-1">
             <h4 className="font-semibold text-xs sm:text-sm mb-4 sm:mb-6 tracking-wider">STAY UPDATED</h4>
             <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-4 sm:mb-5 leading-relaxed">Subscribe to our newsletter for the latest AI video tips and updates.</p>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
               <input 
                 type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 bg-transparent border border-gray-300 dark:border-gray-700 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500/50 transition"
+                className="flex-1 bg-transparent border border-gray-300 dark:border-gray-700 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-[#2E6AF5]/50 transition"
               />
               <button 
-                className="bg-cyan-500 hover:bg-cyan-400 text-white font-semibold px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition text-xs sm:text-sm whitespace-nowrap"
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-[#2E6AF5] hover:bg-[#3A49F6] disabled:opacity-50 text-white font-semibold px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl transition text-xs sm:text-sm whitespace-nowrap active:scale-95 duration-150"
               >
-                Join
+                {isSubmitting ? "Joining..." : "Join"}
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
       
       {/* Bottom Bar */}
       <div className="border-t border-gray-200 dark:border-gray-800/50 mx-4 sm:mx-6 md:mx-12 lg:mx-24"></div>
-      <div className="px-4 sm:px-6 md:px-12 lg:px-24 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-24 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
         <p className="text-gray-500 dark:text-gray-600 text-[10px] sm:text-xs text-center sm:text-left">
           © 2026 Clipforge AI. All rights reserved.
         </p>

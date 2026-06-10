@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
 import { useGetDashboardQuery, useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
+import Footer from "@/app/components/shared/Footer";
 import {
   LineChart,
   Line,
@@ -460,7 +461,7 @@ export default function DashboardHome() {
           {/* Upgrade */}
           <button
             onClick={() => router.push("/dashboard/billing?change=1")}
-            className="flex items-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl border border-white/10 hover:opacity-90 active:scale-95 transition-all duration-150"
+            className="h-11 flex items-center gap-2 text-white text-sm font-semibold px-5 rounded-2xl border border-white/10 hover:opacity-90 active:scale-95 transition-all duration-150"
             style={{ background: btnGradient }}
           >
             <Zap size={15} />
@@ -469,9 +470,9 @@ export default function DashboardHome() {
           </button>
 
           {/* Bell */}
-          <button className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-            <Bell size={16} className="text-gray-600 dark:text-[#9090c0]" />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
+          <button className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+            <Bell size={18} className="text-gray-600 dark:text-[#9090c0]" />
+            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
           </button>
 
           {/* Avatar */}
@@ -479,23 +480,23 @@ export default function DashboardHome() {
             <button
               type="button"
               onClick={() => setShowProfileMenu((prev) => !prev)}
-              className="flex items-center gap-2 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] rounded-xl pl-1 pr-3 py-1.5 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+              className="h-11 flex items-center gap-2.5 bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl pl-1.5 pr-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
             >
               {userPicture ? (
                 <Image
                   src={userPicture} alt={userName}
-                  width={28} height={28} unoptimized referrerPolicy="no-referrer"
-                  className="rounded-full object-cover w-7 h-7"
+                  width={32} height={32} unoptimized referrerPolicy="no-referrer"
+                  className="rounded-full object-cover w-8 h-8"
                 />
               ) : (
                 <div
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
                   style={{ background: btnGradient }}
                 >
                   {getInitials(userName)}
                 </div>
               )}
-              <span className="text-xs font-medium text-gray-700 dark:text-[#ccccee] hidden sm:inline">{userName}</span>
+              <span className="text-xs font-semibold text-gray-700 dark:text-[#ccccee] hidden sm:inline">{userName}</span>
               <ChevronDown size={14} className={`text-gray-500 dark:text-[#9090c0] transition-transform ${showProfileMenu ? "rotate-180" : ""}`} />
             </button>
 
@@ -923,6 +924,8 @@ export default function DashboardHome() {
         </div>
 
       </main>
+
+      <Footer />
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
