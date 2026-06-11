@@ -21,6 +21,8 @@ import {
   Loader2,
   Camera,
   Check,
+  Video,
+  Play,
 } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
@@ -54,38 +56,112 @@ interface UserNotification {
   created_at: string;
 }
 
+const getModalHeaderConfig = (title: string) => {
+  const t = title.toLowerCase();
+  if (t.includes("complete") || t.includes("ready") || t.includes("success") || t.includes("done")) {
+    return {
+      icon: <Video className="w-6 h-6 text-emerald-500" />,
+      bg: "bg-emerald-500/10 border-emerald-500/20",
+      glow: "bg-emerald-500/15"
+    };
+  }
+  if (t.includes("fail") || t.includes("error") || t.includes("warn")) {
+    return {
+      icon: <AlertTriangle className="w-6 h-6 text-rose-500 animate-bounce" />,
+      bg: "bg-rose-500/10 border-rose-500/20",
+      glow: "bg-rose-500/15"
+    };
+  }
+  return {
+    icon: <Bell className="w-6 h-6 text-[#2563EB]" />,
+    bg: "bg-[#2563EB]/10 border-[#2563EB]/20",
+    glow: "bg-[#2563EB]/15"
+  };
+};
+
 function NotificationDetailsModal({
   notification,
   onClose,
+  onViewVideo,
 }: {
   notification: UserNotification;
   onClose: () => void;
+  onViewVideo?: (videoId: number) => void;
 }) {
   const createdAt = new Date(notification.created_at).toLocaleString();
+  const config = getModalHeaderConfig(notification.title);
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-950/35 backdrop-blur-md" onClick={onClose} />
-      <div className="relative bg-white dark:bg-[#111827] rounded-2xl w-full max-w-lg mx-auto shadow-2xl border border-gray-200 dark:border-[#1E293B] overflow-hidden">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors z-10">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" 
+        onClick={onClose} 
+      />
+      
+      {/* Modal Card */}
+      <div className="relative bg-white dark:bg-[#0D0D1A] rounded-3xl w-full max-w-md mx-auto shadow-2xl border border-gray-200 dark:border-[#1F1F1F] overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
+        
+        {/* Dynamic Top Glow */}
+        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 ${config.glow} rounded-full blur-3xl pointer-events-none`} />
+
+        {/* Close Button */}
+        <button 
+          onClick={onClose} 
+          className="absolute top-5 right-5 p-1.5 rounded-xl text-gray-400 hover:text-gray-955 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-200 z-10"
+        >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="p-6 sm:p-8">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{notification.title}</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">{createdAt}</p>
-
-          <div className="bg-gray-50 dark:bg-[#0D1117] border border-gray-200 dark:border-[#1A3155] rounded-xl p-4">
-            <p className="text-sm leading-6 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{notification.message}</p>
+        <div className="p-6 sm:p-8 relative z-10 flex flex-col items-center text-center">
+          {/* Dynamic Responsive Icon */}
+          <div className={`w-14 h-14 rounded-2xl ${config.bg} border flex items-center justify-center mb-5 shadow-inner`}>
+            {config.icon}
           </div>
 
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={onClose}
-              className="bg-[#3B82F6] hover:bg-[#2563EB] text-white font-medium px-5 py-2.5 rounded-lg transition-colors text-sm"
-            >
-              Close
-            </button>
+          {/* Title */}
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 max-w-xs leading-snug">
+            {notification.title}
+          </h3>
+          
+          {/* Created Date */}
+          <p className="text-xs text-gray-500 dark:text-[#7070a0] mb-5">
+            {createdAt}
+          </p>
+
+          {/* Message Content */}
+          <div className="w-full bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-[#1F1F1F] rounded-2xl p-4 text-left max-h-60 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <p className="text-sm leading-relaxed text-gray-700 dark:text-[#ccccee] whitespace-pre-wrap">
+              {notification.message}
+            </p>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-6 w-full flex flex-col gap-2.5">
+            {notification.video_id && onViewVideo ? (
+              <>
+                <button
+                  onClick={() => onViewVideo(notification.video_id!)}
+                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold py-3 rounded-xl transition-all duration-150 shadow-lg shadow-[#2563EB]/10 hover:shadow-[#2563EB]/25 active:scale-[0.98] text-sm flex items-center justify-center gap-2"
+                >
+                  <Play className="w-4 h-4 fill-white text-white" />
+                  View Video
+                </button>
+                <button
+                  onClick={onClose}
+                  className="w-full bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/10 text-gray-700 dark:text-[#a0a0c0] font-semibold py-3 rounded-xl transition-all duration-150 text-sm"
+                >
+                  Close
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={onClose}
+                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold py-3 rounded-xl transition-all duration-150 shadow-lg shadow-[#2563EB]/10 hover:shadow-[#2563EB]/25 active:scale-[0.98] text-sm"
+              >
+                Close
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -858,7 +934,7 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
     const token = authToken || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/v1/users/notifications?unread_only=true&limit=50`, {
+      const response = await fetch(`${API_BASE_URL}/v1/users/notifications?limit=50`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -903,11 +979,17 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
       return;
     }
 
+    // Optimistically mark as read instantly in UI
+    setNotifications((prev) =>
+      prev.map((item) =>
+        item.id === notification.id ? { ...item, is_read: true } : item
+      )
+    );
+
     try {
       await markNotificationAsRead(notification.id);
-      setNotifications((prev) => prev.filter((item) => item.id !== notification.id));
     } catch {
-      // Keep modal open even if read status update fails.
+      // Keep local state marked as read to prevent UI jumping.
     }
   };
 
@@ -1005,6 +1087,8 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
     .toUpperCase()
     .slice(0, 2);
 
+  const unreadNotificationsCount = notifications.filter(n => !n.is_read).length;
+
   return (
     <>
       <header className="flex items-center justify-end gap-3 mb-6 bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-[#1F1F1F] rounded-xl px-4 py-3">
@@ -1056,9 +1140,9 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
             aria-label="Open notifications"
           >
             <Bell className="w-5 h-5" />
-            {notifications.length > 0 && (
+            {unreadNotificationsCount > 0 && (
               <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none border border-white dark:border-[#0D1117]">
-                {notifications.length > 9 ? "9+" : notifications.length}
+                {unreadNotificationsCount > 9 ? "9+" : unreadNotificationsCount}
               </span>
             )}
           </button>
@@ -1066,16 +1150,23 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
           {showNotificationMenu && (
             <div className="absolute right-0 top-full mt-2 w-84 max-w-[90vw] bg-white dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] rounded-xl shadow-2xl z-100 overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-200 dark:border-[#1A3155] flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</h4>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</h4>
+                  {unreadNotificationsCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[10px] font-bold">
+                      {unreadNotificationsCount} new
+                    </span>
+                  )}
+                </div>
                 <button
                   onClick={fetchNotifications}
-                  className="text-xs text-[#3B82F6] hover:text-[#2563EB] font-medium"
+                  className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium"
                 >
                   Refresh
                 </button>
               </div>
 
-              <div className="max-h-90 overflow-y-auto">
+              <div className="max-h-90 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {notificationsLoading ? (
                   <div className="py-8 flex items-center justify-center text-gray-500 dark:text-gray-400">
                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -1084,21 +1175,47 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
                 ) : notificationsError ? (
                   <p className="text-sm text-red-500 px-4 py-6">{notificationsError}</p>
                 ) : notifications.length === 0 ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 px-4 py-6">No unread notifications.</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 px-4 py-6 text-center">No notifications.</p>
                 ) : (
-                  notifications.map((notification) => (
-                    <button
-                      key={notification.id}
-                      onClick={() => {
-                        handleNotificationClick(notification);
-                      }}
-                      className="w-full text-left px-4 py-3 border-b border-gray-100 dark:border-[#1A3155] last:border-b-0 hover:bg-gray-50 dark:hover:bg-[#1A2332] transition-colors"
-                    >
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{notification.title}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{notification.message}</p>
-                      <p className="text-[11px] text-gray-400 mt-1.5">{new Date(notification.created_at).toLocaleString()}</p>
-                    </button>
-                  ))
+                  notifications.map((notification) => {
+                    const isUnread = !notification.is_read;
+                    return (
+                      <button
+                        key={notification.id}
+                        onClick={() => {
+                          handleNotificationClick(notification);
+                        }}
+                        className={`w-full text-left px-4 py-3 border-b border-gray-100 dark:border-[#1A3155] last:border-b-0 hover:bg-gray-50 dark:hover:bg-[#1A2332] transition-colors relative flex gap-2.5 items-start ${
+                          isUnread 
+                            ? "bg-blue-50/45 dark:bg-[#2563EB]/5" 
+                            : "bg-transparent"
+                        }`}
+                      >
+                        {isUnread && (
+                          <span className="w-2 h-2 rounded-full bg-[#2563EB] mt-1.5 shrink-0 animate-pulse" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm truncate ${
+                            isUnread 
+                              ? "font-bold text-gray-900 dark:text-white" 
+                              : "font-medium text-gray-500 dark:text-[#a0a0c0]"
+                          }`}>
+                            {notification.title}
+                          </p>
+                          <p className={`text-xs mt-0.5 line-clamp-2 ${
+                            isUnread 
+                              ? "text-gray-700 dark:text-[#ccccee] font-medium" 
+                              : "text-gray-400 dark:text-[#707090]"
+                          }`}>
+                            {notification.message}
+                          </p>
+                          <p className="text-[10px] text-gray-400 dark:text-[#606085] mt-1">
+                            {new Date(notification.created_at).toLocaleString()}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -1201,6 +1318,10 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
           <NotificationDetailsModal
             notification={selectedNotification}
             onClose={() => setSelectedNotification(null)}
+            onViewVideo={(videoId) => {
+              router.push(`/dashboard/videos/${videoId}`);
+              setSelectedNotification(null);
+            }}
           />,
           document.body
         )}

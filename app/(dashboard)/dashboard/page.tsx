@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
@@ -8,6 +8,7 @@ import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
 import { useGetDashboardQuery, useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
 import Footer from "@/app/components/shared/Footer";
+import { toast } from "react-toastify";
 import {
   LineChart,
   Line,
@@ -34,7 +35,136 @@ import {
   Settings,
   LogOut,
   AlertTriangle,
+  Loader2,
+  X,
 } from "lucide-react";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
+
+interface UserNotification {
+  id: number;
+  user_id: number;
+  title: string;
+  message: string;
+  type: string;
+  is_read: boolean;
+  video_id: number | null;
+  job_id: string | null;
+  created_at: string;
+}
+
+const getModalHeaderConfig = (title: string) => {
+  const t = title.toLowerCase();
+  if (t.includes("complete") || t.includes("ready") || t.includes("success") || t.includes("done")) {
+    return {
+      icon: <Video className="w-6 h-6 text-emerald-500" />,
+      bg: "bg-emerald-500/10 border-emerald-500/20",
+      glow: "bg-emerald-500/15"
+    };
+  }
+  if (t.includes("fail") || t.includes("error") || t.includes("warn")) {
+    return {
+      icon: <AlertTriangle className="w-6 h-6 text-rose-500 animate-bounce" />,
+      bg: "bg-rose-500/10 border-rose-500/20",
+      glow: "bg-rose-500/15"
+    };
+  }
+  return {
+    icon: <Bell className="w-6 h-6 text-[#2563EB]" />,
+    bg: "bg-[#2563EB]/10 border-[#2563EB]/20",
+    glow: "bg-[#2563EB]/15"
+  };
+};
+
+function NotificationDetailsModal({
+  notification,
+  onClose,
+  onViewVideo,
+}: {
+  notification: UserNotification;
+  onClose: () => void;
+  onViewVideo?: (videoId: number) => void;
+}) {
+  const createdAt = new Date(notification.created_at).toLocaleString();
+  const config = getModalHeaderConfig(notification.title);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" 
+        onClick={onClose} 
+      />
+      
+      {/* Modal Card */}
+      <div className="relative bg-white dark:bg-[#0D0D1A] rounded-3xl w-full max-w-md mx-auto shadow-2xl border border-gray-200 dark:border-[#1F1F1F] overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
+        
+        {/* Dynamic Top Glow */}
+        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 ${config.glow} rounded-full blur-3xl pointer-events-none`} />
+
+        {/* Close Button */}
+        <button 
+          onClick={onClose} 
+          className="absolute top-5 right-5 p-1.5 rounded-xl text-gray-400 hover:text-gray-950 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-200 z-10"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="p-6 sm:p-8 relative z-10 flex flex-col items-center text-center">
+          {/* Dynamic Responsive Icon */}
+          <div className={`w-14 h-14 rounded-2xl ${config.bg} border flex items-center justify-center mb-5 shadow-inner`}>
+            {config.icon}
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 max-w-xs leading-snug">
+            {notification.title}
+          </h3>
+          
+          {/* Created Date */}
+          <p className="text-xs text-gray-500 dark:text-[#7070a0] mb-5">
+            {createdAt}
+          </p>
+
+          {/* Message Content */}
+          <div className="w-full bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-[#1F1F1F] rounded-2xl p-4 text-left max-h-60 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <p className="text-sm leading-relaxed text-gray-700 dark:text-[#ccccee] whitespace-pre-wrap">
+              {notification.message}
+            </p>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-6 w-full flex flex-col gap-2.5">
+            {notification.video_id && onViewVideo ? (
+              <>
+                <button
+                  onClick={() => onViewVideo(notification.video_id!)}
+                  className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold py-3 rounded-xl transition-all duration-150 shadow-lg shadow-[#2563EB]/10 hover:shadow-[#2563EB]/25 active:scale-[0.98] text-sm flex items-center justify-center gap-2"
+                >
+                  <Play className="w-4 h-4 fill-white text-white" />
+                  View Video
+                </button>
+                <button
+                  onClick={onClose}
+                  className="w-full bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.05] dark:hover:bg-white/10 text-gray-700 dark:text-[#a0a0c0] font-semibold py-3 rounded-xl transition-all duration-150 text-sm"
+                >
+                  Close
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={onClose}
+                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold py-3 rounded-xl transition-all duration-150 shadow-lg shadow-[#2563EB]/10 hover:shadow-[#2563EB]/25 active:scale-[0.98] text-sm"
+              >
+                Close
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const CREDITS_TOTAL = 5000;
@@ -57,10 +187,10 @@ const overviewData = [
 
 
 const tutorials = [
-  { id: 1, title: "Getting Started", duration: "0:52", desc: "A quick guide to get started with ClipForge." },
-  { id: 2, title: "Using Templates", duration: "1:15", desc: "Customize templates for your videos." },
-  { id: 3, title: "AI Features", duration: "1:42", desc: "Explore the power of AI tools in ClipForge." },
-  { id: 4, title: "Export & Share", duration: "1:05", desc: "Export and share your videos easily." },
+  { id: 1, title: "Navigating the Dashboard", duration: "1:24", image: "/tutorials/navigating_dashboard.png" },
+  { id: 2, title: "Create a Video", duration: "2:10", image: "/tutorials/create_video.png" },
+  { id: 3, title: "Write a Script with AI", duration: "1:35", image: "/tutorials/write_script.png" },
+  { id: 4, title: "Processing vs Queued Videos", duration: "1:50", image: "/tutorials/processing_queued.png" },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -258,16 +388,37 @@ function StatCard({ icon, label, value, sub, subColor, chart, accent }: StatCard
 }
 
 // ── Tutorial Thumb ────────────────────────────────────────────────────────────
-function TutThumb({ duration }: { duration: string }) {
+function TutThumb({ title, duration, image }: { title: string; duration: string; image: string }) {
   return (
-    <div className="relative rounded-xl bg-gradient-to-br from-[#1a1040] to-[#2a1860] aspect-video flex items-center justify-center mb-2 cursor-pointer group overflow-hidden border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all">
-      <div
-        className="w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 duration-200"
-        style={{ background: `linear-gradient(135deg, ${GRAD_FROM}, ${GRAD_TO})` }}
-      >
-        <Play size={12} fill="white" className="text-white ml-0.5" />
+    <div className="relative rounded-xl h-48 sm:h-64 w-full cursor-pointer group overflow-hidden border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all duration-300 shadow-lg shadow-black/5">
+      {/* Background Image */}
+      <Image
+        src={image}
+        alt={title}
+        fill
+        className="object-cover group-hover:scale-105 transition-transform duration-500 z-0"
+        unoptimized
+      />
+      
+      {/* Dark Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/10 group-hover:from-black/90 group-hover:via-black/55 transition-colors duration-300 z-10" />
+
+      {/* Play Icon in the Center (appears on hover) */}
+      <div className="absolute inset-0 flex items-center justify-center z-20">
+        <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/25 flex items-center justify-center text-white shadow-2xl transition-all duration-300 transform scale-75 opacity-0 group-hover:scale-110 group-hover:opacity-100 group-hover:bg-white/20 group-hover:border-white/35">
+          <Play size={16} fill="white" className="text-white ml-0.5" />
+        </div>
       </div>
-      <span className="absolute bottom-1.5 right-1.5 bg-black/80 text-[9px] text-white px-1.5 py-0.5 rounded-md font-medium">
+
+      {/* Title (Centered in the card, left-aligned text, hides on hover) */}
+      <div className="absolute inset-0 z-20 flex items-center justify-center p-4 select-none transition-all duration-300 opacity-100 group-hover:opacity-0 transform translate-y-0 group-hover:translate-y-2">
+        <div className="text-[15px] sm:text-lg font-extrabold text-white leading-snug tracking-tight drop-shadow-md max-w-[80%] font-sans text-left">
+          {title}
+        </div>
+      </div>
+
+      {/* Duration Badge (Top Right) */}
+      <span className="absolute top-3 right-3 bg-black/75 backdrop-blur-sm text-[9px] text-white px-1.5 py-0.5 rounded-md font-medium z-20">
         {duration}
       </span>
     </div>
@@ -372,6 +523,13 @@ export default function DashboardHome() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
+  const [showNotificationMenu, setShowNotificationMenu] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState<UserNotification | null>(null);
+  const [notifications, setNotifications] = useState<UserNotification[]>([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [notificationsError, setNotificationsError] = useState<string | null>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
   const [logoutApi, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   const token = useAppSelector((state) => state.auth.token);
@@ -383,6 +541,124 @@ export default function DashboardHome() {
     { skip: 0, limit: 100 },
     { skip: !token }
   );
+
+  const fetchNotifications = useCallback(async () => {
+    setNotificationsLoading(true);
+    setNotificationsError(null);
+    const tokenVal = token || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/v1/users/notifications?limit=50`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          ...(tokenVal ? { Authorization: `Bearer ${tokenVal}` } : {}),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load notifications");
+      }
+
+      const data = (await response.json()) as UserNotification[];
+      setNotifications(Array.isArray(data) ? data : []);
+    } catch {
+      setNotificationsError("Failed to load notifications");
+    } finally {
+      setNotificationsLoading(false);
+    }
+  }, [token]);
+
+  const markNotificationAsRead = async (notificationId: number) => {
+    const tokenVal = token || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+
+    const response = await fetch(`${API_BASE_URL}/v1/users/notifications/${notificationId}/read`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        ...(tokenVal ? { Authorization: `Bearer ${tokenVal}` } : {}),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to mark notification as read");
+    }
+  };
+
+  const handleNotificationClick = async (notification: UserNotification) => {
+    setShowNotificationMenu(false);
+    setSelectedNotification(notification);
+
+    if (notification.is_read) {
+      return;
+    }
+
+    // Optimistically mark as read instantly in UI
+    setNotifications((prev) =>
+      prev.map((item) =>
+        item.id === notification.id ? { ...item, is_read: true } : item
+      )
+    );
+
+    try {
+      await markNotificationAsRead(notification.id);
+    } catch {
+      // Keep local state marked as read to prevent UI jumping.
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const timer = setInterval(() => {
+      fetchNotifications();
+    }, 60000);
+
+    return () => clearInterval(timer);
+  }, [fetchNotifications]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target as Node)
+      ) {
+        setShowNotificationMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined" || typeof window === "undefined") return;
+
+    const hasModalOpen =
+      showLogoutModal ||
+      selectedNotification !== null;
+
+    if (!hasModalOpen) return;
+
+    const scrollY = window.scrollY;
+    const originalBodyStyle = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overflowY: document.body.style.overflowY,
+    };
+
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.body.style.overflowY = "scroll";
+
+    return () => {
+      document.body.style.position = originalBodyStyle.position;
+      document.body.style.top = originalBodyStyle.top;
+      document.body.style.width = originalBodyStyle.width;
+      document.body.style.overflowY = originalBodyStyle.overflowY;
+      window.scrollTo(0, scrollY);
+    };
+  }, [selectedNotification, showLogoutModal]);
 
   useEffect(() => {
     if (!showProfileMenu) return;
@@ -445,6 +721,8 @@ export default function DashboardHome() {
     router.push("/");
   };
 
+  const unreadNotificationsCount = notifications.filter(n => !n.is_read).length;
+
   return (
     <div className="bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-white min-h-screen flex flex-col">
 
@@ -452,7 +730,7 @@ export default function DashboardHome() {
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between pl-5 lg:pl-7 pr-5 lg:pr-5 py-4 border-b border-gray-200 dark:border-[#1F1F1F] gap-3 sticky top-0 z-20 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md">
         <div>
           <h2 className="text-lg sm:text-xl font-bold tracking-tight">
-            Welcome back, <span>{userFirstName}</span>! 👋
+            Welcome back, <span>{userFirstName}</span>!
           </h2>
           <p className="text-xs text-gray-500 dark:text-[#6666a0] mt-0.5">Create stunning videos in minutes with AI.</p>
         </div>
@@ -470,10 +748,100 @@ export default function DashboardHome() {
           </button>
 
           {/* Bell */}
-          <button className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-            <Bell size={18} className="text-gray-600 dark:text-[#9090c0]" />
-            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-          </button>
+          <div className="relative" ref={notificationRef}>
+            <button
+              onClick={() => {
+                const nextValue = !showNotificationMenu;
+                setShowNotificationMenu(nextValue);
+                if (nextValue && !notificationsLoading) {
+                  fetchNotifications();
+                }
+              }}
+              className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+              aria-label="Open notifications"
+            >
+              <Bell size={18} className="text-gray-600 dark:text-[#9090c0]" />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center leading-none border border-white dark:border-[#0A0A0A]">
+                  {unreadNotificationsCount > 9 ? "9+" : unreadNotificationsCount}
+                </span>
+              )}
+            </button>
+
+            {showNotificationMenu && (
+              <div className="absolute right-0 top-full mt-2 w-80 max-w-[90vw] bg-white dark:bg-[#0D0D1A] border border-gray-200 dark:border-[#1F1F1F] rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/60 z-30 overflow-hidden animate-in fade-in-50 slide-in-from-top-2 duration-150">
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-[#1F1F1F] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</h4>
+                    {unreadNotificationsCount > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[10px] font-bold">
+                        {unreadNotificationsCount} new
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={fetchNotifications}
+                    className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium"
+                  >
+                    Refresh
+                  </button>
+                </div>
+
+                <div className="max-h-80 overflow-y-auto divide-y divide-gray-200 dark:divide-[#1F1F1F] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  {notificationsLoading ? (
+                    <div className="py-8 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Loading...
+                    </div>
+                  ) : notificationsError ? (
+                    <p className="text-sm text-red-500 px-4 py-6">{notificationsError}</p>
+                  ) : notifications.length === 0 ? (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 px-4 py-6 text-center">No notifications.</p>
+                  ) : (
+                    notifications.map((notification) => {
+                      const isUnread = !notification.is_read;
+                      return (
+                        <button
+                          key={notification.id}
+                          onClick={() => {
+                            handleNotificationClick(notification);
+                          }}
+                          className={`w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors relative flex gap-2.5 items-start ${
+                            isUnread 
+                              ? "bg-blue-50/45 dark:bg-[#2563EB]/5" 
+                              : "bg-transparent"
+                          }`}
+                        >
+                          {isUnread && (
+                            <span className="w-2 h-2 rounded-full bg-[#2563EB] mt-1.5 shrink-0 animate-pulse" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm truncate ${
+                              isUnread 
+                                ? "font-bold text-gray-900 dark:text-white" 
+                                : "font-medium text-gray-500 dark:text-[#a0a0c0]"
+                            }`}>
+                              {notification.title}
+                            </p>
+                            <p className={`text-xs mt-0.5 line-clamp-2 ${
+                              isUnread 
+                                ? "text-gray-700 dark:text-[#ccccee] font-medium" 
+                                : "text-gray-400 dark:text-[#707090]"
+                            }`}>
+                              {notification.message}
+                            </p>
+                            <p className="text-[10px] text-gray-400 dark:text-[#606085] mt-1">
+                              {new Date(notification.created_at).toLocaleString()}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Avatar */}
           <div className="relative" ref={profileMenuRef}>
@@ -731,11 +1099,7 @@ export default function DashboardHome() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {tutorials.map((t) => (
-                <div key={t.id} className="group cursor-pointer">
-                  <TutThumb duration={t.duration} />
-                  <div className="text-[11px] font-semibold text-gray-700 dark:text-[#ddddff] group-hover:text-gray-950 dark:group-hover:text-white transition-colors">{t.title}</div>
-                  <div className="text-[10px] text-gray-500 dark:text-[#4a4a70] mt-0.5 leading-relaxed">{t.desc}</div>
-                </div>
+                <TutThumb key={t.id} title={t.title} duration={t.duration} image={t.image} />
               ))}
             </div>
           </div>
@@ -973,6 +1337,17 @@ export default function DashboardHome() {
             </div>
           </div>
         </div>
+      )}
+
+      {selectedNotification && (
+        <NotificationDetailsModal
+          notification={selectedNotification}
+          onClose={() => setSelectedNotification(null)}
+          onViewVideo={(videoId) => {
+            router.push(`/dashboard/videos/${videoId}`);
+            setSelectedNotification(null);
+          }}
+        />
       )}
     </div>
   );
