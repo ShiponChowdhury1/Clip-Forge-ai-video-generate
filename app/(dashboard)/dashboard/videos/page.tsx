@@ -101,22 +101,17 @@ export default function AllVideosPage() {
   const startIndex = (currentPage - 1) * VIDEOS_PER_PAGE;
   const paginatedVideos = filteredVideos.slice(startIndex, startIndex + VIDEOS_PER_PAGE);
 
-  // Generate visible page numbers
-  const getPageNumbers = () => {
-    const pages: (number | "...")[] = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (currentPage > 3) pages.push("...");
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPages - 1, currentPage + 1);
-      for (let i = start; i <= end; i++) pages.push(i);
-      if (currentPage < totalPages - 2) pages.push("...");
-      pages.push(totalPages);
-    }
-    return pages;
-  };
+  const maxVisiblePages = 3;
+  const tentativeStart = Math.max(1, currentPage - 1);
+  const startPage = Math.min(
+    tentativeStart,
+    Math.max(1, totalPages - maxVisiblePages + 1)
+  );
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
   const totalVideos = videos.length;
   const completedCount = videos.filter((v) => v.status.toLowerCase() === "completed").length;
@@ -235,10 +230,10 @@ export default function AllVideosPage() {
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-8 mb-4">
+      {filteredVideos.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 mb-4 pt-5 border-t border-gray-200 dark:border-[#1A3155]">
           {/* Info */}
-          <p className="text-gray-500 text-sm">
+          <p className="text-xs sm:text-sm text-gray-500">
             Showing{" "}
             <span className="text-gray-700 dark:text-gray-300 font-medium">{startIndex + 1}</span>
             {" - "}
@@ -251,46 +246,38 @@ export default function AllVideosPage() {
           </p>
 
           {/* Page Controls */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             {/* Previous */}
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 dark:disabled:hover:border-[#1A3155] disabled:hover:text-gray-600 dark:disabled:hover:text-gray-400 transition-all"
+              className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Prev</span>
+              Previous
             </button>
 
             {/* Page Numbers */}
-            {getPageNumbers().map((page, idx) =>
-              page === "..." ? (
-                <span key={`dots-${idx}`} className="px-2 text-gray-600 text-sm">
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`min-w-[36px] h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${
-                    currentPage === page
-                            ? "bg-[#3B82F6] text-white"
-                            : "bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6]"
-                  }`}
-                >
-                  {page}
-                </button>
-              )
-            )}
+            {pageNumbers.map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`min-w-9 px-2.5 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${
+                  currentPage === page
+                    ? "bg-cyan-500 border-cyan-500 text-white"
+                    : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
 
             {/* Next */}
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-[#0A0A0A] border border-gray-300 dark:border-[#1A3155] rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#3B82F6] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 dark:disabled:hover:border-[#1A3155] disabled:hover:text-gray-600 dark:disabled:hover:text-gray-400 transition-all"
+              className="px-3 sm:px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span className="hidden sm:inline">Next</span>
-              <ChevronRight className="w-4 h-4" />
+              Next
             </button>
           </div>
         </div>

@@ -30,6 +30,19 @@ export default function BillingHistory({
   totalPages = 1,
   onPageChange,
 }: BillingHistoryProps) {
+  const safeTotalPages = Math.max(1, totalPages);
+  const maxVisiblePages = 3;
+  const tentativeStart = Math.max(1, page - 1);
+  const startPage = Math.min(
+    tentativeStart,
+    Math.max(1, safeTotalPages - maxVisiblePages + 1)
+  );
+  const endPage = Math.min(safeTotalPages, startPage + maxVisiblePages - 1);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
+
   const handleDownloadInvoice = async (invoice: Invoice) => {
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF();
@@ -139,47 +152,41 @@ export default function BillingHistory({
         ))}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-end gap-2 pt-5 mt-4 border-t border-gray-200 dark:border-[#1A2332]">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-5 mt-4 border-t border-gray-200 dark:border-[#1A3155]">
+        <p className="text-xs sm:text-sm text-gray-500">
+          Page {page} of {safeTotalPages}
+        </p>
+        <div className="flex items-center gap-2">
           <button
             onClick={() => onPageChange?.(Math.max(1, page - 1))}
-            disabled={page <= 1 || isLoading}
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2A3040] text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={page === 1 || isLoading}
+            className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
-
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, index) => {
-              const pageNumber = index + 1;
-              const isActive = pageNumber === page;
-
-              return (
-                <button
-                  key={pageNumber}
-                  onClick={() => onPageChange?.(pageNumber)}
-                  disabled={isLoading}
-                  className={`w-9 h-9 rounded-lg border text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isActive
-                      ? "bg-cyan-500 border-cyan-500 text-white"
-                      : "bg-gray-100 dark:bg-[#1A1F2E] border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-[#252B3B]"
-                  }`}
-                >
-                  {pageNumber}
-                </button>
-              );
-            })}
-          </div>
-
+          {pageNumbers.map((pageNumber) => (
+            <button
+              key={pageNumber}
+              onClick={() => onPageChange?.(pageNumber)}
+              disabled={isLoading}
+              className={`min-w-9 px-2.5 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${
+                pageNumber === page
+                  ? "bg-cyan-500 border-cyan-500 text-white"
+                  : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
+              }`}
+            >
+              {pageNumber}
+            </button>
+          ))}
           <button
-            onClick={() => onPageChange?.(Math.min(totalPages, page + 1))}
-            disabled={page >= totalPages || isLoading}
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2A3040] text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => onPageChange?.(Math.min(safeTotalPages, page + 1))}
+            disabled={page === safeTotalPages || isLoading}
+            className="px-3 sm:px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

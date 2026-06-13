@@ -44,6 +44,19 @@ export default function CreditWalletDetail({
   const credits = walletData?.user_credits ?? user?.credits ?? 0;
   const userName = user?.name || "User";
   const totalPages = walletData?.total_pages ?? 1;
+  const activePage = walletData?.page ?? page;
+  const safeTotalPages = Math.max(1, totalPages);
+  const maxVisiblePages = 3;
+  const tentativeStart = Math.max(1, activePage - 1);
+  const startPage = Math.min(
+    tentativeStart,
+    Math.max(1, safeTotalPages - maxVisiblePages + 1)
+  );
+  const endPage = Math.min(safeTotalPages, startPage + maxVisiblePages - 1);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
   const transactions: UiTransaction[] = (walletData?.transaction_history || []).map((tx) => {
     const createdAt = new Date(tx.created_at);
@@ -322,44 +335,40 @@ export default function CreditWalletDetail({
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-end gap-2 pt-5 mt-3 border-t border-gray-200 dark:border-[#1A2332]">
-          <button
-            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-            disabled={page <= 1 || isFetching}
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2A3040] text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, index) => {
-              const pageNumber = index + 1;
-              const isActive = (walletData?.page ?? page) === pageNumber;
-
-              return (
-                <button
-                  key={pageNumber}
-                  onClick={() => setPage(pageNumber)}
-                  disabled={isFetching}
-                  className={`w-9 h-9 rounded-lg border text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isActive
-                      ? "bg-cyan-500 border-cyan-500 text-white"
-                      : "bg-gray-100 dark:bg-[#1A1F2E] border-gray-300 dark:border-[#2A3040] text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-[#252B3B]"
-                  }`}
-                >
-                  {pageNumber}
-                </button>
-              );
-            })}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-5 mt-4 border-t border-gray-200 dark:border-[#1A3155]">
+          <p className="text-xs sm:text-sm text-gray-500">
+            Page {activePage} of {safeTotalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={activePage === 1 || isFetching}
+              className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            {pageNumbers.map((pageNumber) => (
+              <button
+                key={pageNumber}
+                onClick={() => setPage(pageNumber)}
+                disabled={isFetching}
+                className={`min-w-9 px-2.5 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${
+                  activePage === pageNumber
+                    ? "bg-cyan-500 border-cyan-500 text-white"
+                    : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
+                }`}
+              >
+                {pageNumber}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage((prev) => Math.min(safeTotalPages, prev + 1))}
+              disabled={activePage === safeTotalPages || isFetching}
+              className="px-3 sm:px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
           </div>
-
-          <button
-            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-            disabled={page >= totalPages || isFetching}
-            className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#2A3040] text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-[#1A1F2E] hover:bg-gray-200 dark:hover:bg-[#252B3B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
         </div>
       </div>
 

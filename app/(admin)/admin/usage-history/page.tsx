@@ -22,7 +22,7 @@ export default function AdminUsageHistoryPage() {
 
   const entries = logs ?? [];
   const hasNextPage = entries.length >= LIMIT;
-  const inferredTotalPages = hasNextPage ? page + 2 : page + 1;
+  const inferredTotalPages = hasNextPage ? page + 3 : page + 1;
   const currentPage = page + 1;
   const maxVisiblePages = 3;
   const tentativeStart = Math.max(1, currentPage - 1);
@@ -160,7 +160,7 @@ export default function AdminUsageHistoryPage() {
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
@@ -168,7 +168,7 @@ export default function AdminUsageHistoryPage() {
               <button
                 key={pageNumber}
                 onClick={() => setPage(pageNumber - 1)}
-                className={`min-w-8 px-2.5 py-1.5 rounded-lg border text-xs sm:text-sm transition-colors ${
+                className={`min-w-9 px-2.5 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${
                   page + 1 === pageNumber
                     ? "bg-cyan-500 border-cyan-500 text-white"
                     : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
@@ -180,7 +180,7 @@ export default function AdminUsageHistoryPage() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={!hasNextPage}
-              className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 sm:px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>

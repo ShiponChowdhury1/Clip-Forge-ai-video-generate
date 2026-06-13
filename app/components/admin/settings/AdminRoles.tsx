@@ -249,15 +249,17 @@ export function AdminRoles() {
   }, [filteredAdmins, currentPage]);
 
   const pageNumbers = useMemo(() => {
-    if (totalPages <= 5) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
-    let start = Math.max(1, currentPage - 2);
-    const end = Math.min(totalPages, start + 4);
-    start = Math.max(1, end - 4);
-
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    const maxVisiblePages = 3;
+    const tentativeStart = Math.max(1, currentPage - 1);
+    const startPage = Math.min(
+      tentativeStart,
+      Math.max(1, totalPages - maxVisiblePages + 1)
+    );
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    return Array.from(
+      { length: endPage - startPage + 1 },
+      (_, i) => startPage + i
+    );
   }, [currentPage, totalPages]);
 
   const handleRoleChange = async (userId: number, nextRole: ManagedRole) => {
@@ -380,15 +382,15 @@ export function AdminRoles() {
             );
           })}
 
-          <div className="flex items-center justify-between gap-3 pt-2">
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-200 dark:border-[#1A3155]">
+            <p className="text-xs sm:text-sm text-gray-500">
               Page {currentPage} of {totalPages}
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 sm:px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#1A2332] border border-gray-300 dark:border-[#1A3155] text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
@@ -396,10 +398,10 @@ export function AdminRoles() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`min-w-8 px-2.5 py-1.5 rounded-lg border text-xs sm:text-sm transition-colors ${
+                  className={`min-w-9 px-2.5 py-2 rounded-lg border text-xs sm:text-sm transition-colors ${
                     currentPage === page
                       ? "bg-cyan-500 border-cyan-500 text-white"
-                      : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-cyan-400"
+                      : "bg-gray-100 dark:bg-[#1A2332] border-gray-300 dark:border-[#1A3155] text-gray-700 dark:text-gray-300 hover:border-[#2563EB]"
                   }`}
                 >
                   {page}
@@ -408,7 +410,7 @@ export function AdminRoles() {
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 sm:px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white text-xs sm:text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
