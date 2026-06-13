@@ -954,7 +954,7 @@ export default function DashboardHome() {
 
           {/* Banner */}
           <div
-            className="relative rounded-3xl py-6 sm:py-8 md:py-12 pl-6 sm:pl-8 md:pl-8 pr-6 sm:pr-8 md:pr-12 flex items-center overflow-hidden bg-gray-50 dark:bg-[#0A0A0A] min-h-[320px] sm:min-h-[380px] md:min-h-[420px]"
+            className="relative rounded-3xl py-6 sm:py-8 md:py-12 pl-6 sm:pl-8 md:pl-8 pr-6 sm:pr-8 md:pr-12 flex items-center overflow-hidden  min-h-[320px] sm:min-h-[380px] md:min-h-[420px]"
           >
             {/* Visual banner image as background */}
             <div className="absolute inset-0 z-0 w-full h-full rounded-3xl overflow-hidden">
