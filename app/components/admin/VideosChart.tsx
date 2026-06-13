@@ -101,10 +101,20 @@ export default function VideosChart({ data, timeFilter = "all" }: VideosChartPro
     ctx.fillStyle = "#6b7280";
     ctx.font = "11px sans-serif";
     ctx.textAlign = "center";
+
+    const maxLabels = Math.floor(chartW / 65);
+    const step = Math.ceil(data.length / maxLabels);
+
     data.forEach((d, i) => {
-      const x = padLeft + i * gap + gap / 2;
-      const label = formatAxisLabel(d.date ?? d.day, timeFilter);
-      ctx.fillText(label, x, h - 10);
+      const isStep = i % step === 0;
+      const isLast = i === data.length - 1;
+      const tooCloseToLast = (data.length - 1 - i) < (step / 2);
+
+      if (step === 1 || (isStep && !tooCloseToLast) || isLast) {
+        const x = padLeft + i * gap + gap / 2;
+        const label = formatAxisLabel(d.date ?? d.day, timeFilter);
+        ctx.fillText(label, x, h - 10);
+      }
     });
   }, [data, timeFilter]);
 
