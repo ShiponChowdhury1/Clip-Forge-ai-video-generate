@@ -187,10 +187,10 @@ const overviewData = [
 
 
 const tutorials = [
-  { id: 1, title: "Navigating the Dashboard", duration: "1:24", image: "/tutorials/navigating_dashboard.png" },
-  { id: 2, title: "Create a Video", duration: "2:10", image: "/tutorials/create_video.png" },
-  { id: 3, title: "Write a Script with AI", duration: "1:35", image: "/tutorials/write_script.png" },
-  { id: 4, title: "Processing vs Queued Videos", duration: "1:50", image: "/tutorials/processing_queued.png" },
+  { id: 1, title: "Navigating the Dashboard", duration: "1:24", image: "/tutorials/clip-forge-navigating_dashboard.png" },
+  { id: 2, title: "Create a Video", duration: "2:10", image: "/tutorials/clip-forge-create_video.png" },
+  { id: 3, title: "Write a Script with AI", duration: "1:35", image: "/tutorials/clip-forge-write_script.png" },
+  { id: 4, title: "Processing vs Queued Videos", duration: "1:50", image: "/tutorials/clip-forge-processing_queued.png" },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -311,6 +311,26 @@ function DonutChart({ pct, total }: { pct: number; total: number }) {
       />
       <text x="34" y="32" textAnchor="middle" className="fill-gray-900 dark:fill-white" fontSize="12" fontWeight="700">{pct}%</text>
       <text x="34" y="44" textAnchor="middle" fill="#5a5a8a" fontSize="6.5">of {total.toLocaleString()}</text>
+    </svg>
+  );
+}
+
+function DonutChartLarge({ pct, total }: { pct: number; total: number }) {
+  const r = 38;
+  const circ = 2 * Math.PI * r;
+  const filled = (pct / 100) * circ;
+  return (
+    <svg width="100" height="100" viewBox="0 0 100 100" aria-label={`${pct}% of credits used`} role="img">
+      <circle cx="50" cy="50" r={r} fill="none" className="stroke-gray-200 dark:stroke-[#1e1e3a]" strokeWidth="9" />
+      <circle
+        cx="50" cy="50" r={r} fill="none"
+        stroke={PROGRESS_COLOR} strokeWidth="9"
+        strokeDasharray={`${filled} ${circ - filled}`}
+        strokeDashoffset={circ * 0.25}
+        strokeLinecap="round"
+      />
+      <text x="50" y="46" textAnchor="middle" className="fill-gray-900 dark:fill-white font-extrabold" fontSize="18" fontWeight="800">{pct}%</text>
+      <text x="50" y="62" textAnchor="middle" fill="#7070a0" className="font-semibold" fontSize="8.5">of {total.toLocaleString()}</text>
     </svg>
   );
 }
@@ -934,102 +954,99 @@ export default function DashboardHome() {
 
           {/* Banner */}
           <div
-            className="relative rounded-2xl p-6 sm:p-8 flex items-center justify-between overflow-hidden border border-gray-200 dark:border-[#1F1F1F] bg-gray-50 dark:bg-[#0A0A0A] min-h-[250px]"
+            className="relative rounded-3xl py-6 sm:py-8 md:py-12 pl-6 sm:pl-8 md:pl-8 pr-6 sm:pr-8 md:pr-12 flex items-center overflow-hidden bg-gray-50 dark:bg-[#0A0A0A] min-h-[320px] sm:min-h-[380px] md:min-h-[420px]"
           >
-            {/* decorative circles */}
-            <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full opacity-10" style={{ background: btnGradient }} />
-            <div className="absolute -right-4 -bottom-8 w-32 h-32 rounded-full opacity-10" style={{ background: GRAD_TO }} />
+            {/* Visual banner image as background */}
+            <div className="absolute inset-0 z-0 w-full h-full rounded-3xl overflow-hidden">
+              <Image
+                src="/banner-image.png"
+                alt="Banner Background"
+                fill
+                priority
+                className="object-cover object-right opacity-100 rounded-3xl"
+                unoptimized
+              />
+              {/* Very subtle overall overlay to tie colors together without blocking details */}
+              <div className="absolute inset-0 bg-black/[0.04] dark:bg-black/35 z-0" />
+            </div>
 
-            <div className="relative z-10 w-1/2 shrink-0">
-
-              <h3 className="text-2xl sm:text-3xl font-semibold leading-snug text-gray-900 dark:text-white mb-2">
+            {/* Content Container (no background color/card overlay) */}
+            <div className="relative z-10 max-w-sm sm:max-w-md pl-0">
+              <h3 className="text-2xl sm:text-3xl font-extrabold leading-tight text-gray-900 dark:text-white mb-2 tracking-tight">
                 Create your next amazing<br />
-                <span>
-                 video
+                <span className="text-[#ffffff] dark:text-[#ffffff]">
+                  video
                 </span>
               </h3>
-              <p className="text-sm text-gray-600 dark:text-[#8888bb] mb-4 max-w-xs leading-relaxed">
+              <p className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
                 Turn your ideas into captivating videos with the power of AI.
               </p>
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => router.push("/dashboard/create")}
-                  className="h-11 flex items-center gap-2 text-white text-sm font-bold px-5 rounded-xl hover:opacity-90 active:scale-95 transition-all duration-150 shadow-lg"
-                  style={{ background: btnGradient, boxShadow: `0 4px 20px ${GRAD_FROM}55` }}
+                  className="h-10 flex items-center gap-2 text-white text-xs sm:text-sm font-bold px-5 rounded-xl hover:opacity-90 active:scale-95 transition-all duration-150 shadow-md cursor-pointer"
+                  style={{ background: btnGradient, boxShadow: `0 4px 15px ${GRAD_FROM}33` }}
                 >
                   <Plus size={14} />
                   Create Video
                 </button>
-
-                {/* <button
-                  // onClick={() => router.push("/dashboard/create")}
-                  className="h-11 flex items-center gap-2 text-white text-sm font-bold px-5 rounded-xl hover:opacity-90 active:scale-95 transition-all duration-150 shadow-lg"
-                  style={{ background: "#1e1255", boxShadow: "0 4px 20px rgba(30,18,85,0.55)" }}
-                >
-                  <Plus size={14} />
-                  Choose a Template
-                </button> */}
               </div>
-            </div>
-
-            {/* Visual banner image */}
-            <div className="hidden sm:block absolute right-0 bottom-0 top-0 w-1/2 z-10">
-              <Image
-                src="/banner1.png"
-                alt="Banner Illustration"
-                fill
-                priority
-                className="object-cover object-right-bottom rounded-r-2xl"
-              />
             </div>
           </div>
 
           {/* Credits Card */}
-          <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-5 flex flex-col border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-colors min-h-[250px]">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-bold text-gray-900 dark:text-white">Credits Used</span>
+          <div className="bg-gray-50 dark:bg-[#0A0A0A] rounded-2xl p-6 flex flex-col border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-colors min-h-[250px]">
+            {/* Card Header */}
+            <div className="flex justify-between items-center mb-5">
+              <span className="text-base font-bold text-gray-900 dark:text-white">Credits Used</span>
               <button
                 onClick={() => router.push("/dashboard/billing")}
-                className="text-[11px] font-semibold hover:underline transition-colors"
+                className="text-xs font-semibold hover:underline transition-colors"
                 style={{ color: PROGRESS_COLOR }}
               >
                 View Details
               </button>
             </div>
 
-            {/* Donut + rows */}
-            <div className="flex items-center gap-4 mb-4">
-              <DonutChart pct={creditsPct} total={displayTotalCredits} />
-              <div className="flex-1 space-y-1">
+            {/* Main Content Area - Evenly spaced to match height */}
+            <div className="flex-1 flex flex-col justify-between gap-4">
+              {/* Donut Chart (Enlarged and Centered) */}
+              <div className="flex justify-center my-1">
+                <DonutChartLarge pct={creditsPct} total={displayTotalCredits} />
+              </div>
+
+              {/* Rows (Larger text size) */}
+              <div className="space-y-2 px-1">
                 {[
                   { lbl: "Used", val: creditsUsed.toLocaleString() },
                   { lbl: "Remaining", val: userCredits.toLocaleString() },
                   { lbl: "Reset Date", val: resetDate, muted: true },
                 ].map((r) => (
-                  <div key={r.lbl} className="flex justify-between items-center">
-                    <span className="text-[11px] text-gray-500 dark:text-[#5a5a8a]">{r.lbl}</span>
-                    <span className={`text-[11px] font-semibold ${r.muted ? "text-gray-400 dark:text-[#7070a0]" : "text-gray-900 dark:text-white"}`}>{r.val}</span>
+                  <div key={r.lbl} className="flex justify-between items-center text-xs sm:text-sm">
+                    <span className="text-gray-500 dark:text-[#7070a0] font-medium">{r.lbl}</span>
+                    <span className={`font-bold ${r.muted ? "text-gray-400 dark:text-[#8888b5]" : "text-gray-900 dark:text-white"}`}>{r.val}</span>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Progress bar */}
-            <div className="w-full bg-gray-200 dark:bg-[#1e1e3a] rounded-full h-1.5 mb-4 overflow-hidden">
-              <div
-                className="h-1.5 rounded-full transition-all duration-700"
-                style={{ width: `${creditsPct}%`, background: PROGRESS_COLOR }}
-              />
-            </div>
+              {/* Progress bar (thicker) */}
+              <div className="w-full bg-gray-200 dark:bg-[#1e1e3a] rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-2 rounded-full transition-all duration-700"
+                  style={{ width: `${creditsPct}%`, background: PROGRESS_COLOR }}
+                />
+              </div>
 
-            <button
-              onClick={() => router.push("/dashboard/billing?buy=1")}
-              className="w-full h-11 flex items-center justify-center gap-2 text-white text-sm font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all mt-auto"
-              style={{ background: btnGradient }}
-            >
-              <Zap size={13} />
-              Purchase Credits
-            </button>
+              {/* Purchase button */}
+              <button
+                onClick={() => router.push("/dashboard/billing?buy=1")}
+                className="w-full h-12 flex items-center justify-center gap-2 text-white text-sm font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                style={{ background: btnGradient }}
+              >
+                <Zap size={14} />
+                Purchase Credits
+              </button>
+            </div>
           </div>
         </div>
 
