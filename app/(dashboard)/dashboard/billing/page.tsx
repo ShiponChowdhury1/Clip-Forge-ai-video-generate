@@ -16,18 +16,22 @@ import {
   PaymentCheckout,
   ProcessingPayment,
   PaymentSuccess,
+  ActiveSubscriptionCard,
 } from "@/app/components/dashboard/billing";
 import type { Invoice } from "@/app/components/dashboard/billing";
 import {
   useGetCreditPackagesQuery,
   useGetSubscriptionsQuery,
 } from "@/lib/redux/features/admin/adminApi";
-import { useGetUserCreditBalanceQuery } from "@/lib/redux/features/auth/authApi";
+import { useGetUserCreditBalanceQuery, useGetMySubscriptionQuery } from "@/lib/redux/features/auth/authApi";
 import {
   useSubscriptionCheckoutMutation,
   useCreditCheckoutMutation,
   useGetPaymentHistoryQuery,
+  useCancelSubscriptionMutation,
+  useCancelCreditMutation,
 } from "@/lib/redux/features/billing/billingApi";
+import { toast } from "react-toastify";
 
 type BillingView = "main" | "pricing" | "checkout" | "processing" | "success";
 type BillingModalType = "change" | "buy";
@@ -50,6 +54,43 @@ function BillingPageContent() {
   const [subscriptionCheckout, { isLoading: isCheckoutLoading }] = useSubscriptionCheckoutMutation();
   const [creditCheckout, { isLoading: isCreditCheckoutLoading }] = useCreditCheckoutMutation();
   const [historyPage, setHistoryPage] = useState(1);
+
+  const { data: userSubscription, isLoading: isSubscriptionLoading, refetch: refetchSubscription } = useGetMySubscriptionQuery(undefined, {
+    skip: !userId,
+  });
+  const [cancelSubscription, { isLoading: isCancellingSub }] = useCancelSubscriptionMutation();
+  const [cancelCredit, { isLoading: isCancellingCredit }] = useCancelCreditMutation();
+
+  const handleCancelSubscription = async () => {
+    try {
+      await cancelSubscription().unwrap();
+      toast.success("Subscription cancelled successfully.");
+      refetchSubscription();
+    } catch (err: any) {
+      console.error("Cancel subscription failed:", err);
+      const errorMessage =
+        err?.data?.detail || 
+        (typeof err?.data === "string" ? err.data : null) || 
+        err?.message || 
+        "Failed to cancel subscription.";
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleCancelCredit = async () => {
+    try {
+      await cancelCredit().unwrap();
+      toast.success("Credit plan cancelled successfully.");
+    } catch (err: any) {
+      console.error("Cancel credit plan failed:", err);
+      const errorMessage =
+        err?.data?.detail || 
+        (typeof err?.data === "string" ? err.data : null) || 
+        err?.message || 
+        "Failed to cancel credit plan.";
+      toast.error(errorMessage);
+    }
+  };
   const historyPageSize = 10;
   const {
     data: paymentHistory,
@@ -108,6 +149,30 @@ function BillingPageContent() {
       }
     }
   }, [creditBalance, dispatch]);
+
+  // Sync updated subscription plan back to Redux user state
+  useEffect(() => {
+    const currentUser = authUserRef.current;
+    if (!currentUser || !userSubscription) return;
+
+    const nextPlan =
+      userSubscription.status === "active" && userSubscription.plan?.name?.trim()
+        ? userSubscription.plan.name.trim()
+        : "Free";
+    const currentPlan = (currentUser.subscription_plan || "Free").trim();
+
+    if (nextPlan === currentPlan) return;
+
+    const updatedUser = {
+      ...currentUser,
+      subscription_plan: nextPlan,
+    };
+
+    dispatch(setUser(updatedUser));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    }
+  }, [userSubscription, dispatch]);
 
   const activePlans = useMemo(
     () => (subscriptions ?? []).filter((plan) => plan.plan_status?.toLowerCase() === "active"),
@@ -350,6 +415,15 @@ function BillingPageContent() {
             credits={currentCredits}
             onChangePlan={handleChangePlan}
             onBuyCredits={handleBuyCredits}
+          />
+
+          <ActiveSubscriptionCard
+            subscription={userSubscription}
+            isLoading={isSubscriptionLoading}
+            onCancelSubscription={handleCancelSubscription}
+            onCancelCredit={handleCancelCredit}
+            isCancellingSubscription={isCancellingSub}
+            isCancellingCredit={isCancellingCredit}
           />
 
           <PaymentMethod

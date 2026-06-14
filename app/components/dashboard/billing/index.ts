@@ -5,4 +5,5 @@ export { default as PricingPlans } from "./PricingPlans";
 export { default as PaymentCheckout } from "./PaymentCheckout";
 export { default as ProcessingPayment } from "./ProcessingPayment";
 export { default as PaymentSuccess } from "./PaymentSuccess";
+export { default as ActiveSubscriptionCard } from "./ActiveSubscriptionCard";
 export type { Invoice } from "./BillingHistory";

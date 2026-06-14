@@ -106,6 +106,22 @@ export const billingApi = createApi({
         method: "GET",
       }),
     }),
+
+    // Cancel active subscription
+    cancelSubscription: builder.mutation<{ detail: string } | string, void>({
+      query: () => ({
+        url: "/subscription/cancel",
+        method: "DELETE",
+      }),
+    }),
+
+    // Cancel active credit plan
+    cancelCredit: builder.mutation<{ detail: string } | string, void>({
+      query: () => ({
+        url: "/credit/cancel",
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -113,5 +129,7 @@ export const {
   useSubscriptionCheckoutMutation,
   useCreditCheckoutMutation,
   useGetPaymentHistoryQuery,
+  useCancelSubscriptionMutation,
+  useCancelCreditMutation,
 } = billingApi;
 
