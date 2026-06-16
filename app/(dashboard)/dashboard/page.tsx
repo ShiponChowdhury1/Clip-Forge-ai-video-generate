@@ -972,7 +972,7 @@ export default function DashboardHome() {
 
             {/* Content Container (no background color/card overlay) */}
             <div className="relative z-10 max-w-sm sm:max-w-md pl-0">
-              <h3 className="text-2xl sm:text-3xl font-extrabold leading-tight text-gray-900 dark:text-white mb-2 tracking-tight">
+              <h3 className="text-3xl sm:text-4xl font-extrabold leading-tight text-gray-900 dark:text-white mb-2 tracking-tight">
                 Create your next amazing<br />
                 <span className="text-[#ffffff] dark:text-[#ffffff]">
                   video

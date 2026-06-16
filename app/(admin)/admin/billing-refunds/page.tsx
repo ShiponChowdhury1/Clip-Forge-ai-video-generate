@@ -15,7 +15,7 @@ const statusConfig: Record<string, { icon: typeof CheckCircle; color: string }> 
 };
 
 function formatAmount(n: number) {
-  return `$${(n / 100).toFixed(2)}`;
+  return `$${n.toFixed(2)}`;
 }
 
 export default function AdminBillingRefundsPage() {
