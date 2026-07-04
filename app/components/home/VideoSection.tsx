@@ -86,9 +86,7 @@ function VideoCard({ item, index, activeIndex, onClick }: VideoCardProps) {
         <h3 className="text-white font-semibold text-base sm:text-lg mb-1 leading-snug">
           {item.title}
         </h3>
-        <p className="text-gray-300 text-xs sm:text-sm leading-relaxed line-clamp-2">
-          {item.desc}
-        </p>
+        
       </div>
     </div>
   );
