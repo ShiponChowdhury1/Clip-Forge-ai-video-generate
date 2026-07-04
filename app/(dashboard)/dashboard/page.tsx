@@ -187,10 +187,10 @@ const overviewData = [
 
 
 const tutorials = [
-  { id: 1, title: "Navigating the Dashboard", duration: "1:24", image: "/tutorials/clip-forge-navigating_dashboard.png" },
-  { id: 2, title: "Create a Video", duration: "2:10", image: "/tutorials/clip-forge-create_video.png" },
-  { id: 3, title: "Write a Script with AI", duration: "1:35", image: "/tutorials/clip-forge-write_script.png" },
-  { id: 4, title: "Processing vs Queued Videos", duration: "1:50", image: "/tutorials/clip-forge-processing_queued.png" },
+  { id: 1, title: "Navigating the Dashboard", duration: "3:41", image: "/tutorials/clip-forge-navigating_dashboard.png", video: "/tutorials/tutorial-1.mp4" },
+  { id: 2, title: "Create a Video", duration: "5:21", image: "/tutorials/clip-forge-create_video.png", video: "/tutorials/tutorial-2.mp4" },
+  { id: 3, title: "Write a Script with AI", duration: "5:23", image: "/tutorials/clip-forge-write_script.png", video: "/tutorials/tutorial-3.mp4" },
+  { id: 4, title: "Processing vs Queued Videos", duration: "3:05", image: "/tutorials/clip-forge-processing_queued.png", video: "/tutorials/tutorial-4.mp4" },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -408,9 +408,9 @@ function StatCard({ icon, label, value, sub, subColor, chart, accent }: StatCard
 }
 
 // ── Tutorial Thumb ────────────────────────────────────────────────────────────
-function TutThumb({ title, duration, image }: { title: string; duration: string; image: string }) {
+function TutThumb({ title, duration, image, onClick }: { title: string; duration: string; image: string; onClick?: () => void }) {
   return (
-    <div className="relative rounded-xl h-48 sm:h-64 w-full cursor-pointer group overflow-hidden border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all duration-300 shadow-lg shadow-black/5">
+    <div onClick={onClick} className="relative rounded-xl h-48 sm:h-64 w-full cursor-pointer group overflow-hidden border border-gray-200 dark:border-[#1F1F1F] hover:border-gray-300 dark:hover:border-[#2A2A2A] transition-all duration-300 shadow-lg shadow-black/5">
       {/* Background Image */}
       <Image
         src={image}
@@ -516,6 +516,7 @@ export default function DashboardHome() {
   
   const [currentTip, setCurrentTip] = useState(TIPS[0]);
   const [fade, setFade] = useState(true);
+  const [activeTutorial, setActiveTutorial] = useState<{ id: number; title: string; duration: string; image: string; video: string } | null>(null);
 
   useEffect(() => {
     // Shuffle on mount (client-side only to prevent hydration mismatch)
@@ -1116,7 +1117,7 @@ export default function DashboardHome() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {tutorials.map((t) => (
-                <TutThumb key={t.id} title={t.title} duration={t.duration} image={t.image} />
+                <TutThumb key={t.id} title={t.title} duration={t.duration} image={t.image} onClick={() => setActiveTutorial(t)} />
               ))}
             </div>
           </div>
@@ -1365,6 +1366,49 @@ export default function DashboardHome() {
             setSelectedNotification(null);
           }}
         />
+      )}
+
+      {/* Tutorial Video Player Modal */}
+      {activeTutorial && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-in fade-in-0 duration-200">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            onClick={() => setActiveTutorial(null)}
+          />
+          
+          {/* Modal Card */}
+          <div className="relative bg-[#080816] rounded-3xl w-full max-w-4xl mx-auto shadow-2xl border border-gray-800/80 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-300 z-10">
+            {/* Header */}
+            <div className="px-6 py-4 flex justify-between items-center border-b border-gray-800/50 bg-[#04040a]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <Play size={16} className="text-blue-500 fill-blue-500" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white tracking-wide">{activeTutorial.title}</h3>
+                  <p className="text-[10px] text-gray-400 font-medium">Video Tutorial • {activeTutorial.duration}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setActiveTutorial(null)} 
+                className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Video Container */}
+            <div className="aspect-video bg-black relative flex items-center justify-center">
+              <video
+                src={activeTutorial.video}
+                controls
+                autoPlay
+                className="w-full h-full max-h-[70vh] object-contain"
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -142,32 +142,46 @@ export const plans = [
 // Video Section Data
 export const videos = [
   {
-    title: "Storytelling",
-    desc: "Generate viral storytelling content in minutes.",
+    title: "The Emperor Who Declared War on Birds",
+    category: "Fun History",
     bgImage: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
     bgColor: "from-slate-900 via-slate-800 to-slate-900",
-    image: "/video/storytelling.png",
+    videoUrl: "/video/Fun History - The Emperor Who Declared War on Birds.mp4",
   },
   {
-    title: "Educational",
-    desc: "Generate viral educational content in minutes.",
+    title: "The Warrior Who Refused to Fall",
+    category: "Story Telling",
     bgImage: "linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%)",
     bgColor: "from-gray-900 via-gray-800 to-gray-900",
-    image: "/video/educational.png",
+    videoUrl: "/video/Story Telling - The Warrior Who Refused to Fall.mp4",
   },
   {
-    title: "Product Promo",
-    desc: "Generate viral product promo content in minutes.",
+    title: "The Fairy Who Stole the Morning Light",
+    category: "Fantasy",
     bgImage: "linear-gradient(135deg, #0a192f 0%, #112240 50%, #1d3557 100%)",
     bgColor: "from-blue-950 via-blue-900 to-cyan-900",
-    image: "/video/productPromo.png",
+    videoUrl: "/video/The Fairy Who Stole the Morning Light.mp4",
   },
   {
-    title: "Cinematic",
-    desc: "Generate viral cinematic content in minutes.",
+    title: "The Last Stand of the Spartans",
+    category: "History",
     bgImage: "linear-gradient(135deg, #000000 0%, #0d1b2a 50%, #1b263b 100%)",
     bgColor: "from-black via-slate-900 to-slate-800",
-    image: "/video/cinematic.png",
+    videoUrl: "/video/The Last Stand of the Spartans.mp4",
+  },
+  {
+    title: "The Man Who Survived TWO Atomic Bombs",
+    category: "History",
+    bgImage: "linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #2980b9 100%)",
+    bgColor: "from-slate-950 via-slate-900 to-blue-900",
+    videoUrl: "/video/The Man Who Survived TWO Atomic Bombs.mp4",
+  },
+  {
+    title: "The SECRET Power of Beagles",
+    category: "Animals",
+    bgImage: "linear-gradient(135deg, #d35400 0%, #e67e22 50%, #f39c12 100%)",
+    bgColor: "from-amber-950 via-amber-900 to-yellow-900",
+    videoUrl: "/video/The SECRET Power of Beagles.mp4",
   },
 ];
 
