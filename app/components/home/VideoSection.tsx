@@ -2,7 +2,7 @@
 
 import { Play, X } from "lucide-react";
 import { videos } from "@/app/data";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 interface VideoCardProps {
   item: typeof videos[0];
@@ -11,52 +11,17 @@ interface VideoCardProps {
 }
 
 function VideoCard({ item, index, onClick }: VideoCardProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleLoadedMetadata = () => {
-    if (videoRef.current) {
-      try {
-        videoRef.current.currentTime = 1.0;
-      } catch (e) {
-        console.error("Error setting initial time:", e);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!videoRef.current) return;
-    if (isHovered) {
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {});
-      }
-    } else {
-      try {
-        videoRef.current.pause();
-        if (videoRef.current.readyState >= 1) {
-          videoRef.current.currentTime = 1.0;
-        }
-      } catch (err) {
-        console.error("Error pausing video:", err);
-      }
-    }
-  }, [isHovered]);
-
   return (
     <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
       className="relative rounded-2xl overflow-hidden cursor-pointer group border border-gray-200 dark:border-gray-800/80 hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-500 ease-out w-[180px] sm:w-[220px] md:w-[260px] xl:w-[280px] shrink-0 shadow-lg shadow-black/5 aspect-[9/16] bg-gray-950"
     >
       {/* Video Element (Dynamic Live Thumbnail) */}
       <video
-        ref={videoRef}
         src={`${encodeURI(item.videoUrl)}#t=1.0`}
-        onLoadedMetadata={handleLoadedMetadata}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 z-0 bg-gray-950"
-        preload="metadata"
+        preload="auto"
+        autoPlay
         playsInline
         muted
         loop
