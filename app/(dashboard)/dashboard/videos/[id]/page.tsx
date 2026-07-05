@@ -31,7 +31,7 @@ function buildVideoUrl(path: string | null | undefined): string {
   let relativePath = path;
   if (path.startsWith("http")) {
     if (path.includes("cloudinary.com") || path.includes("/upload/")) {
-      return path;
+      return path.replace(/^http:/, "https:");
     }
     const backendPrefix = (process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api").replace(/\/api$/, "");
     if (path.startsWith(backendPrefix)) {
