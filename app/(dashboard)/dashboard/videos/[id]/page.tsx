@@ -182,7 +182,11 @@ export default function VideoDetailsPage() {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!hasVideo) return;
 
     // 1. Cloudinary URL download handling using fl_attachment
@@ -193,7 +197,7 @@ export default function VideoDetailsPage() {
         const downloadUrl = videoUrl.replace(uploadPattern, `$1fl_attachment:${safeFilename}/`);
         const link = document.createElement("a");
         link.href = downloadUrl;
-        link.target = "_blank";
+        link.download = `${video.title}.mp4`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -207,6 +211,7 @@ export default function VideoDetailsPage() {
       const downloadUrl = `${videoUrl}&download=true&filename=${safeFilename}`;
       const link = document.createElement("a");
       link.href = downloadUrl;
+      link.download = `${video.title}.mp4`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -217,6 +222,7 @@ export default function VideoDetailsPage() {
     const link = document.createElement("a");
     link.href = videoUrl;
     link.download = `${video.title}.mp4`;
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -447,7 +453,8 @@ export default function VideoDetailsPage() {
                 Edit & Regenerate
               </button>
               <button
-                onClick={handleDownload}
+                type="button"
+                onClick={(e) => handleDownload(e)}
                 disabled={!hasVideo}
                 className={`group relative overflow-hidden flex items-center justify-center gap-2.5 rounded-2xl py-3.5 px-4 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#0D1117] ${
                   hasVideo

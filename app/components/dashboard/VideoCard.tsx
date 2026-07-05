@@ -117,6 +117,7 @@ export default function VideoCard({
   };
 
   const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (!videoUrl) return;
 
@@ -128,7 +129,7 @@ export default function VideoCard({
         const downloadUrl = videoUrl.replace(uploadPattern, `$1fl_attachment:${safeFilename}/`);
         const link = document.createElement("a");
         link.href = downloadUrl;
-        link.target = "_blank";
+        link.download = `${title}.mp4`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -142,6 +143,7 @@ export default function VideoCard({
       const downloadUrl = `${videoUrl}&download=true&filename=${safeFilename}`;
       const link = document.createElement("a");
       link.href = downloadUrl;
+      link.download = `${title}.mp4`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -152,6 +154,7 @@ export default function VideoCard({
     const link = document.createElement("a");
     link.href = videoUrl;
     link.download = `${title}.mp4`;
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -293,6 +296,7 @@ export default function VideoCard({
               Preview
             </button>
             <button
+              type="button"
               onClick={handleDownload}
               className="flex items-center justify-center gap-1.5 flex-1 h-9 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg text-[13px] font-medium transition-colors"
             >
