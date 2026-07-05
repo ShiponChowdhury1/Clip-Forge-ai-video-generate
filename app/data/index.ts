@@ -183,6 +183,13 @@ export const videos = [
     bgColor: "from-amber-950 via-amber-900 to-yellow-900",
     videoUrl: "/video/The SECRET Power of Beagles.mp4",
   },
+  {
+    title: "Why Bora Bora Looks Too Perfect to Be Real",
+    category: "Travel",
+    bgImage: "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)",
+    bgColor: "from-teal-950 via-teal-900 to-slate-900",
+    videoUrl: "/video/Why Bora Bora Looks Too Perfect to Be Real.mp4",
+  },
 ];
 
 // Video Card Data (Reusable for Dashboard & All Videos page)
