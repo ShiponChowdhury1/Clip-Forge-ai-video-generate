@@ -4,13 +4,18 @@ import { Play, X } from "lucide-react";
 import { videos } from "@/app/data";
 import { useState } from "react";
 
+const getPreviewUrl = (videoUrl: string) => {
+  const parts = videoUrl.split('/');
+  const filename = parts.pop();
+  return `${parts.join('/')}/previews/preview-${filename}`;
+};
+
 interface VideoCardProps {
   item: typeof videos[0];
-  index: number;
   onClick: () => void;
 }
 
-function VideoCard({ item, index, onClick }: VideoCardProps) {
+function VideoCard({ item, onClick }: VideoCardProps) {
   return (
     <div
       onClick={onClick}
@@ -18,9 +23,9 @@ function VideoCard({ item, index, onClick }: VideoCardProps) {
     >
       {/* Video Element (Dynamic Live Thumbnail) */}
       <video
-        src={`${encodeURI(item.videoUrl)}#t=1.0`}
+        src={encodeURI(getPreviewUrl(item.videoUrl))}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 z-0 bg-gray-950"
-        preload="auto"
+        preload="metadata"
         autoPlay
         playsInline
         muted
@@ -60,7 +65,6 @@ export default function VideoSection() {
               <VideoCard
                 key={`${item.title}-${index}`}
                 item={item}
-                index={index}
                 onClick={() => setActiveVideo(item)}
               />
             ))}

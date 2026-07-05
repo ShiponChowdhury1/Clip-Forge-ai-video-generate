@@ -221,7 +221,7 @@ textarea:invalid {
 }
 
 @theme {
-  --animate-marquee: marquee 45s linear infinite;
+  --animate-marquee: marquee 85s linear infinite;
 
   @keyframes marquee {
     from { transform: translateX(0); }
