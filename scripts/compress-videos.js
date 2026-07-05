@@ -32,14 +32,13 @@ const mp4Files = files.filter(file => file.endsWith('.mp4'));
 
 mp4Files.forEach(file => {
   const inputPath = path.join(videoDir, file);
-  const outputPath = path.join(previewDir, `preview-${file}`);
+  const outputPath = path.join(previewDir, `preview-${file.replace('.mp4', '.webp')}`);
 
-
-  
   try {
-    // Cut 15 seconds starting from 1.0 second, remove audio, scale width to 480px, compress heavily
-    const command = `"${ffmpegPath}" -y -ss 00:00:01 -i "${inputPath}" -t 15 -vf "scale=480:-2" -an -vcodec libx264 -crf 28 "${outputPath}"`;
+    // Convert to animated webp, cut 10 seconds, scale to 320px width, 12 fps, loop infinitely
+    const command = `"${ffmpegPath}" -y -ss 00:00:01 -t 10 -i "${inputPath}" -vf "scale=320:-2,fps=12" -loop 0 -vcodec libwebp -quality 60 "${outputPath}"`;
     execSync(command, { stdio: 'inherit' });
+    console.log(`✓ Created webp preview: preview-${file.replace('.mp4', '.webp')}`);
   } catch (error) {
     console.error(`✗ Error processing ${file}:`, error.message);
   }

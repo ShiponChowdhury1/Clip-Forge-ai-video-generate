@@ -6,8 +6,9 @@ import { useState } from "react";
 
 const getPreviewUrl = (videoUrl: string) => {
   const parts = videoUrl.split('/');
-  const filename = parts.pop();
-  return `${parts.join('/')}/previews/preview-${filename}`;
+  const filename = parts.pop() || '';
+  const webpFilename = filename.replace('.mp4', '.webp');
+  return `${parts.join('/')}/previews/preview-${webpFilename}`;
 };
 
 interface VideoCardProps {
@@ -21,15 +22,11 @@ function VideoCard({ item, onClick }: VideoCardProps) {
       onClick={onClick}
       className="relative rounded-2xl overflow-hidden cursor-pointer group border border-gray-200 dark:border-gray-800/80 hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-500 ease-out w-[180px] sm:w-[220px] md:w-[260px] xl:w-[280px] shrink-0 shadow-lg shadow-black/5 aspect-[9/16] bg-gray-950"
     >
-      {/* Video Element (Dynamic Live Thumbnail) */}
-      <video
+      {/* Animated WebP Image Thumbnail (Instant Loading) */}
+      <img
         src={encodeURI(getPreviewUrl(item.videoUrl))}
+        alt={item.title}
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 z-0 bg-gray-950"
-        preload="metadata"
-        autoPlay
-        playsInline
-        muted
-        loop
       />
       {/* Category Info Glass Badge (Top-Left) */}
       <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20">
