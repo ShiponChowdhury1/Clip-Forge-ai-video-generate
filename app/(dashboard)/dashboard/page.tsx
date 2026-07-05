@@ -219,9 +219,23 @@ function formatDate(dateString: string): string {
 
 function buildVideoUrl(path: string | null | undefined): string {
   if (!path || typeof path !== "string" || path.trim() === "") return "";
-  if (path.startsWith("http")) return path;
-  const match = path.match(/outputs\/.+$/);
-  const relativePath = match ? `/${match[0]}` : path;
+  
+  let relativePath = path;
+  if (path.startsWith("http")) {
+    if (path.includes("cloudinary.com") || path.includes("/upload/")) {
+      return path;
+    }
+    const backendPrefix = (process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api").replace(/\/api$/, "");
+    if (path.startsWith(backendPrefix)) {
+      relativePath = path.substring(backendPrefix.length);
+    } else {
+      return path;
+    }
+  } else {
+    const match = path.match(/outputs\/.+$/);
+    relativePath = match ? `/${match[0]}` : path;
+  }
+  
   return `/api/video-proxy?path=${encodeURIComponent(relativePath)}`;
 }
 

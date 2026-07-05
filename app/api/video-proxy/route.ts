@@ -31,10 +31,18 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Video not found", { status: response.status });
   }
 
+  const download = searchParams.get("download") === "true";
+  const filename = searchParams.get("filename") || "video";
+
   const headers = new Headers();
   headers.set("Content-Type", response.headers.get("Content-Type") || "video/mp4");
   headers.set("Accept-Ranges", "bytes");
   headers.set("Cache-Control", "public, max-age=3600");
+
+  if (download) {
+    const safeFilename = filename.endsWith(".mp4") ? filename : `${filename}.mp4`;
+    headers.set("Content-Disposition", `attachment; filename="${safeFilename}"`);
+  }
 
   const contentRange = response.headers.get("Content-Range");
   if (contentRange) headers.set("Content-Range", contentRange);

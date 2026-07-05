@@ -26,11 +26,23 @@ interface VideoCardProps {
 
 function buildVideoUrl(path: string | null | undefined): string {
   if (!path || typeof path !== "string" || path.trim() === "") return "";
-  if (path.startsWith("http")) return path;
-  // Extract relative path starting from "outputs/" (handles absolute server filesystem paths)
-  const match = path.match(/outputs\/.+$/);
-  const relativePath = match ? `/${match[0]}` : path;
-  // Use Next.js proxy to avoid cross-origin cache issues
+  
+  let relativePath = path;
+  if (path.startsWith("http")) {
+    if (path.includes("cloudinary.com") || path.includes("/upload/")) {
+      return path;
+    }
+    const backendPrefix = (process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api").replace(/\/api$/, "");
+    if (path.startsWith(backendPrefix)) {
+      relativePath = path.substring(backendPrefix.length);
+    } else {
+      return path;
+    }
+  } else {
+    const match = path.match(/outputs\/.+$/);
+    relativePath = match ? `/${match[0]}` : path;
+  }
+  
   return `/api/video-proxy?path=${encodeURIComponent(relativePath)}`;
 }
 
@@ -107,6 +119,36 @@ export default function VideoCard({
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!videoUrl) return;
+
+    // 1. Cloudinary URL download handling using fl_attachment
+    if (videoUrl.includes("cloudinary.com") || videoUrl.includes("/upload/")) {
+      const uploadPattern = /(\/upload\/)/;
+      if (uploadPattern.test(videoUrl)) {
+        const safeFilename = encodeURIComponent(title.replace(/[^a-zA-Z0-9_-]/g, "_"));
+        const downloadUrl = videoUrl.replace(uploadPattern, `$1fl_attachment:${safeFilename}/`);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      }
+    }
+
+    // 2. Video Proxy download handling (attaches Content-Disposition)
+    if (videoUrl.startsWith("/api/video-proxy")) {
+      const safeFilename = encodeURIComponent(title.replace(/[^a-zA-Z0-9_-]/g, "_"));
+      const downloadUrl = `${videoUrl}&download=true&filename=${safeFilename}`;
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
+
+    // Fallback: Default anchor download
     const link = document.createElement("a");
     link.href = videoUrl;
     link.download = `${title}.mp4`;
