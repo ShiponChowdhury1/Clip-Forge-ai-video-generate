@@ -35,6 +35,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useLogoutMutation, useRequestChangePasswordOtpMutation, useVerifyChangePasswordOtpMutation, useChangePasswordMutation, useUpdateProfileMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction, setUser } from "@/lib/redux/features/auth/authSlice";
 import { features, steps, plans, videos, videoCardData } from "@/app/data";
+import ThemeToggleButton from "@/app/components/shared/ThemeToggleButton";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://10.10.12.3:8000/api";
 const ORIGIN = API_BASE_URL.replace(/\/api$/, "");
@@ -1125,6 +1126,12 @@ export default function AdminHeader({ exportPayload, exportFilePrefix = "clipfor
             </div>
           )}
         </div>
+
+        {/* Theme toggle */}
+        <ThemeToggleButton
+          className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-[#0D1117] border border-gray-300 dark:border-[#1A3155] flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-[#2563EB] transition-colors shrink-0"
+          size={18}
+        />
 
         {/* Notification bell */}
         <div className="relative" ref={notificationRef}>

@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, ChevronDown, LayoutDashboard, Settings, LogOut, Shield, Sun, Moon } from "lucide-react";
+import { Menu, X, ChevronDown, LayoutDashboard, Settings, LogOut, Shield } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
-import { useTheme } from "./ThemeProvider";
+import ThemeToggleButton from "./ThemeToggleButton";
 
 const navLinks = [
   { name: "Features", href: "#features" },
@@ -35,7 +35,6 @@ export default function Navbar() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isHomePage = pathname === "/";
-  const { theme, toggleTheme } = useTheme();
 
   const token = useAppSelector((state) => state.auth.token);
   const user = useAppSelector((state) => state.auth.user);
@@ -180,13 +179,10 @@ export default function Navbar() {
         {/* Desktop: Auth buttons or User dropdown */}
         <div className="hidden md:flex items-center gap-3 lg:gap-4">
           {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
+          <ThemeToggleButton
             className="w-9 h-9 rounded-lg border border-gray-300 dark:border-[#1A3155] bg-gray-100 dark:bg-[#0D1117] flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-[#3B82F6] transition-all"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
+            size={16}
+          />
           {isLoggedIn ? (
             <div ref={dropdownRef} className="relative">
               <button
@@ -284,13 +280,11 @@ export default function Navbar() {
         <div className="md:hidden border-t border-gray-200 dark:border-zinc-800/50 bg-white/98 dark:bg-black/98 backdrop-blur-md absolute top-16 left-0 right-0 z-50">
           <nav className="flex flex-col px-4 py-4 space-y-1">
             {/* Mobile theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="flex items-center gap-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition"
-            >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              {theme === "dark" ? "Light Mode" : "Dark Mode"}
-            </button>
+            <ThemeToggleButton
+              className="flex items-center gap-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900/50 text-sm py-3 px-3 rounded-lg transition w-full"
+              size={16}
+              showLabel
+            />
             {navLinks.map((link) => (
               <a
                 key={link.href}

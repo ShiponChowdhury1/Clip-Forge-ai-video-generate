@@ -8,6 +8,7 @@ import { useLogoutMutation } from "@/lib/redux/features/auth/authApi";
 import { logout as logoutAction } from "@/lib/redux/features/auth/authSlice";
 import { useGetDashboardQuery, useGetAllVideosQuery } from "@/lib/redux/features/videos/videosApi";
 import Footer from "@/app/components/shared/Footer";
+import ThemeToggleButton from "@/app/components/shared/ThemeToggleButton";
 import { toast } from "react-toastify";
 import {
   LineChart,
@@ -781,6 +782,12 @@ export default function DashboardHome() {
             <span className="hidden xs:inline">Upgrade Plan</span>
             <span className="xs:hidden">Upgrade</span>
           </button>
+
+          {/* Theme toggle */}
+          <ThemeToggleButton
+            className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-[#1F1F1F] hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-[#9090c0] hover:text-gray-900 dark:hover:text-white transition-colors"
+            size={18}
+          />
 
           {/* Bell */}
           <div className="relative" ref={notificationRef}>
